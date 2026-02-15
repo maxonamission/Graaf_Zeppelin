@@ -1,0 +1,46 @@
+{
+  "nodes": [
+    {
+      "id": "café",
+      "label": "Café ☕",
+      "properties": {
+        "type": "locatie",
+        "beschrijving": "Een gezellige plek voor koffie"
+      }
+    },
+    {
+      "id": "boek",
+      "label": "Boek 📚",
+      "properties": {
+        "titel": "Het Leven van Pi",
+        "auteur": "Yann Martel"
+      }
+    },
+    {
+      "id": "muziek",
+      "label": "Muziek 🎵",
+      "properties": {
+        "genre": "klassiek",
+        "componist": "Dvorák"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "café",
+      "target": "boek",
+      "label": "heeft",
+      "properties": {
+        "beschrijving": "Het café heeft een boekenplank"
+      }
+    },
+    {
+      "source": "café",
+      "target": "muziek",
+      "label": "speelt",
+      "properties": {
+        "tijdstip": "'s avonds"
+      }
+    }
+  ]
+}

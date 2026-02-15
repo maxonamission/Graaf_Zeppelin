@@ -1,0 +1,69 @@
+{
+  "nodes": [
+    {
+      "id": "python",
+      "label": "Python",
+      "properties": {
+        "type": "programming_language",
+        "paradigm": "multi-paradigm"
+      }
+    },
+    {
+      "id": "data_science",
+      "label": "Data Science",
+      "properties": {
+        "type": "field",
+        "popularity": "high"
+      }
+    },
+    {
+      "id": "web_development",
+      "label": "Web Development",
+      "properties": {
+        "type": "field"
+      }
+    },
+    {
+      "id": "machine_learning",
+      "label": "Machine Learning",
+      "properties": {
+        "type": "subdomain",
+        "requires": "mathematics"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "python",
+      "target": "data_science",
+      "label": "used in",
+      "properties": {
+        "strength": "strong"
+      }
+    },
+    {
+      "source": "python",
+      "target": "web_development",
+      "label": "used in",
+      "properties": {
+        "strength": "strong"
+      }
+    },
+    {
+      "source": "data_science",
+      "target": "machine_learning",
+      "label": "includes",
+      "properties": {
+        "relationship": "parent-child"
+      }
+    },
+    {
+      "source": "python",
+      "target": "machine_learning",
+      "label": "used in",
+      "properties": {
+        "strength": "very strong"
+      }
+    }
+  ]
+}
