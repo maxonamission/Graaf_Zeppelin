@@ -2,14 +2,13 @@
 
 ## Project Overview
 
-Graaf Zeppelin is a Python framework that uses graph theory to model social relationships in sports clubs. The framework represents members as nodes in a graph, with weighted edges representing relationship quality. It's designed to help analyze and improve team dynamics through quantitative affective metrics.
+Graaf Zeppelin is a Python project for graph experiments. This repository is for exploring graph theory concepts and implementations.
 
 ## Technology Stack
 
 - **Language**: Python
-- **Core Libraries**: Graph theory libraries (for relationship modeling)
-- **Testing**: unittest module
-- **File Formats**: JSON, GEXF, Markdown
+- **Testing**: unittest or pytest for testing
+- **File Formats**: Support for various graph formats as needed (JSON, GEXF, etc.)
 
 ## Coding Standards
 
@@ -28,19 +27,11 @@ Graaf Zeppelin is a Python framework that uses graph theory to model social rela
 
 ## Architecture & Patterns
 
-### Core Components
-1. **Relationship Graph**: Models social relationships using graph nodes (members) and weighted edges (relationship quality)
-
-2. **Affective Metrics**: Measures four key dimensions:
-   - Emotional Climate
-   - Relational Quality
-   - Psychological Safety
-   - Cultural Cohesion
-
 ### Design Principles
-- Separate concerns: Keep graph modeling separate from metric calculations
-- Data-driven: Base all metrics on quantifiable graph properties
-- Extensibility: Design for adding new affective dimensions easily
+- Write clear, maintainable code
+- Separate concerns appropriately
+- Design for extensibility
+- Use appropriate data structures for graph operations
 
 ## Testing Practices
 
@@ -63,14 +54,14 @@ Graaf Zeppelin is a Python framework that uses graph theory to model social rela
 ## File Organization
 
 Organize code with clear separation of concerns:
-- Core functionality for graph modeling and relationship analysis
+- Core functionality for graph operations and algorithms
 - Separate test files for each major component
 - Documentation in dedicated docs directory
 - Use meaningful module and package names
 
 ## Documentation
 
-- Maintain theoretical documentation describing the framework's foundation
+- Maintain documentation describing the project's purpose and implementation
 - Update README.md with usage examples when adding new features
 - Keep documentation in sync with code changes
 - Use clear docstrings for all public APIs
@@ -103,5 +94,5 @@ finally:
 ## Resources
 
 - README.md: Project overview and basic usage
-- Documentation: Theoretical foundation and technical details
+- Documentation: Implementation details and technical information
 - Tests: Reference implementations and usage examples
