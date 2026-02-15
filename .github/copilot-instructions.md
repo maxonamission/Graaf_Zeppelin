@@ -30,14 +30,12 @@ Graaf Zeppelin is a Python framework that uses graph theory to model social rela
 
 ### Core Components
 1. **Relationship Graph**: Models social relationships using graph nodes (members) and weighted edges (relationship quality)
-   - Located in: `src/graaf_zeppelin/core/relationship_graph.py`
 
 2. **Affective Metrics**: Measures four key dimensions:
    - Emotional Climate
    - Relational Quality
    - Psychological Safety
    - Cultural Cohesion
-   - Located in: `src/graaf_zeppelin/core/affective_metrics.py`
 
 ### Design Principles
 - Separate concerns: Keep graph modeling separate from metric calculations
@@ -48,14 +46,13 @@ Graaf Zeppelin is a Python framework that uses graph theory to model social rela
 
 ### Test Structure
 - Use unittest module for all testing
-- Create separate test files for each major component:
-  - `tests/test_relationship_graph.py` for graph functionality
-  - `tests/test_affective_metrics.py` for metrics calculations
-  - `tests/test_conversions.py` for data conversions
+- Create separate test files for each major component
+- Name test files with `test_` prefix for clarity
+- Group related tests in test classes
 
 ### Test Commands
-- Run tests with: `python tests/test_conversions.py` from repository root
-- Each test file should be runnable independently
+- Run individual test files independently from repository root
+- Example: `python tests/test_<component>.py`
 
 ### Test Best Practices
 - Use `tempfile.mkdtemp()` for temporary files in tests
@@ -63,30 +60,20 @@ Graaf Zeppelin is a Python framework that uses graph theory to model social rela
 - Test edge cases and boundary conditions
 - Ensure tests are deterministic and don't depend on external state
 
-## File Structure
+## File Organization
 
-```
-graaf_zeppelin/
-├── src/
-│   └── graaf_zeppelin/
-│       ├── core/
-│       │   ├── relationship_graph.py
-│       │   └── affective_metrics.py
-│       ├── knowledge_graph.py
-│       └── converters.py
-├── tests/
-│   ├── test_relationship_graph.py
-│   ├── test_affective_metrics.py
-│   └── test_conversions.py
-└── docs/
-    └── THEORETISCHE_ONDERBOUWING.md
-```
+Organize code with clear separation of concerns:
+- Core functionality for graph modeling and relationship analysis
+- Separate test files for each major component
+- Documentation in dedicated docs directory
+- Use meaningful module and package names
 
 ## Documentation
 
-- Maintain theoretical documentation in `docs/THEORETISCHE_ONDERBOUWING.md`
+- Maintain theoretical documentation describing the framework's foundation
 - Update README.md with usage examples when adding new features
 - Keep documentation in sync with code changes
+- Use clear docstrings for all public APIs
 
 ## Security Best Practices
 
@@ -116,5 +103,5 @@ finally:
 ## Resources
 
 - README.md: Project overview and basic usage
-- docs/THEORETISCHE_ONDERBOUWING.md: Theoretical foundation
-- tests/: Reference implementations and usage examples
+- Documentation: Theoretical foundation and technical details
+- Tests: Reference implementations and usage examples
