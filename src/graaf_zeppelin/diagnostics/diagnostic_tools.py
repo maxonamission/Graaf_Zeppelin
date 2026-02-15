@@ -5,7 +5,8 @@ Dit module biedt tools om de affectieve dynamiek binnen een sportvereniging
 te diagnosticeren en aanbevelingen te genereren.
 """
 
-from typing import Dict, List, Any
+import numpy as np
+from typing import Dict, List, Any, Optional
 from ..core.relationship_graph import RelationshipGraph
 from ..core.affective_metrics import AffectiveMetrics
 
@@ -316,8 +317,3 @@ class DiagnosticTools:
             report['risico_factoren'].append('Geen sterke relaties')
         
         return report
-
-
-# Import numpy voor community analysis
-import numpy as np
-from typing import Optional

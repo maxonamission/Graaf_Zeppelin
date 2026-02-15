@@ -204,10 +204,12 @@ class AffectiveMetrics:
             
             # Bereken fragmentatie
             if graph_metrics['aantal_leden'] > 0:
+                import networkx as nx
+                components = list(nx.connected_components(self.graph.graph))
                 largest_component = max(
-                    (len(c) for c in self.graph.graph.subgraphs()),
+                    (len(c) for c in components),
                     default=0
-                ) if len(self.graph.graph) > 0 else 0
+                ) if components else 0
                 
                 metrics['fragmentatie'] = float(
                     1.0 - (largest_component / graph_metrics['aantal_leden'])
@@ -314,16 +316,21 @@ class AffectiveMetrics:
         
         # Culturele cohesie score (genormaliseerd naar 0-10)
         cultural = self.calculate_cultural_cohesion()
-        # Dichtheid en clustering zijn 0-1, modularity kan negatief tot 1 zijn
-        cohesion_components = [
-            cultural.get('netwerk_dichtheid', 0) * 10,
-            cultural.get('gemiddelde_clustering', 0) * 10,
-            max(0, cultural.get('modulariteit', 0)) * 10,  # Alleen positieve modularity
-            (1 - cultural.get('fragmentatie', 1)) * 10,  # Inverse fragmentatie
-        ]
-        scores['culturele_cohesie_score'] = float(
-            np.mean(cohesion_components)
-        )
+        
+        # Voor een lege graaf is cohesie 0
+        if len(self.graph.graph) == 0:
+            scores['culturele_cohesie_score'] = 0.0
+        else:
+            # Dichtheid en clustering zijn 0-1, modularity kan negatief tot 1 zijn
+            cohesion_components = [
+                cultural.get('netwerk_dichtheid', 0) * 10,
+                cultural.get('gemiddelde_clustering', 0) * 10,
+                max(0, cultural.get('modulariteit', 0)) * 10,  # Alleen positieve modularity
+                (1 - cultural.get('fragmentatie', 1)) * 10,  # Inverse fragmentatie
+            ]
+            scores['culturele_cohesie_score'] = float(
+                np.mean(cohesion_components)
+            )
         
         # Totale affectieve gezondheid (gewogen gemiddelde)
         # Alle dimensies evenveel gewicht
