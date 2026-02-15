@@ -6,7 +6,7 @@ van de vereniging om de affectieve dynamiek te kwantificeren.
 """
 
 import numpy as np
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Any
 from .relationship_graph import RelationshipGraph
 
 
@@ -222,7 +222,7 @@ class AffectiveMetrics:
         
         return metrics
     
-    def calculate_dropout_risk_indicators(self) -> Dict[str, any]:
+    def calculate_dropout_risk_indicators(self) -> Dict[str, Any]:
         """
         Identificeer indicatoren voor uitvalrisico.
         
