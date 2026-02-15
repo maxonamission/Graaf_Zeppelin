@@ -4,6 +4,7 @@ Simple tests for Graaf Zeppelin knowledge graph conversions.
 
 import os
 import json
+import tempfile
 from pathlib import Path
 
 # Add parent directory to path
@@ -11,6 +12,9 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from graaf_zeppelin import KnowledgeGraph, json_to_gexf, gexf_to_json, json_to_markdown, markdown_to_json
+
+# Create a temporary directory for test files
+TEST_DIR = tempfile.mkdtemp(prefix="graaf_zeppelin_test_")
 
 
 def test_knowledge_graph_creation():
@@ -39,7 +43,7 @@ def test_json_roundtrip():
     kg.add_edge("test", "test", "self-reference")
     
     # Save to JSON
-    json_path = "/tmp/test_kg.json"
+    json_path = os.path.join(TEST_DIR, "test_kg.json")
     kg.to_json(json_path)
     
     # Load from JSON
@@ -61,7 +65,7 @@ def test_utf8_encoding():
     kg.add_edge("café", "über", "heeft", {"note": "éèêë"})
     
     # Save and load
-    json_path = "/tmp/test_utf8.json"
+    json_path = os.path.join(TEST_DIR, "test_utf8.json")
     kg.to_json(json_path)
     kg2 = KnowledgeGraph.from_json(json_path)
     
@@ -82,8 +86,8 @@ def test_json_to_gexf_conversion():
     kg.add_node("n2", "Node 2")
     kg.add_edge("n1", "n2", "related to")
     
-    json_path = "/tmp/test_convert.json"
-    gexf_path = "/tmp/test_convert.gexf"
+    json_path = os.path.join(TEST_DIR, "test_convert.json")
+    gexf_path = os.path.join(TEST_DIR, "test_convert.gexf")
     
     kg.to_json(json_path)
     json_to_gexf(json_path, gexf_path)
@@ -108,8 +112,8 @@ def test_json_to_markdown_conversion():
     kg.add_node("data", "Data Science")
     kg.add_edge("python", "data", "used in")
     
-    json_path = "/tmp/test_md.json"
-    md_path = "/tmp/test_md.md"
+    json_path = os.path.join(TEST_DIR, "test_md.json")
+    md_path = os.path.join(TEST_DIR, "test_md.md")
     
     kg.to_json(json_path)
     json_to_markdown(json_path, md_path)
@@ -137,9 +141,9 @@ def test_gexf_to_json_conversion():
     kg.add_node("b", "Node B")
     kg.add_edge("a", "b", "links to")
     
-    json_path1 = "/tmp/test_gexf_src.json"
-    gexf_path = "/tmp/test_gexf_mid.gexf"
-    json_path2 = "/tmp/test_gexf_dst.json"
+    json_path1 = os.path.join(TEST_DIR, "test_gexf_src.json")
+    gexf_path = os.path.join(TEST_DIR, "test_gexf_mid.gexf")
+    json_path2 = os.path.join(TEST_DIR, "test_gexf_dst.json")
     
     kg.to_json(json_path1)
     json_to_gexf(json_path1, gexf_path)
@@ -186,6 +190,14 @@ def main():
     print("=" * 60)
     print(f"Results: {passed} passed, {failed} failed")
     print("=" * 60)
+    
+    # Cleanup temporary directory
+    import shutil
+    try:
+        shutil.rmtree(TEST_DIR)
+        print(f"\n✓ Cleaned up temporary test directory")
+    except Exception as e:
+        print(f"\nWarning: Could not clean up test directory: {e}")
     
     return failed == 0
 

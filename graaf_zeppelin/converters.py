@@ -164,16 +164,13 @@ def json_to_markdown(json_filepath: str, markdown_filepath: str):
     
     # Write edges section
     lines.append("## Edges\n")
+    
+    # Create node ID to label mapping for efficient lookup
+    node_labels = {node['id']: node.get('label', node['id']) for node in kg.nodes}
+    
     for edge in kg.edges:
-        source_label = edge['source']
-        target_label = edge['target']
-        
-        # Find node labels
-        for node in kg.nodes:
-            if node['id'] == edge['source']:
-                source_label = node.get('label', edge['source'])
-            if node['id'] == edge['target']:
-                target_label = node.get('label', edge['target'])
+        source_label = node_labels.get(edge['source'], edge['source'])
+        target_label = node_labels.get(edge['target'], edge['target'])
         
         relation = edge.get('label', 'related to')
         lines.append(f"- **{source_label}** {relation} **{target_label}**\n")
