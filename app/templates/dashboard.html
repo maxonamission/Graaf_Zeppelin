@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Graaf Zeppelin{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 1.5rem;">Dashboard</h1>
+
+<div class="grid grid-3" id="stats"
+     hx-get="/api/graph/summary" hx-trigger="load" hx-swap="innerHTML"
+     hx-target="#model-stats">
+    <div class="card stat" id="model-stats">
+        <div class="stat-value">...</div>
+        <div class="stat-label">Model laden...</div>
+    </div>
+    <div class="card stat">
+        <div class="stat-value" id="license-tier">...</div>
+        <div class="stat-label">Licentie</div>
+    </div>
+    <div class="card stat">
+        <div class="stat-value" id="queries-used">...</div>
+        <div class="stat-label">Queries deze maand</div>
+    </div>
+</div>
+
+<div class="grid grid-2" style="margin-top: 1rem;">
+    <div class="card">
+        <div class="card-header">Snel aan de slag</div>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <a href="/graph" class="btn btn-outline">Bekijk het causale model</a>
+            <a href="/reasoning" class="btn btn-primary">Stel een vraag</a>
+            <a href="/releases" class="btn btn-outline">Bekijk release notes</a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">Recente factoren</div>
+        <div id="factor-list" hx-get="/api/graph/factors" hx-trigger="load" hx-swap="innerHTML">
+            <p style="color: var(--text-muted);">Laden...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+// Load dashboard data
+document.addEventListener('DOMContentLoaded', async () => {
+    // Model summary
+    try {
+        const summaryRes = await fetch('/api/graph/summary');
+        if (summaryRes.ok) {
+            const summary = await summaryRes.json();
+            document.getElementById('model-stats').innerHTML = `
+                <div class="stat-value">${summary.num_factors}</div>
+                <div class="stat-label">Factoren in model v${summary.version}</div>
+            `;
+        }
+    } catch (e) { /* ignore */ }
+
+    // License info
+    try {
+        const licRes = await fetch('/api/license/info');
+        if (licRes.ok) {
+            const lic = await licRes.json();
+            document.getElementById('license-tier').textContent = lic.tier;
+            document.getElementById('queries-used').textContent =
+                `${lic.queries_used} / ${lic.queries_limit}`;
+        }
+    } catch (e) { /* ignore */ }
+
+    // Factor list
+    try {
+        const factorRes = await fetch('/api/graph/factors');
+        if (factorRes.ok) {
+            const data = await factorRes.json();
+            const html = data.factors.slice(0, 6).map(f => `
+                <div class="factor-item" onclick="window.location='/graph#${f.id}'">
+                    <span class="factor-name">${f.label}</span>
+                    <span class="factor-category">${f.category}</span>
+                </div>
+            `).join('');
+            document.getElementById('factor-list').innerHTML = html;
+        }
+    } catch (e) { /* ignore */ }
+});
+</script>
+{% endblock %}

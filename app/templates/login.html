@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Inloggen — Graaf Zeppelin{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <h2>Inloggen</h2>
+
+    <div id="login-error"></div>
+
+    <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+            <label for="email">E-mailadres</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Wachtwoord</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">
+            Inloggen
+        </button>
+    </form>
+
+    <p style="text-align: center; margin-top: 1rem; color: var(--text-muted);">
+        Nog geen account? <a href="/register">Registreren</a>
+    </p>
+</div>
+
+<script>
+async function handleLogin(e) {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    try {
+        const res = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({email, password})
+        });
+        const data = await res.json();
+        if (res.ok) {
+            document.cookie = `access_token=${data.access_token}; path=/; max-age=86400; SameSite=Strict`;
+            window.location.href = '/dashboard';
+        } else {
+            document.getElementById('login-error').innerHTML =
+                `<div class="alert alert-error">${data.detail}</div>`;
+        }
+    } catch (err) {
+        document.getElementById('login-error').innerHTML =
+            '<div class="alert alert-error">Verbindingsfout. Probeer het opnieuw.</div>';
+    }
+}
+</script>
+{% endblock %}

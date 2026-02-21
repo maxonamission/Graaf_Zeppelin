@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block title %}Redeneren — Graaf Zeppelin{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 1.5rem;">Causaal redeneren</h1>
+
+<div class="grid grid-2">
+    <div>
+        <div class="card">
+            <div class="card-header">LLM configuratie</div>
+            <div class="form-group">
+                <label for="llm-provider">Provider</label>
+                <select id="llm-provider">
+                    <option value="openai">OpenAI</option>
+                    <option value="anthropic">Anthropic</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="llm-key">API key</label>
+                <input type="password" id="llm-key" placeholder="sk-...">
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">
+                    Je key wordt niet opgeslagen — alleen gebruikt voor deze sessie.
+                </p>
+            </div>
+            <div class="form-group">
+                <label for="llm-model">Model (optioneel)</label>
+                <input type="text" id="llm-model" placeholder="Standaard model gebruiken">
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Focusfactoren (optioneel)</div>
+            <div id="factor-checkboxes">
+                <p style="color: var(--text-muted);">Laden...</p>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="card" style="display: flex; flex-direction: column; min-height: 600px;">
+            <div class="card-header">Gesprek</div>
+            <div class="reasoning-chat" id="chat-messages">
+                <div class="message message-assistant">
+                    Welkom! Stel een vraag over sportdeelname en ik redeneer op basis
+                    van het causale model. Bijvoorbeeld: "Wat gebeurt er als we investeren
+                    in betere coaching?"
+                </div>
+            </div>
+            <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border);">
+                <form id="chat-form" onsubmit="sendQuery(event)" style="display: flex; gap: 0.5rem;">
+                    <input type="text" id="chat-input" placeholder="Stel je vraag..."
+                           style="flex: 1;" required>
+                    <button type="submit" class="btn btn-primary" id="send-btn">Verstuur</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Load factors for checkboxes
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const res = await fetch('/api/graph/factors');
+        if (res.ok) {
+            const data = await res.json();
+            const html = data.factors.map(f => `
+                <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.3rem 0; cursor: pointer;">
+                    <input type="checkbox" class="factor-checkbox" value="${f.id}">
+                    <span style="font-size: 0.85rem;">${f.label}</span>
+                </label>
+            `).join('');
+            document.getElementById('factor-checkboxes').innerHTML = html;
+        }
+    } catch (e) { /* ignore */ }
+});
+
+async function sendQuery(e) {
+    e.preventDefault();
+
+    const query = document.getElementById('chat-input').value.trim();
+    if (!query) return;
+
+    const apiKey = document.getElementById('llm-key').value;
+    if (!apiKey) {
+        alert('Voer eerst je LLM API key in.');
+        return;
+    }
+
+    // Show user message
+    addMessage(query, 'user');
+    document.getElementById('chat-input').value = '';
+    document.getElementById('send-btn').disabled = true;
+    document.getElementById('send-btn').textContent = 'Denken...';
+
+    // Get selected factors
+    const selectedFactors = Array.from(
+        document.querySelectorAll('.factor-checkbox:checked')
+    ).map(cb => cb.value);
+
+    try {
+        const res = await fetch('/api/reasoning/query', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                query: query,
+                provider: document.getElementById('llm-provider').value,
+                api_key: apiKey,
+                model: document.getElementById('llm-model').value || null,
+                factor_ids: selectedFactors.length > 0 ? selectedFactors : null,
+            })
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            addMessage(data.response, 'assistant');
+        } else {
+            const error = await res.json();
+            addMessage(`Fout: ${error.detail}`, 'assistant');
+        }
+    } catch (err) {
+        addMessage('Verbindingsfout. Controleer je API key en probeer het opnieuw.', 'assistant');
+    }
+
+    document.getElementById('send-btn').disabled = false;
+    document.getElementById('send-btn').textContent = 'Verstuur';
+}
+
+function addMessage(text, role) {
+    const chat = document.getElementById('chat-messages');
+    const div = document.createElement('div');
+    div.className = `message message-${role}`;
+    div.textContent = text;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+}
+</script>
+{% endblock %}

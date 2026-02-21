@@ -1,0 +1,281 @@
+{
+  "name": "Sportdeelname",
+  "version": "1.0.0",
+  "description": "Causaal model voor factoren die sportdeelname beïnvloeden. Gebaseerd op wetenschappelijke inzichten en praktijkervaring uit het Nederlandse sportbeleid.",
+  "factors": [
+    {
+      "id": "sportdeelname",
+      "label": "Sportdeelname",
+      "description": "De mate waarin mensen structureel deelnemen aan sport en bewegen",
+      "category": "uitkomst"
+    },
+    {
+      "id": "motivatie",
+      "label": "Motivatie",
+      "description": "Intrinsieke en extrinsieke motivatie om te sporten",
+      "category": "individueel"
+    },
+    {
+      "id": "competentie",
+      "label": "Ervaren competentie",
+      "description": "Het gevoel vaardig genoeg te zijn om mee te doen",
+      "category": "individueel"
+    },
+    {
+      "id": "sociaal_netwerk",
+      "label": "Sociaal netwerk",
+      "description": "Vrienden, familie en leeftijdsgenoten die ook sporten",
+      "category": "sociaal"
+    },
+    {
+      "id": "coaching_kwaliteit",
+      "label": "Kwaliteit begeleiding",
+      "description": "Kwaliteit en opleiding van trainers, coaches en begeleiders",
+      "category": "aanbod"
+    },
+    {
+      "id": "aanbod_programmering",
+      "label": "Aanbod & programmering",
+      "description": "Diversiteit en passendheid van het sportaanbod en de programmering",
+      "category": "aanbod"
+    },
+    {
+      "id": "bereikbaarheid",
+      "label": "Bereikbaarheid faciliteiten",
+      "description": "Fysieke afstand en bereikbaarheid van sportaccommodaties",
+      "category": "omgeving"
+    },
+    {
+      "id": "kosten",
+      "label": "Kosten deelname",
+      "description": "Financiële drempel: contributie, materiaal, vervoer",
+      "category": "omgeving"
+    },
+    {
+      "id": "veiligheid_inclusie",
+      "label": "Veiligheid & inclusie",
+      "description": "Mate waarin de sportomgeving veilig, welkom en inclusief is",
+      "category": "sociaal"
+    },
+    {
+      "id": "tijd_beschikbaarheid",
+      "label": "Tijd & beschikbaarheid",
+      "description": "Beschikbare tijd in relatie tot werk, school, gezin",
+      "category": "individueel"
+    },
+    {
+      "id": "gezondheid",
+      "label": "Gezondheid",
+      "description": "Fysieke en mentale gezondheid als factor én uitkomst",
+      "category": "individueel"
+    },
+    {
+      "id": "beleid_gemeente",
+      "label": "Gemeentelijk sportbeleid",
+      "description": "Lokaal beleid, subsidies, sportakkoorden",
+      "category": "beleid"
+    },
+    {
+      "id": "beleid_bond",
+      "label": "Bondsbeleid",
+      "description": "Beleid van sportbonden: ledenbinding, ontwikkelprogramma's",
+      "category": "beleid"
+    },
+    {
+      "id": "cluborganisatie",
+      "label": "Cluborganisatie",
+      "description": "Bestuurskracht, vrijwilligers, organisatiegraad van de club",
+      "category": "aanbod"
+    },
+    {
+      "id": "plezier",
+      "label": "Plezier",
+      "description": "Ervaren plezier en positieve beleving bij het sporten",
+      "category": "individueel"
+    }
+  ],
+  "relations": [
+    {
+      "cause": "motivatie",
+      "effect": "sportdeelname",
+      "direction": "positive",
+      "strength": 0.9,
+      "description": "Motivatie is de sterkste directe voorspeller van sportdeelname"
+    },
+    {
+      "cause": "plezier",
+      "effect": "motivatie",
+      "direction": "positive",
+      "strength": 0.85,
+      "description": "Plezier in sport voedt intrinsieke motivatie"
+    },
+    {
+      "cause": "competentie",
+      "effect": "motivatie",
+      "direction": "positive",
+      "strength": 0.7,
+      "description": "Wie zich competent voelt, is gemotiveerder"
+    },
+    {
+      "cause": "competentie",
+      "effect": "plezier",
+      "direction": "positive",
+      "strength": 0.65,
+      "description": "Competentie vergroot het plezier in sport"
+    },
+    {
+      "cause": "sociaal_netwerk",
+      "effect": "motivatie",
+      "direction": "positive",
+      "strength": 0.75,
+      "description": "Sociale verbinding is een sterke motivator"
+    },
+    {
+      "cause": "sociaal_netwerk",
+      "effect": "plezier",
+      "direction": "positive",
+      "strength": 0.7,
+      "description": "Samen sporten vergroot het plezier"
+    },
+    {
+      "cause": "coaching_kwaliteit",
+      "effect": "competentie",
+      "direction": "positive",
+      "strength": 0.8,
+      "description": "Goede coaching ontwikkelt competentie"
+    },
+    {
+      "cause": "coaching_kwaliteit",
+      "effect": "plezier",
+      "direction": "positive",
+      "strength": 0.6,
+      "description": "Goede coaches zorgen voor een positievere sportbeleving"
+    },
+    {
+      "cause": "coaching_kwaliteit",
+      "effect": "veiligheid_inclusie",
+      "direction": "positive",
+      "strength": 0.65,
+      "description": "Goede coaches creëren een veilige en inclusieve omgeving"
+    },
+    {
+      "cause": "aanbod_programmering",
+      "effect": "sportdeelname",
+      "direction": "positive",
+      "strength": 0.6,
+      "description": "Passend aanbod verlaagt de drempel tot deelname"
+    },
+    {
+      "cause": "aanbod_programmering",
+      "effect": "plezier",
+      "direction": "positive",
+      "strength": 0.5,
+      "description": "Gevarieerd aanbod vergroot de kans op een passende activiteit"
+    },
+    {
+      "cause": "bereikbaarheid",
+      "effect": "sportdeelname",
+      "direction": "positive",
+      "strength": 0.55,
+      "description": "Nabijheid van faciliteiten vergemakkelijkt deelname"
+    },
+    {
+      "cause": "kosten",
+      "effect": "sportdeelname",
+      "direction": "negative",
+      "strength": 0.5,
+      "description": "Hogere kosten vormen een drempel voor deelname"
+    },
+    {
+      "cause": "veiligheid_inclusie",
+      "effect": "sportdeelname",
+      "direction": "positive",
+      "strength": 0.65,
+      "description": "Een veilige, inclusieve omgeving bevordert deelname"
+    },
+    {
+      "cause": "veiligheid_inclusie",
+      "effect": "plezier",
+      "direction": "positive",
+      "strength": 0.7,
+      "description": "Veiligheid is een voorwaarde voor plezier"
+    },
+    {
+      "cause": "tijd_beschikbaarheid",
+      "effect": "sportdeelname",
+      "direction": "positive",
+      "strength": 0.5,
+      "description": "Beschikbare tijd is een randvoorwaarde"
+    },
+    {
+      "cause": "gezondheid",
+      "effect": "sportdeelname",
+      "direction": "positive",
+      "strength": 0.4,
+      "description": "Goede gezondheid maakt sporten makkelijker"
+    },
+    {
+      "cause": "beleid_gemeente",
+      "effect": "bereikbaarheid",
+      "direction": "positive",
+      "strength": 0.6,
+      "description": "Gemeentelijk beleid beïnvloedt faciliteiten en bereikbaarheid"
+    },
+    {
+      "cause": "beleid_gemeente",
+      "effect": "kosten",
+      "direction": "negative",
+      "strength": 0.5,
+      "description": "Subsidies en regelingen verlagen de kosten"
+    },
+    {
+      "cause": "beleid_gemeente",
+      "effect": "aanbod_programmering",
+      "direction": "positive",
+      "strength": 0.45,
+      "description": "Lokaal beleid stimuleert diversiteit in aanbod"
+    },
+    {
+      "cause": "beleid_bond",
+      "effect": "coaching_kwaliteit",
+      "direction": "positive",
+      "strength": 0.7,
+      "description": "Bonden investeren in opleiding en kwaliteit van coaches"
+    },
+    {
+      "cause": "beleid_bond",
+      "effect": "aanbod_programmering",
+      "direction": "positive",
+      "strength": 0.6,
+      "description": "Bonden ontwikkelen nieuwe programma's en formats"
+    },
+    {
+      "cause": "beleid_bond",
+      "effect": "cluborganisatie",
+      "direction": "positive",
+      "strength": 0.55,
+      "description": "Bonden ondersteunen clubs in hun organisatie"
+    },
+    {
+      "cause": "cluborganisatie",
+      "effect": "coaching_kwaliteit",
+      "direction": "positive",
+      "strength": 0.5,
+      "description": "Goed georganiseerde clubs trekken betere coaches aan"
+    },
+    {
+      "cause": "cluborganisatie",
+      "effect": "aanbod_programmering",
+      "direction": "positive",
+      "strength": 0.55,
+      "description": "Sterke clubs kunnen meer en beter aanbod organiseren"
+    },
+    {
+      "cause": "cluborganisatie",
+      "effect": "veiligheid_inclusie",
+      "direction": "positive",
+      "strength": 0.5,
+      "description": "Goede organisatie leidt tot beter beleid rond veiligheid"
+    }
+  ]
+}
