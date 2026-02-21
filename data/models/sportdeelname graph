@@ -1,0 +1,5590 @@
+{
+   "metadata": {
+      "deliverable": "SDM_graph",
+      "project": "Sportdeelnamemodel KNSB",
+      "version": "2.3.0",
+      "date": "2026-02-20",
+      "sources": {
+         "nodes": "SDM_A1_nodes.json (v2.3.0)",
+         "edges": "SDM_A2_edges.json (v2.3.0)",
+         "literature": "SDM_D1_referenties.json (v2.0.0)",
+         "sliders": "SDM_A3_sliders.json (v1.0.0)"
+      },
+      "summary": {
+         "total_nodes": 69,
+         "total_edges": 114,
+         "total_references": 66,
+         "domains": {
+            "Discipline-specifiek": 5,
+            "Macro-context": 8,
+            "Middelen & Logistiek": 8,
+            "Organisatie & Aanbod": 13,
+            "Psychologisch": 11,
+            "Regels & Administratie": 8,
+            "Sociaal": 5,
+            "Training & Prestatie": 7,
+            "Uitkomsten": 4
+         },
+         "clusters": {
+            "Continuïteit": 10,
+            "Discipline-specifiek": 10,
+            "Feitelijke deelname": 24,
+            "Macro-moderaties": 10,
+            "Motivatie": 1,
+            "Organisatie": 8,
+            "Psychologisch": 11,
+            "Recreatief": 18,
+            "Sociaal": 9,
+            "Toelaatbaarheid": 13
+         },
+         "edge_status": {
+            "A": 40,
+            "-": 38,
+            "B": 36
+         },
+         "edges_with_literature": 70,
+         "literature_coverage_pct": 61.4,
+         "cross_domain_edges": 88,
+         "cross_domain_pct": 80,
+         "total_sliders": 8
+      },
+      "graph_metrics": {
+         "avg_degree": 3.25,
+         "max_degree": {
+            "node": "N018",
+            "degree": 16
+         },
+         "min_degree": {
+            "node": "N055",
+            "degree": 1
+         },
+         "connected_components": 1
+      }
+   },
+   "nodes": [
+      {
+         "id": "N001",
+         "label": "Toelaatbaarheid",
+         "domain": "Uitkomsten",
+         "level": "L0",
+         "bond_influence": "none",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "-",
+         "definition": "Voldoet aan formele eisen (licentie, categorie, kwalificatie, inschrijving)",
+         "degree": 5,
+         "in_degree": 4,
+         "out_degree": 1
+      },
+      {
+         "id": "N002",
+         "label": "Feitelijke deelname",
+         "domain": "Uitkomsten",
+         "level": "L0",
+         "bond_influence": "none",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "-",
+         "definition": "Daadwerkelijk opkomen en starten in wedstrijd",
+         "degree": 13,
+         "in_degree": 11,
+         "out_degree": 2
+      },
+      {
+         "id": "N003",
+         "label": "Continuïteit",
+         "domain": "Uitkomsten",
+         "level": "L0",
+         "bond_influence": "none",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "-",
+         "definition": "Blijven deelnemen over meerdere seizoenen",
+         "degree": 12,
+         "in_degree": 12,
+         "out_degree": 0
+      },
+      {
+         "id": "N004",
+         "label": "Licentiestatus",
+         "domain": "Regels & Administratie",
+         "level": "L2",
+         "bond_influence": "high",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "-",
+         "definition": "Wedstrijdlicentie / daglicentie als toegangspoort",
+         "degree": 3,
+         "in_degree": 2,
+         "out_degree": 1
+      },
+      {
+         "id": "N005",
+         "label": "Lidmaatschapseis",
+         "domain": "Regels & Administratie",
+         "level": "L2",
+         "bond_influence": "high",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "-",
+         "definition": "Verenigings- en/of bondslidmaatschap vereist",
+         "degree": 1,
+         "in_degree": 0,
+         "out_degree": 1
+      },
+      {
+         "id": "N006",
+         "label": "Licentiekosten",
+         "domain": "Regels & Administratie",
+         "level": "L2",
+         "bond_influence": "high",
+         "disciplines": [
+            "MA",
+            "LB",
+            "ST",
+            "ISK",
+            "KS",
+            "SR"
+         ],
+         "status": "-",
+         "definition": "Tarieven verschillen per type en discipline",
+         "degree": 2,
+         "in_degree": 1,
+         "out_degree": 1
+      },
+      {
+         "id": "N007",
+         "label": "Categorie-indeling",
+         "domain": "Regels & Administratie",
+         "level": "L2",
+         "bond_influence": "high",
+         "disciplines": [
+            "MA",
+            "LB",
+            "ST",
+            "ISK",
+            "KS",
+            "SR"
+         ],
+         "status": "-",
+         "definition": "Leeftijd/gender/niveau-categorieën",
+         "degree": 2,
+         "in_degree": 1,
+         "out_degree": 1
+      },
+      {
+         "id": "N008",
+         "label": "Kwalificatiestatus",
+         "domain": "Regels & Administratie",
+         "level": "L2",
+         "bond_influence": "high",
+         "disciplines": [
+            "MA",
+            "LB",
+            "ST",
+            "ISK",
+            "KS",
+            "SR"
+         ],
+         "status": "-",
+         "definition": "Limiettijden, selectiecriteria, startquota",
+         "degree": 3,
+         "in_degree": 2,
+         "out_degree": 1
+      },
+      {
+         "id": "N009",
+         "label": "Inschrijfprocedure",
+         "domain": "Regels & Administratie",
+         "level": "L2",
+         "bond_influence": "high",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "-",
+         "definition": "Deadlines, systemen, digitale toegankelijkheid",
+         "degree": 1,
+         "in_degree": 0,
+         "out_degree": 1
+      },
+      {
+         "id": "N010",
+         "label": "Inschrijfbekwaamheid",
+         "domain": "Regels & Administratie",
+         "level": "L1/L2",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "-",
+         "definition": "Kennis + digitale vaardigheid sporter/ouder",
+         "degree": 4,
+         "in_degree": 3,
+         "out_degree": 1
+      },
+      {
+         "id": "N011",
+         "label": "Trainingsvolume",
+         "domain": "Training & Prestatie",
+         "level": "L1",
+         "bond_influence": "low",
+         "disciplines": [
+            "MA",
+            "LB",
+            "ST",
+            "ISK",
+            "KS",
+            "SR"
+         ],
+         "status": "-",
+         "definition": "Uren/week, consistentie over seizoen",
+         "degree": 10,
+         "in_degree": 9,
+         "out_degree": 1
+      },
+      {
+         "id": "N012",
+         "label": "Trainingskwaliteit",
+         "domain": "Training & Prestatie",
+         "level": "L1",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "-",
+         "definition": "Effectiviteit van training (via coach)",
+         "degree": 3,
+         "in_degree": 2,
+         "out_degree": 1
+      },
+      {
+         "id": "N013",
+         "label": "Technisch niveau",
+         "domain": "Training & Prestatie",
+         "level": "L1",
+         "bond_influence": "medium",
+         "disciplines": [
+            "MA",
+            "LB",
+            "ST",
+            "ISK",
+            "KS",
+            "SR"
+         ],
+         "status": "-",
+         "definition": "Discipline-specifieke vaardigheden",
+         "degree": 2,
+         "in_degree": 0,
+         "out_degree": 2
+      },
+      {
+         "id": "N014",
+         "label": "Fysieke capaciteit",
+         "domain": "Training & Prestatie",
+         "level": "L1",
+         "bond_influence": "low",
+         "disciplines": [
+            "MA",
+            "LB",
+            "ST",
+            "ISK",
+            "KS",
+            "SR"
+         ],
+         "status": "-",
+         "definition": "Kracht, uithoudingsvermogen, mobiliteit",
+         "degree": 2,
+         "in_degree": 0,
+         "out_degree": 2
+      },
+      {
+         "id": "N015",
+         "label": "Blessuregevoeligheid",
+         "domain": "Training & Prestatie",
+         "level": "L1",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "-",
+         "definition": "Acuut/chronisch, blessurehistorie",
+         "degree": 6,
+         "in_degree": 3,
+         "out_degree": 3
+      },
+      {
+         "id": "N016",
+         "label": "Prestatieniveau",
+         "domain": "Training & Prestatie",
+         "level": "L1",
+         "bond_influence": "low",
+         "disciplines": [
+            "MA",
+            "LB",
+            "ST",
+            "ISK",
+            "KS",
+            "SR"
+         ],
+         "status": "-",
+         "definition": "Recente tijden, PR's, ranking",
+         "degree": 7,
+         "in_degree": 5,
+         "out_degree": 2
+      },
+      {
+         "id": "N017",
+         "label": "Herstelcapaciteit",
+         "domain": "Training & Prestatie",
+         "level": "L1",
+         "bond_influence": "low",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "-",
+         "definition": "Vermogen om te herstellen tussen inspanningen",
+         "degree": 2,
+         "in_degree": 0,
+         "out_degree": 2
+      },
+      {
+         "id": "N018",
+         "label": "Intrinsieke motivatie",
+         "domain": "Psychologisch",
+         "level": "L1",
+         "bond_influence": "medium",
+         "disciplines": [
+            "MA",
+            "LB",
+            "ST",
+            "ISK",
+            "KS",
+            "SR"
+         ],
+         "status": "-",
+         "definition": "Plezier in de sport zelf",
+         "degree": 16,
+         "in_degree": 13,
+         "out_degree": 3
+      },
+      {
+         "id": "N019",
+         "label": "Extrinsieke motivatie",
+         "domain": "Psychologisch",
+         "level": "L1",
+         "bond_influence": "medium",
+         "disciplines": [
+            "MA",
+            "LB",
+            "ST",
+            "ISK",
+            "KS",
+            "SR"
+         ],
+         "status": "-",
+         "definition": "Prestatie, selectie, erkenning",
+         "degree": 3,
+         "in_degree": 2,
+         "out_degree": 1
+      },
+      {
+         "id": "N020",
+         "label": "Zelfeffectiviteit",
+         "domain": "Psychologisch",
+         "level": "L1",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "-",
+         "definition": "Vertrouwen in eigen kunnen",
+         "degree": 7,
+         "in_degree": 4,
+         "out_degree": 3
+      },
+      {
+         "id": "N021",
+         "label": "Wedstrijdvertrouwen",
+         "domain": "Psychologisch",
+         "level": "L1",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "-",
+         "definition": "Specifiek vertrouwen in wedstrijdcontext",
+         "degree": 1,
+         "in_degree": 0,
+         "out_degree": 1
+      },
+      {
+         "id": "N022",
+         "label": "Ervaren wedstrijdspanning",
+         "domain": "Psychologisch",
+         "level": "L1",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "-",
+         "definition": "Stress, druk, faalangst",
+         "degree": 3,
+         "in_degree": 1,
+         "out_degree": 2
+      },
+      {
+         "id": "N023",
+         "label": "Emotieregulatie",
+         "domain": "Psychologisch",
+         "level": "L1",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "-",
+         "definition": "Omgaan met spanning en teleurstelling",
+         "degree": 2,
+         "in_degree": 1,
+         "out_degree": 1
+      },
+      {
+         "id": "N024",
+         "label": "Doeloriëntatie",
+         "domain": "Psychologisch",
+         "level": "L1",
+         "bond_influence": "low",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "-",
+         "definition": "Taak- vs ego-oriëntatie",
+         "degree": 3,
+         "in_degree": 0,
+         "out_degree": 3
+      },
+      {
+         "id": "N025",
+         "label": "Ouderondersteuning",
+         "domain": "Sociaal",
+         "level": "L1",
+         "bond_influence": "low",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "-",
+         "definition": "Logistiek, financieel, emotioneel",
+         "degree": 3,
+         "in_degree": 0,
+         "out_degree": 3
+      },
+      {
+         "id": "N026",
+         "label": "Peergroep/teamgenoten",
+         "domain": "Sociaal",
+         "level": "L1",
+         "bond_influence": "medium",
+         "disciplines": [
+            "MA",
+            "LB",
+            "ST",
+            "ISK",
+            "KS",
+            "SR"
+         ],
+         "status": "-",
+         "definition": "Sociale binding, gezamenlijk trainen",
+         "degree": 4,
+         "in_degree": 1,
+         "out_degree": 3
+      },
+      {
+         "id": "N027",
+         "label": "Clubklimaat",
+         "domain": "Sociaal",
+         "level": "L2",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "-",
+         "definition": "Inclusiviteit, sfeer, veiligheid",
+         "degree": 5,
+         "in_degree": 1,
+         "out_degree": 4
+      },
+      {
+         "id": "N028",
+         "label": "Coach-atleet relatie",
+         "domain": "Sociaal",
+         "level": "L1/L2",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "-",
+         "definition": "Vertrouwen, communicatie, fit",
+         "degree": 3,
+         "in_degree": 1,
+         "out_degree": 2
+      },
+      {
+         "id": "N029",
+         "label": "Financiële draagkracht",
+         "domain": "Middelen & Logistiek",
+         "level": "L1",
+         "bond_influence": "none",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "-",
+         "definition": "Huishoudinkomen, prioriteiten",
+         "degree": 6,
+         "in_degree": 2,
+         "out_degree": 4
+      },
+      {
+         "id": "N030",
+         "label": "Tijd beschikbaar",
+         "domain": "Middelen & Logistiek",
+         "level": "L1",
+         "bond_influence": "none",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "-",
+         "definition": "Werk/school/gezin concurrentie",
+         "degree": 4,
+         "in_degree": 1,
+         "out_degree": 3
+      },
+      {
+         "id": "N031",
+         "label": "Materiaaltoegang",
+         "domain": "Middelen & Logistiek",
+         "level": "L1",
+         "bond_influence": "medium",
+         "disciplines": [
+            "MA",
+            "LB",
+            "ST",
+            "ISK",
+            "KS",
+            "SR"
+         ],
+         "status": "-",
+         "definition": "Schaatsen, pakken, bescherming, slijpen",
+         "degree": 2,
+         "in_degree": 1,
+         "out_degree": 1
+      },
+      {
+         "id": "N032",
+         "label": "Materiaalkosten",
+         "domain": "Middelen & Logistiek",
+         "level": "L1",
+         "bond_influence": "medium",
+         "disciplines": [
+            "MA",
+            "LB",
+            "ST",
+            "ISK",
+            "KS",
+            "SR"
+         ],
+         "status": "-",
+         "definition": "Aanschaf + onderhoud",
+         "degree": 2,
+         "in_degree": 1,
+         "out_degree": 1
+      },
+      {
+         "id": "N033",
+         "label": "Reisafstand",
+         "domain": "Middelen & Logistiek",
+         "level": "L1",
+         "bond_influence": "low",
+         "disciplines": [
+            "MA",
+            "LB",
+            "ST",
+            "ISK",
+            "KS",
+            "SR"
+         ],
+         "status": "-",
+         "definition": "Tot trainingsbaan en wedstrijdlocaties",
+         "degree": 2,
+         "in_degree": 1,
+         "out_degree": 1
+      },
+      {
+         "id": "N034",
+         "label": "Reiskosten",
+         "domain": "Middelen & Logistiek",
+         "level": "L1",
+         "bond_influence": "low",
+         "disciplines": [
+            "MA",
+            "LB",
+            "ST",
+            "ISK",
+            "KS",
+            "SR"
+         ],
+         "status": "-",
+         "definition": "Brandstof, OV, verblijf",
+         "degree": 3,
+         "in_degree": 2,
+         "out_degree": 1
+      },
+      {
+         "id": "N035",
+         "label": "Transponderregistratie",
+         "domain": "Middelen & Logistiek",
+         "level": "L2",
+         "bond_influence": "high",
+         "disciplines": [
+            "MA",
+            "LB",
+            "ST",
+            "ISK"
+         ],
+         "status": "-",
+         "definition": "Technische registratie voor tijdwaarneming",
+         "degree": 1,
+         "in_degree": 0,
+         "out_degree": 1
+      },
+      {
+         "id": "N036",
+         "label": "IJsbaanbeschikbaarheid",
+         "domain": "Organisatie & Aanbod",
+         "level": "L2",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "-",
+         "definition": "Aantal banen, openingstijden, verdeling",
+         "degree": 5,
+         "in_degree": 3,
+         "out_degree": 2
+      },
+      {
+         "id": "N037",
+         "label": "IJsuurverdeling",
+         "domain": "Organisatie & Aanbod",
+         "level": "L2",
+         "bond_influence": "medium",
+         "disciplines": [
+            "MA",
+            "LB",
+            "ST",
+            "ISK",
+            "KS",
+            "SR"
+         ],
+         "status": "-",
+         "definition": "Wie krijgt welke uren (selectie vs breedtesport)",
+         "degree": 2,
+         "in_degree": 1,
+         "out_degree": 1
+      },
+      {
+         "id": "N038",
+         "label": "Coachcapaciteit",
+         "domain": "Organisatie & Aanbod",
+         "level": "L2",
+         "bond_influence": "high",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "-",
+         "definition": "Aantal gekwalificeerde coaches",
+         "degree": 2,
+         "in_degree": 1,
+         "out_degree": 1
+      },
+      {
+         "id": "N039",
+         "label": "Coachkwaliteit",
+         "domain": "Organisatie & Aanbod",
+         "level": "L2",
+         "bond_influence": "high",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "-",
+         "definition": "Opleidingsniveau, didactiek, pedagogiek",
+         "degree": 4,
+         "in_degree": 0,
+         "out_degree": 4
+      },
+      {
+         "id": "N040",
+         "label": "Wedstrijdkalender",
+         "domain": "Organisatie & Aanbod",
+         "level": "L2",
+         "bond_influence": "high",
+         "disciplines": [
+            "MA",
+            "LB",
+            "ST",
+            "ISK",
+            "KS",
+            "SR"
+         ],
+         "status": "-",
+         "definition": "Spreiding, frequentie, locaties",
+         "degree": 1,
+         "in_degree": 0,
+         "out_degree": 1
+      },
+      {
+         "id": "N041",
+         "label": "Wedstrijdformat",
+         "domain": "Organisatie & Aanbod",
+         "level": "L2",
+         "bond_influence": "high",
+         "disciplines": [
+            "MA",
+            "LB",
+            "ST",
+            "ISK",
+            "KS",
+            "SR"
+         ],
+         "status": "-",
+         "definition": "Aantrekkelijkheid, innovatie (bijv. mass start)",
+         "degree": 1,
+         "in_degree": 0,
+         "out_degree": 1
+      },
+      {
+         "id": "N042",
+         "label": "Selectiesystematiek",
+         "domain": "Organisatie & Aanbod",
+         "level": "L2",
+         "bond_influence": "high",
+         "disciplines": [
+            "MA",
+            "LB",
+            "ST",
+            "ISK",
+            "KS",
+            "SR"
+         ],
+         "status": "-",
+         "definition": "Transparantie, haalbaarheid, progressie",
+         "degree": 1,
+         "in_degree": 0,
+         "out_degree": 1
+      },
+      {
+         "id": "N043",
+         "label": "Digitale systemen",
+         "domain": "Organisatie & Aanbod",
+         "level": "L2",
+         "bond_influence": "high",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "-",
+         "definition": "Inschrijfplatform UX, informatie-ontsluiting",
+         "degree": 1,
+         "in_degree": 0,
+         "out_degree": 1
+      },
+      {
+         "id": "N044",
+         "label": "Verenigingsondersteuning",
+         "domain": "Organisatie & Aanbod",
+         "level": "L2",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "-",
+         "definition": "Hulp van bond aan clubs",
+         "degree": 2,
+         "in_degree": 0,
+         "out_degree": 2
+      },
+      {
+         "id": "N045",
+         "label": "Economisch klimaat",
+         "domain": "Macro-context",
+         "level": "L3",
+         "bond_influence": "none",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "-",
+         "definition": "Koopkracht, inflatie",
+         "degree": 1,
+         "in_degree": 0,
+         "out_degree": 1
+      },
+      {
+         "id": "N046",
+         "label": "Klimaattrends",
+         "domain": "Macro-context",
+         "level": "L3",
+         "bond_influence": "none",
+         "disciplines": [
+            "MA",
+            "LB",
+            "ST",
+            "KS",
+            "SR"
+         ],
+         "status": "-",
+         "definition": "Zachte winters → minder natuurijs, energiekosten",
+         "degree": 2,
+         "in_degree": 0,
+         "out_degree": 2
+      },
+      {
+         "id": "N047",
+         "label": "Energieprijzen",
+         "domain": "Macro-context",
+         "level": "L3",
+         "bond_influence": "none",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "-",
+         "definition": "Direct effect op ijsbaankosten",
+         "degree": 4,
+         "in_degree": 0,
+         "out_degree": 4
+      },
+      {
+         "id": "N048",
+         "label": "Mediaprofilering",
+         "domain": "Macro-context",
+         "level": "L3",
+         "bond_influence": "low",
+         "disciplines": [
+            "MA",
+            "LB",
+            "ST",
+            "ISK",
+            "KS",
+            "SR"
+         ],
+         "status": "-",
+         "definition": "Zichtbaarheid sport, helden",
+         "degree": 1,
+         "in_degree": 0,
+         "out_degree": 1
+      },
+      {
+         "id": "N049",
+         "label": "Nationale successen",
+         "domain": "Macro-context",
+         "level": "L3",
+         "bond_influence": "low",
+         "disciplines": [
+            "MA",
+            "LB",
+            "ST",
+            "ISK",
+            "KS",
+            "SR"
+         ],
+         "status": "-",
+         "definition": "WK/OS prestaties → inspiratie",
+         "degree": 1,
+         "in_degree": 0,
+         "out_degree": 1
+      },
+      {
+         "id": "N050",
+         "label": "Sportvoorkeuren jeugd",
+         "domain": "Macro-context",
+         "level": "L3",
+         "bond_influence": "none",
+         "disciplines": [
+            "MA",
+            "LB",
+            "ST",
+            "ISK",
+            "KS",
+            "SR"
+         ],
+         "status": "-",
+         "definition": "Concurrentie andere sporten/gaming",
+         "degree": 1,
+         "in_degree": 0,
+         "out_degree": 1
+      },
+      {
+         "id": "N051",
+         "label": "Duurzaamheidsdiscours",
+         "domain": "Macro-context",
+         "level": "L3",
+         "bond_influence": "none",
+         "disciplines": [
+            "MA",
+            "LB",
+            "ST",
+            "KS",
+            "SR"
+         ],
+         "status": "-",
+         "definition": "Schaatsen als \"energieslurper\"",
+         "degree": 1,
+         "in_degree": 0,
+         "out_degree": 1
+      },
+      {
+         "id": "N052",
+         "label": "Ploegenstructuur",
+         "domain": "Discipline-specifiek",
+         "level": "L2",
+         "bond_influence": "medium",
+         "disciplines": [
+            "MA"
+         ],
+         "status": "-",
+         "definition": "Ploeglidmaatschap als factor",
+         "degree": 3,
+         "in_degree": 1,
+         "out_degree": 2
+      },
+      {
+         "id": "N053",
+         "label": "Internationale oriëntatie",
+         "domain": "Discipline-specifiek",
+         "level": "L2",
+         "bond_influence": "medium",
+         "disciplines": [
+            "ST"
+         ],
+         "status": "-",
+         "definition": "Meer internationale wedstrijden",
+         "degree": 1,
+         "in_degree": 0,
+         "out_degree": 1
+      },
+      {
+         "id": "N054",
+         "label": "Tactische complexiteit",
+         "domain": "Discipline-specifiek",
+         "level": "L1",
+         "bond_influence": "low",
+         "disciplines": [
+            "MA",
+            "ST"
+         ],
+         "status": "-",
+         "definition": "Mass start vaardigheden",
+         "degree": 2,
+         "in_degree": 1,
+         "out_degree": 1
+      },
+      {
+         "id": "N055",
+         "label": "Wegveiligheid",
+         "domain": "Discipline-specifiek",
+         "level": "L3",
+         "bond_influence": "none",
+         "disciplines": [
+            "ISK"
+         ],
+         "status": "-",
+         "definition": "Infrastructuur, verkeer",
+         "degree": 1,
+         "in_degree": 0,
+         "out_degree": 1
+      },
+      {
+         "id": "N056",
+         "label": "Seizoenscompensatie",
+         "domain": "Discipline-specifiek",
+         "level": "L1/L2",
+         "bond_influence": "medium",
+         "disciplines": [
+            "ISK"
+         ],
+         "status": "-",
+         "definition": "Zomertraining voor winterdisciplines",
+         "degree": 3,
+         "in_degree": 1,
+         "out_degree": 2
+      },
+      {
+         "id": "N057",
+         "label": "Recreatieve participatie",
+         "domain": "Uitkomsten",
+         "level": "L0",
+         "bond_influence": "none",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "B",
+         "definition": "Frequentie en volume van recreatief schaatsen (georganiseerd of ongeorganiseerd) zonder competitief doel",
+         "degree": 8,
+         "in_degree": 8,
+         "out_degree": 0
+      },
+      {
+         "id": "N058",
+         "label": "Toegangskosten recreatief",
+         "domain": "Middelen & Logistiek",
+         "level": "L1/L2",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "B",
+         "definition": "Financiële kosten recreatief schaatsen: baankaart (seizoen/10-rit/dag), schaatshuur, entree publieke schaatsuren",
+         "degree": 2,
+         "in_degree": 1,
+         "out_degree": 1
+      },
+      {
+         "id": "N059",
+         "label": "Openingstijden publiek schaatsen",
+         "domain": "Organisatie & Aanbod",
+         "level": "L2",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "-",
+         "definition": "Beschikbaarheid publieke schaatsuren: aantal uren per week, weekdag/weekend verdeling, seizoensduur",
+         "degree": 4,
+         "in_degree": 3,
+         "out_degree": 1
+      },
+      {
+         "id": "N060",
+         "label": "Autonomie / Zelfbepaling",
+         "domain": "Psychologisch",
+         "level": "L1",
+         "bond_influence": "low",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "A",
+         "definition": "Mate waarin deelnemer zelf kan bepalen wanneer, hoe lang, en op welke manier men sport (SDT basisbehoefte)",
+         "degree": 2,
+         "in_degree": 0,
+         "out_degree": 2
+      },
+      {
+         "id": "N061",
+         "label": "Participatieflexibiliteit",
+         "domain": "Organisatie & Aanbod",
+         "level": "L2",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "B",
+         "definition": "Mate waarin sportvorm zich laat combineren met wisselende levensagenda (werk, gezin, onverwachte verplichtingen)",
+         "degree": 2,
+         "in_degree": 1,
+         "out_degree": 1
+      },
+      {
+         "id": "N062",
+         "label": "Informele sociale groepen",
+         "domain": "Sociaal",
+         "level": "L1",
+         "bond_influence": "low",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "B",
+         "definition": "Schaatsen met familie, vrienden, of spontaan gevormde groepjes zonder formele teamstructuur",
+         "degree": 2,
+         "in_degree": 0,
+         "out_degree": 2
+      },
+      {
+         "id": "N063",
+         "label": "Kwaliteit vroege sportervaring",
+         "domain": "Psychologisch",
+         "level": "L1",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "A",
+         "definition": "Mate waarin jeugdervaring met schaatsen positief was (plezier, competentie, positieve coach/ouder-interactie)",
+         "degree": 1,
+         "in_degree": 0,
+         "out_degree": 1
+      },
+      {
+         "id": "N064",
+         "label": "Post-carrière identiteit",
+         "domain": "Psychologisch",
+         "level": "L1",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "A",
+         "definition": "Mate waarin ex-competitieve sporter een identiteit heeft naast atletische identiteit (faciliteert transitie competitief → recreatief)",
+         "degree": 1,
+         "in_degree": 0,
+         "out_degree": 1
+      },
+      {
+         "id": "N065",
+         "label": "Herintrede-programma’s",
+         "domain": "Organisatie & Aanbod",
+         "level": "L2",
+         "bond_influence": "high",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "B",
+         "definition": "Gestructureerde programma’s (Back to Skating, Masters beginners) die ex-schaatsers of nieuwe volwassenen faciliteren (weer) te beginnen",
+         "degree": 3,
+         "in_degree": 2,
+         "out_degree": 1
+      },
+      {
+         "id": "N066",
+         "label": "Niet-participatie fase",
+         "domain": "Psychologisch",
+         "level": "L1",
+         "bond_influence": "none",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "-",
+         "definition": "Duur sinds laatste sportieve activiteit (schaatsen of gerelateerd). Moderator voor herintrede-kans en -behoefte",
+         "degree": 1,
+         "in_degree": 0,
+         "out_degree": 1
+      },
+      {
+         "id": "N067",
+         "label": "Hybride event-beschikbaarheid",
+         "domain": "Organisatie & Aanbod",
+         "level": "L2",
+         "bond_influence": "high",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "A",
+         "definition": "Bestaan van georganiseerde maar niet-competitieve schaatsevenementen (parkrun-model): gratis/laagrempelig, getimed maar niet gerankt",
+         "degree": 2,
+         "in_degree": 0,
+         "out_degree": 2
+      },
+      {
+         "id": "N068",
+         "label": "Spelregels & veiligheidsregels",
+         "domain": "Regels & Administratie",
+         "level": "L2",
+         "bond_influence": "high",
+         "disciplines": [
+            "Spec"
+         ],
+         "status": "B",
+         "definition": "Officiële wedstrijdregels, veiligheidsstandaarden en uitrustingsvereisten per discipline. Omvat formats (mass start, relay), materiaalvoorschriften (snijvast pak, helm) en competitiereglementen.",
+         "degree": 4,
+         "in_degree": 0,
+         "out_degree": 4
+      },
+      {
+         "id": "N069",
+         "label": "Institutionele prioriteitstelling",
+         "domain": "Macro-context",
+         "level": "L3",
+         "bond_influence": "high",
+         "disciplines": [
+            "Univ"
+         ],
+         "status": "B",
+         "definition": "De bestuurlijke afweging tussen topsport/competitief en breedtesport/recreatief in beleid, budgetverdeling en accommodatie-allocatie. KNSB en regionale bonden beïnvloeden via lobbyen bij gemeenten en ijsbaanexploitanten de beschikbaarheid en verdeling van faciliteiten.",
+         "degree": 4,
+         "in_degree": 0,
+         "out_degree": 4
+      }
+   ],
+   "edges": [
+      {
+         "id": "E001",
+         "source": "N005",
+         "target": "N004",
+         "target_type": "node",
+         "source_label": "Lidmaatschapseis",
+         "target_label": "Licentiestatus",
+         "cluster": "Toelaatbaarheid",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "THRESHOLD_LOGISTIC",
+         "curve_params": {
+            "a": 15,
+            "t": 0.3
+         },
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.9,
+         "time_lag": "short",
+         "bond_influence": "high",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L053",
+            "L054",
+            "L056",
+            "L057",
+            "L058"
+         ],
+         "status": "A",
+         "mechanism": "Lidmaatschap vaak voorwaarde",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "low",
+            "sens_bondsbeleid": "very_high",
+            "sens_prestatiecultuur": "none",
+            "sens_clubklimaat": "none",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "low"
+         }
+      },
+      {
+         "id": "E002",
+         "source": "N004",
+         "target": "N001",
+         "target_type": "node",
+         "source_label": "Licentiestatus",
+         "target_label": "Toelaatbaarheid",
+         "cluster": "Toelaatbaarheid",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "THRESHOLD_LOGISTIC",
+         "curve_params": {
+            "a": 15,
+            "t": 0.3
+         },
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.9,
+         "time_lag": "short",
+         "bond_influence": "high",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L053",
+            "L054",
+            "L056",
+            "L057",
+            "L058"
+         ],
+         "status": "A",
+         "mechanism": "Formele toegangspoort",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "low",
+            "sens_bondsbeleid": "very_high",
+            "sens_prestatiecultuur": "none",
+            "sens_clubklimaat": "none",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "low"
+         }
+      },
+      {
+         "id": "E003",
+         "source": "N006",
+         "target": "N004",
+         "target_type": "node",
+         "source_label": "Licentiekosten",
+         "target_label": "Licentiestatus",
+         "cluster": "Toelaatbaarheid",
+         "polarity": "negatief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {
+            "a": 12,
+            "t": 0.35
+         },
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.65,
+         "time_lag": "short",
+         "bond_influence": "high",
+         "disciplines": [
+            "Spec"
+         ],
+         "literature": [
+            "L053",
+            "L055",
+            "L056",
+            "L058"
+         ],
+         "status": "A",
+         "mechanism": "Hogere kosten → minder licenties",
+         "slider_sensitivity": {
+            "sens_economisch": "high",
+            "sens_accommodatie": "low",
+            "sens_bondsbeleid": "very_high",
+            "sens_prestatiecultuur": "none",
+            "sens_clubklimaat": "none",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "low"
+         }
+      },
+      {
+         "id": "E004",
+         "source": "N029",
+         "target": "E003",
+         "target_type": "edge",
+         "source_label": "Financiële draagkracht",
+         "target_label": "Licentiekosten → Licentiestatus",
+         "cluster": "Toelaatbaarheid",
+         "polarity": "moderator",
+         "strength": "midden",
+         "curve_type": "",
+         "curve_params": {},
+         "edge_type": "MODERATOR",
+         "base_weight": 0.65,
+         "time_lag": "short",
+         "bond_influence": "none",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Modereert kostendrempel",
+         "slider_sensitivity": {
+            "sens_economisch": "very_high",
+            "sens_accommodatie": "low",
+            "sens_bondsbeleid": "very_high",
+            "sens_prestatiecultuur": "none",
+            "sens_clubklimaat": "none",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "low"
+         }
+      },
+      {
+         "id": "E005",
+         "source": "N016",
+         "target": "N008",
+         "target_type": "node",
+         "source_label": "Prestatieniveau",
+         "target_label": "Kwalificatiestatus",
+         "cluster": "Toelaatbaarheid",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "THRESHOLD_LOGISTIC",
+         "curve_params": {
+            "a": 12,
+            "t": 0.25
+         },
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.9,
+         "time_lag": "short",
+         "bond_influence": "low",
+         "disciplines": [
+            "Spec"
+         ],
+         "literature": [
+            "L054",
+            "L058"
+         ],
+         "status": "A",
+         "mechanism": "Tijd moet onder limiet",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "low",
+            "sens_bondsbeleid": "very_high",
+            "sens_prestatiecultuur": "none",
+            "sens_clubklimaat": "none",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "low"
+         }
+      },
+      {
+         "id": "E006",
+         "source": "N008",
+         "target": "N001",
+         "target_type": "node",
+         "source_label": "Kwalificatiestatus",
+         "target_label": "Toelaatbaarheid",
+         "cluster": "Toelaatbaarheid",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "THRESHOLD_LOGISTIC",
+         "curve_params": {
+            "a": 15,
+            "t": 0.3
+         },
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.9,
+         "time_lag": "short",
+         "bond_influence": "high",
+         "disciplines": [
+            "Spec"
+         ],
+         "literature": [
+            "L054",
+            "L058"
+         ],
+         "status": "A",
+         "mechanism": "Selectie als poort",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "low",
+            "sens_bondsbeleid": "very_high",
+            "sens_prestatiecultuur": "none",
+            "sens_clubklimaat": "none",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "low"
+         }
+      },
+      {
+         "id": "E007",
+         "source": "N010",
+         "target": "N001",
+         "target_type": "node",
+         "source_label": "Inschrijfbekwaamheid",
+         "target_label": "Toelaatbaarheid",
+         "cluster": "Toelaatbaarheid",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "THRESHOLD_LOGISTIC",
+         "curve_params": {
+            "a": 15,
+            "t": 0.25
+         },
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.65,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L053",
+            "L054",
+            "L056",
+            "L057",
+            "L058"
+         ],
+         "status": "A",
+         "mechanism": "Niet inschrijven = niet meedoen",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "low",
+            "sens_bondsbeleid": "very_high",
+            "sens_prestatiecultuur": "none",
+            "sens_clubklimaat": "none",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "low"
+         }
+      },
+      {
+         "id": "E008",
+         "source": "N043",
+         "target": "N010",
+         "target_type": "node",
+         "source_label": "Digitale systemen",
+         "target_label": "Inschrijfbekwaamheid",
+         "cluster": "Toelaatbaarheid",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {
+            "a": 10,
+            "t": 0.35
+         },
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.65,
+         "time_lag": "short",
+         "bond_influence": "high",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L053",
+            "L054",
+            "L058"
+         ],
+         "status": "A",
+         "mechanism": "Betere UX → makkelijker",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "low",
+            "sens_bondsbeleid": "very_high",
+            "sens_prestatiecultuur": "none",
+            "sens_clubklimaat": "none",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "low"
+         }
+      },
+      {
+         "id": "E009",
+         "source": "N009",
+         "target": "N010",
+         "target_type": "node",
+         "source_label": "Inschrijfprocedure",
+         "target_label": "Inschrijfbekwaamheid",
+         "cluster": "Toelaatbaarheid",
+         "polarity": "negatief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {
+            "a": 10,
+            "t": 0.35
+         },
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.65,
+         "time_lag": "short",
+         "bond_influence": "high",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L053",
+            "L054",
+            "L058"
+         ],
+         "status": "A",
+         "mechanism": "Complexere procedure → meer fouten",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "low",
+            "sens_bondsbeleid": "very_high",
+            "sens_prestatiecultuur": "none",
+            "sens_clubklimaat": "none",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "low"
+         }
+      },
+      {
+         "id": "E010",
+         "source": "N018",
+         "target": "N010",
+         "target_type": "node",
+         "source_label": "Intrinsieke motivatie",
+         "target_label": "Inschrijfbekwaamheid",
+         "cluster": "Toelaatbaarheid",
+         "polarity": "positief",
+         "strength": "zwak",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.4,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L053",
+            "L054"
+         ],
+         "status": "A",
+         "mechanism": "Gemotiveerden regelen het",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "low",
+            "sens_bondsbeleid": "very_high",
+            "sens_prestatiecultuur": "none",
+            "sens_clubklimaat": "none",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "low"
+         }
+      },
+      {
+         "id": "E011",
+         "source": "N001",
+         "target": "N002",
+         "target_type": "node",
+         "source_label": "Toelaatbaarheid",
+         "target_label": "Feitelijke deelname",
+         "cluster": "Feitelijke deelname",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "THRESHOLD_LOGISTIC",
+         "curve_params": {
+            "a": 8,
+            "t": 0.4
+         },
+         "edge_type": "MEDIATING",
+         "base_weight": 0.8,
+         "time_lag": "short",
+         "bond_influence": "none",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Eerst toegelaten, dan deelnemen",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "high",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E012",
+         "source": "N015",
+         "target": "N002",
+         "target_type": "node",
+         "source_label": "Blessuregevoeligheid",
+         "target_label": "Feitelijke deelname",
+         "cluster": "Feitelijke deelname",
+         "polarity": "negatief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.8,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L016",
+            "L017"
+         ],
+         "status": "A",
+         "mechanism": "Blessure → niet starten",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "high",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E013",
+         "source": "N015",
+         "target": "N011",
+         "target_type": "node",
+         "source_label": "Blessuregevoeligheid",
+         "target_label": "Trainingsvolume",
+         "cluster": "Feitelijke deelname",
+         "polarity": "negatief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {
+            "a": 10,
+            "t": 0.3
+         },
+         "edge_type": "MEDIATING",
+         "base_weight": 0.8,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L017"
+         ],
+         "status": "-",
+         "mechanism": "Blessure → minder trainen",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "high",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E014",
+         "source": "N011",
+         "target": "N016",
+         "target_type": "node",
+         "source_label": "Trainingsvolume",
+         "target_label": "Prestatieniveau",
+         "cluster": "Feitelijke deelname",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "INVERTED_U",
+         "curve_params": {
+            "mu": 0.6,
+            "sigma": 0.35
+         },
+         "edge_type": "MEDIATING",
+         "base_weight": 0.8,
+         "time_lag": "short",
+         "bond_influence": "low",
+         "disciplines": [
+            "Spec"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Meer training → beter, tot plateau",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "high",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E015",
+         "source": "N012",
+         "target": "N016",
+         "target_type": "node",
+         "source_label": "Trainingskwaliteit",
+         "target_label": "Prestatieniveau",
+         "cluster": "Feitelijke deelname",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {
+            "mu": 0.65,
+            "sigma": 0.3
+         },
+         "edge_type": "MEDIATING",
+         "base_weight": 0.8,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Betere training → betere prestatie",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "high",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "high",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E016",
+         "source": "N036",
+         "target": "N011",
+         "target_type": "node",
+         "source_label": "IJsbaanbeschikbaarheid",
+         "target_label": "Trainingsvolume",
+         "cluster": "Feitelijke deelname",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.8,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Meer ijsuren → meer training mogelijk",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "high",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E017",
+         "source": "N037",
+         "target": "N011",
+         "target_type": "node",
+         "source_label": "IJsuurverdeling",
+         "target_label": "Trainingsvolume",
+         "cluster": "Feitelijke deelname",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {
+            "a": 12,
+            "t": 0.25
+         },
+         "edge_type": "MEDIATING",
+         "base_weight": 0.55,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Spec"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Eerlijke verdeling → meer kansen",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "high",
+            "sens_bondsbeleid": "high",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E018",
+         "source": "N031",
+         "target": "N002",
+         "target_type": "node",
+         "source_label": "Materiaaltoegang",
+         "target_label": "Feitelijke deelname",
+         "cluster": "Feitelijke deelname",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "THRESHOLD_LOGISTIC",
+         "curve_params": {
+            "a": 10,
+            "t": 0.3
+         },
+         "edge_type": "MEDIATING",
+         "base_weight": 0.55,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Spec"
+         ],
+         "literature": [
+            "L021",
+            "L035"
+         ],
+         "status": "A",
+         "mechanism": "Geen schaatsen → niet starten",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "high",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E019",
+         "source": "N032",
+         "target": "N031",
+         "target_type": "node",
+         "source_label": "Materiaalkosten",
+         "target_label": "Materiaaltoegang",
+         "cluster": "Feitelijke deelname",
+         "polarity": "negatief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.55,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Spec"
+         ],
+         "literature": [
+            "L023",
+            "L035"
+         ],
+         "status": "A",
+         "mechanism": "Hogere kosten → minder toegang",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "high",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E020",
+         "source": "N029",
+         "target": "E019",
+         "target_type": "edge",
+         "source_label": "Financiële draagkracht",
+         "target_label": "Materiaalkosten → Materiaaltoegang",
+         "cluster": "Feitelijke deelname",
+         "polarity": "moderator",
+         "strength": "midden",
+         "curve_type": "",
+         "curve_params": {},
+         "edge_type": "MODERATOR",
+         "base_weight": 0.55,
+         "time_lag": "short",
+         "bond_influence": "none",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L035"
+         ],
+         "status": "B",
+         "mechanism": "Modereert kostendrempel",
+         "slider_sensitivity": {
+            "sens_economisch": "very_high",
+            "sens_accommodatie": "high",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E021",
+         "source": "N033",
+         "target": "N002",
+         "target_type": "node",
+         "source_label": "Reisafstand",
+         "target_label": "Feitelijke deelname",
+         "cluster": "Feitelijke deelname",
+         "polarity": "negatief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.55,
+         "time_lag": "short",
+         "bond_influence": "low",
+         "disciplines": [
+            "Spec"
+         ],
+         "literature": [
+            "L035"
+         ],
+         "status": "B",
+         "mechanism": "Verder → vaker afhaken",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "very_high",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E022",
+         "source": "N034",
+         "target": "N002",
+         "target_type": "node",
+         "source_label": "Reiskosten",
+         "target_label": "Feitelijke deelname",
+         "cluster": "Feitelijke deelname",
+         "polarity": "negatief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.55,
+         "time_lag": "short",
+         "bond_influence": "low",
+         "disciplines": [
+            "Spec"
+         ],
+         "literature": [
+            "L035"
+         ],
+         "status": "B",
+         "mechanism": "Duurder → vaker afhaken",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "very_high",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E023",
+         "source": "N040",
+         "target": "N033",
+         "target_type": "node",
+         "source_label": "Wedstrijdkalender",
+         "target_label": "Reisafstand",
+         "cluster": "Feitelijke deelname",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.55,
+         "time_lag": "short",
+         "bond_influence": "high",
+         "disciplines": [
+            "Spec"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Betere spreiding → korter reizen",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "high",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E024",
+         "source": "N030",
+         "target": "N011",
+         "target_type": "node",
+         "source_label": "Tijd beschikbaar",
+         "target_label": "Trainingsvolume",
+         "cluster": "Feitelijke deelname",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.8,
+         "time_lag": "short",
+         "bond_influence": "none",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L022",
+            "L035"
+         ],
+         "status": "A",
+         "mechanism": "Meer tijd → meer training",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "high",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E025",
+         "source": "N030",
+         "target": "N002",
+         "target_type": "node",
+         "source_label": "Tijd beschikbaar",
+         "target_label": "Feitelijke deelname",
+         "cluster": "Feitelijke deelname",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.55,
+         "time_lag": "short",
+         "bond_influence": "none",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L021",
+            "L022",
+            "L035"
+         ],
+         "status": "A",
+         "mechanism": "Geen tijd → niet komen",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "high",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E026",
+         "source": "N035",
+         "target": "N002",
+         "target_type": "node",
+         "source_label": "Transponderregistratie",
+         "target_label": "Feitelijke deelname",
+         "cluster": "Feitelijke deelname",
+         "polarity": "positief",
+         "strength": "zwak",
+         "curve_type": "THRESHOLD_LOGISTIC",
+         "curve_params": {
+            "a": 10,
+            "t": 0.35
+         },
+         "edge_type": "MEDIATING",
+         "base_weight": 0.3,
+         "time_lag": "short",
+         "bond_influence": "high",
+         "disciplines": [
+            "Spec"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Technische randvoorwaarde",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "high",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E027",
+         "source": "N018",
+         "target": "N011",
+         "target_type": "node",
+         "source_label": "Intrinsieke motivatie",
+         "target_label": "Trainingsvolume",
+         "cluster": "Psychologisch",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "SOCIAL_REGULATORY",
+         "base_weight": 0.75,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Spec"
+         ],
+         "literature": [
+            "L001",
+            "L002",
+            "L007",
+            "L050",
+            "L051"
+         ],
+         "status": "A",
+         "mechanism": "Plezier → vaker trainen",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "low",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "very_high",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "none",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E028",
+         "source": "N019",
+         "target": "N011",
+         "target_type": "node",
+         "source_label": "Extrinsieke motivatie",
+         "target_label": "Trainingsvolume",
+         "cluster": "Psychologisch",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "INVERTED_U",
+         "curve_params": {
+            "mu": 0.6,
+            "sigma": 0.35
+         },
+         "edge_type": "SOCIAL_REGULATORY",
+         "base_weight": 0.5,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Spec"
+         ],
+         "literature": [
+            "L001",
+            "L007",
+            "L050"
+         ],
+         "status": "A",
+         "mechanism": "Te veel druk kan demotiveren",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "low",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "very_high",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "none",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E029",
+         "source": "N020",
+         "target": "N002",
+         "target_type": "node",
+         "source_label": "Zelfeffectiviteit",
+         "target_label": "Feitelijke deelname",
+         "cluster": "Psychologisch",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "SOCIAL_REGULATORY",
+         "base_weight": 0.75,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Vertrouwen → wel opkomen",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "low",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "very_high",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "none",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E030",
+         "source": "N021",
+         "target": "N002",
+         "target_type": "node",
+         "source_label": "Wedstrijdvertrouwen",
+         "target_label": "Feitelijke deelname",
+         "cluster": "Psychologisch",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "SOCIAL_REGULATORY",
+         "base_weight": 0.75,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Specifiek voor wedstrijdcontext",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "low",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "very_high",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "none",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E031",
+         "source": "N022",
+         "target": "N002",
+         "target_type": "node",
+         "source_label": "Ervaren wedstrijdspanning",
+         "target_label": "Feitelijke deelname",
+         "cluster": "Psychologisch",
+         "polarity": "negatief",
+         "strength": "midden",
+         "curve_type": "INVERTED_U",
+         "curve_params": {
+            "mu": 0.6,
+            "sigma": 0.35
+         },
+         "edge_type": "SOCIAL_REGULATORY",
+         "base_weight": 0.5,
+         "time_lag": "medium",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L004",
+            "L008",
+            "L016",
+            "L035",
+            "L048"
+         ],
+         "status": "A",
+         "mechanism": "Te veel spanning → terugtrekken",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "low",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "very_high",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "none",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E032",
+         "source": "N023",
+         "target": "N022",
+         "target_type": "node",
+         "source_label": "Emotieregulatie",
+         "target_label": "Ervaren wedstrijdspanning",
+         "cluster": "Psychologisch",
+         "polarity": "negatief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "SOCIAL_REGULATORY",
+         "base_weight": 0.5,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L008",
+            "L039"
+         ],
+         "status": "A",
+         "mechanism": "Betere regulatie → minder spanning",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "low",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "very_high",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "none",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E033",
+         "source": "N016",
+         "target": "N020",
+         "target_type": "node",
+         "source_label": "Prestatieniveau",
+         "target_label": "Zelfeffectiviteit",
+         "cluster": "Psychologisch",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "SOCIAL_REGULATORY",
+         "base_weight": 0.75,
+         "time_lag": "short",
+         "bond_influence": "low",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L039"
+         ],
+         "status": "B",
+         "mechanism": "Succes → meer vertrouwen",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "low",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "very_high",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "none",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E034",
+         "source": "N020",
+         "target": "N016",
+         "target_type": "node",
+         "source_label": "Zelfeffectiviteit",
+         "target_label": "Prestatieniveau",
+         "cluster": "Psychologisch",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "SOCIAL_REGULATORY",
+         "base_weight": 0.5,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L039"
+         ],
+         "status": "B",
+         "mechanism": "Vertrouwen → betere prestatie",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "low",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "very_high",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "none",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E035",
+         "source": "N041",
+         "target": "N018",
+         "target_type": "node",
+         "source_label": "Wedstrijdformat",
+         "target_label": "Intrinsieke motivatie",
+         "cluster": "Psychologisch",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "FEEDBACK",
+         "base_weight": 0.5,
+         "time_lag": "short",
+         "bond_influence": "high",
+         "disciplines": [
+            "Spec"
+         ],
+         "literature": [
+            "L024",
+            "L025",
+            "L026",
+            "L041",
+            "L050"
+         ],
+         "status": "A",
+         "mechanism": "Leukere formats → meer plezier",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "low",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "very_high",
+            "sens_clubklimaat": "high",
+            "sens_vrijwilligers": "none",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E036",
+         "source": "N042",
+         "target": "N019",
+         "target_type": "node",
+         "source_label": "Selectiesystematiek",
+         "target_label": "Extrinsieke motivatie",
+         "cluster": "Psychologisch",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "INVERTED_U",
+         "curve_params": {
+            "mu": 0.6,
+            "sigma": 0.35
+         },
+         "edge_type": "SOCIAL_REGULATORY",
+         "base_weight": 0.5,
+         "time_lag": "short",
+         "bond_influence": "high",
+         "disciplines": [
+            "Spec"
+         ],
+         "literature": [
+            "L038"
+         ],
+         "status": "B",
+         "mechanism": "Haalbare selectie motiveert",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "low",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "very_high",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "none",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E037",
+         "source": "N025",
+         "target": "N030",
+         "target_type": "node",
+         "source_label": "Ouderondersteuning",
+         "target_label": "Tijd beschikbaar",
+         "cluster": "Sociaal",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {
+            "mu": 0.55,
+            "sigma": 0.3
+         },
+         "edge_type": "SOCIAL_REGULATORY",
+         "base_weight": 0.45,
+         "time_lag": "short",
+         "bond_influence": "low",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L035"
+         ],
+         "status": "B",
+         "mechanism": "Ouders faciliteren tijd",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "none",
+            "sens_bondsbeleid": "none",
+            "sens_prestatiecultuur": "medium",
+            "sens_clubklimaat": "very_high",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E038",
+         "source": "N025",
+         "target": "N029",
+         "target_type": "node",
+         "source_label": "Ouderondersteuning",
+         "target_label": "Financiële draagkracht",
+         "cluster": "Sociaal",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {
+            "mu": 0.5,
+            "sigma": 0.3
+         },
+         "edge_type": "SOCIAL_REGULATORY",
+         "base_weight": 0.45,
+         "time_lag": "short",
+         "bond_influence": "none",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L035"
+         ],
+         "status": "B",
+         "mechanism": "Ouders betalen vaak",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "none",
+            "sens_bondsbeleid": "none",
+            "sens_prestatiecultuur": "medium",
+            "sens_clubklimaat": "very_high",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E039",
+         "source": "N025",
+         "target": "N018",
+         "target_type": "node",
+         "source_label": "Ouderondersteuning",
+         "target_label": "Intrinsieke motivatie",
+         "cluster": "Sociaal",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "INVERTED_U",
+         "curve_params": {
+            "mu": 0.55,
+            "sigma": 0.3
+         },
+         "edge_type": "SOCIAL_REGULATORY",
+         "base_weight": 0.45,
+         "time_lag": "short",
+         "bond_influence": "low",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L007",
+            "L050"
+         ],
+         "status": "A",
+         "mechanism": "Steun helpt, pushen niet",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "none",
+            "sens_bondsbeleid": "none",
+            "sens_prestatiecultuur": "very_high",
+            "sens_clubklimaat": "very_high",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E040",
+         "source": "N026",
+         "target": "N018",
+         "target_type": "node",
+         "source_label": "Peergroep",
+         "target_label": "Intrinsieke motivatie",
+         "cluster": "Sociaal",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "SOCIAL_REGULATORY",
+         "base_weight": 0.7,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Spec"
+         ],
+         "literature": [
+            "L002",
+            "L007",
+            "L011",
+            "L036",
+            "L050",
+            "L051"
+         ],
+         "status": "A",
+         "mechanism": "Vrienden → meer plezier",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "none",
+            "sens_bondsbeleid": "none",
+            "sens_prestatiecultuur": "medium",
+            "sens_clubklimaat": "very_high",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E041",
+         "source": "N026",
+         "target": "N011",
+         "target_type": "node",
+         "source_label": "Peergroep",
+         "target_label": "Trainingsvolume",
+         "cluster": "Sociaal",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "SOCIAL_REGULATORY",
+         "base_weight": 0.45,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Spec"
+         ],
+         "literature": [
+            "L002",
+            "L011",
+            "L036"
+         ],
+         "status": "A",
+         "mechanism": "Samen trainen → vaker komen",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "none",
+            "sens_bondsbeleid": "none",
+            "sens_prestatiecultuur": "medium",
+            "sens_clubklimaat": "very_high",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E042",
+         "source": "N027",
+         "target": "N018",
+         "target_type": "node",
+         "source_label": "Clubklimaat",
+         "target_label": "Intrinsieke motivatie",
+         "cluster": "Sociaal",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {
+            "mu": 0.55,
+            "sigma": 0.3
+         },
+         "edge_type": "SOCIAL_REGULATORY",
+         "base_weight": 0.7,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L036"
+         ],
+         "status": "B",
+         "mechanism": "Prettig klimaat → blijven",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "none",
+            "sens_bondsbeleid": "high",
+            "sens_prestatiecultuur": "medium",
+            "sens_clubklimaat": "very_high",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E043",
+         "source": "N027",
+         "target": "N003",
+         "target_type": "node",
+         "source_label": "Clubklimaat",
+         "target_label": "Continuïteit",
+         "cluster": "Sociaal",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "SOCIAL_REGULATORY",
+         "base_weight": 0.7,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Belangrijke retentiefactor",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "none",
+            "sens_bondsbeleid": "none",
+            "sens_prestatiecultuur": "medium",
+            "sens_clubklimaat": "very_high",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E044",
+         "source": "N028",
+         "target": "N020",
+         "target_type": "node",
+         "source_label": "Coach-atleet relatie",
+         "target_label": "Zelfeffectiviteit",
+         "cluster": "Sociaal",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "SOCIAL_REGULATORY",
+         "base_weight": 0.7,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L039"
+         ],
+         "status": "B",
+         "mechanism": "Goede coach → vertrouwen",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "none",
+            "sens_bondsbeleid": "none",
+            "sens_prestatiecultuur": "medium",
+            "sens_clubklimaat": "very_high",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E045",
+         "source": "N028",
+         "target": "N012",
+         "target_type": "node",
+         "source_label": "Coach-atleet relatie",
+         "target_label": "Trainingskwaliteit",
+         "cluster": "Sociaal",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "SOCIAL_REGULATORY",
+         "base_weight": 0.7,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Relatie faciliteert leren",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "none",
+            "sens_bondsbeleid": "none",
+            "sens_prestatiecultuur": "medium",
+            "sens_clubklimaat": "very_high",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E046",
+         "source": "N038",
+         "target": "N028",
+         "target_type": "node",
+         "source_label": "Coachcapaciteit",
+         "target_label": "Coach-atleet relatie",
+         "cluster": "Organisatie",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {
+            "mu": 0.6,
+            "sigma": 0.35
+         },
+         "edge_type": "MEDIATING",
+         "base_weight": 0.55,
+         "time_lag": "short",
+         "bond_influence": "high",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Meer coaches → betere match",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "high",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "very_high",
+            "sens_seizoen_klimaat": "low",
+            "sens_levensfase": "high"
+         }
+      },
+      {
+         "id": "E047",
+         "source": "N039",
+         "target": "N012",
+         "target_type": "node",
+         "source_label": "Coachkwaliteit",
+         "target_label": "Trainingskwaliteit",
+         "cluster": "Organisatie",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.8,
+         "time_lag": "short",
+         "bond_influence": "high",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Betere opleiding → betere training",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "high",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "very_high",
+            "sens_seizoen_klimaat": "low",
+            "sens_levensfase": "none"
+         }
+      },
+      {
+         "id": "E048",
+         "source": "N039",
+         "target": "N020",
+         "target_type": "node",
+         "source_label": "Coachkwaliteit",
+         "target_label": "Zelfeffectiviteit",
+         "cluster": "Organisatie",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.8,
+         "time_lag": "short",
+         "bond_influence": "high",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L039"
+         ],
+         "status": "B",
+         "mechanism": "Competente coach → vertrouwen",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "high",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "very_high",
+            "sens_seizoen_klimaat": "low",
+            "sens_levensfase": "none"
+         }
+      },
+      {
+         "id": "E049",
+         "source": "N039",
+         "target": "N023",
+         "target_type": "node",
+         "source_label": "Coachkwaliteit",
+         "target_label": "Emotieregulatie",
+         "cluster": "Organisatie",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.55,
+         "time_lag": "short",
+         "bond_influence": "high",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Coach leert omgaan met druk",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "high",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "very_high",
+            "sens_seizoen_klimaat": "low",
+            "sens_levensfase": "none"
+         }
+      },
+      {
+         "id": "E050",
+         "source": "N039",
+         "target": "N015",
+         "target_type": "node",
+         "source_label": "Coachkwaliteit",
+         "target_label": "Blessuregevoeligheid",
+         "cluster": "Organisatie",
+         "polarity": "negatief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.55,
+         "time_lag": "short",
+         "bond_influence": "high",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L017"
+         ],
+         "status": "-",
+         "mechanism": "Goede coach → minder blessures",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "high",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "very_high",
+            "sens_seizoen_klimaat": "low",
+            "sens_levensfase": "none"
+         }
+      },
+      {
+         "id": "E051",
+         "source": "N044",
+         "target": "N038",
+         "target_type": "node",
+         "source_label": "Verenigingsondersteuning",
+         "target_label": "Coachcapaciteit",
+         "cluster": "Organisatie",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.55,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Ondersteuning → meer coaches",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "high",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "very_high",
+            "sens_seizoen_klimaat": "low",
+            "sens_levensfase": "none"
+         }
+      },
+      {
+         "id": "E052",
+         "source": "N044",
+         "target": "N027",
+         "target_type": "node",
+         "source_label": "Verenigingsondersteuning",
+         "target_label": "Clubklimaat",
+         "cluster": "Organisatie",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.55,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Ondersteuning → beter klimaat",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "high",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "very_high",
+            "sens_seizoen_klimaat": "low",
+            "sens_levensfase": "none"
+         }
+      },
+      {
+         "id": "E053",
+         "source": "N002",
+         "target": "N003",
+         "target_type": "node",
+         "source_label": "Feitelijke deelname",
+         "target_label": "Continuïteit",
+         "cluster": "Continuïteit",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.8,
+         "time_lag": "medium",
+         "bond_influence": "none",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L036",
+            "L037"
+         ],
+         "status": "A",
+         "mechanism": "Deelnemen → blijven (als positief)",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "high",
+            "sens_clubklimaat": "high",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "low",
+            "sens_levensfase": "very_high"
+         }
+      },
+      {
+         "id": "E054",
+         "source": "N018",
+         "target": "N003",
+         "target_type": "node",
+         "source_label": "Intrinsieke motivatie",
+         "target_label": "Continuïteit",
+         "cluster": "Continuïteit",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.8,
+         "time_lag": "medium",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Spec"
+         ],
+         "literature": [
+            "L001",
+            "L002",
+            "L003",
+            "L004",
+            "L005",
+            "L020",
+            "L036",
+            "L037",
+            "L040",
+            "L050",
+            "L051"
+         ],
+         "status": "A",
+         "mechanism": "Plezier = belangrijkste retentiefactor",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "high",
+            "sens_clubklimaat": "high",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "low",
+            "sens_levensfase": "high"
+         }
+      },
+      {
+         "id": "E055",
+         "source": "N027",
+         "target": "N003",
+         "target_type": "node",
+         "source_label": "Clubklimaat",
+         "target_label": "Continuïteit",
+         "cluster": "Continuïteit",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.8,
+         "time_lag": "medium",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L015",
+            "L036",
+            "L037"
+         ],
+         "status": "A",
+         "mechanism": "Prettige club → blijven",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "high",
+            "sens_clubklimaat": "high",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "low",
+            "sens_levensfase": "very_high"
+         }
+      },
+      {
+         "id": "E056",
+         "source": "N015",
+         "target": "N003",
+         "target_type": "node",
+         "source_label": "Blessuregevoeligheid",
+         "target_label": "Continuïteit",
+         "cluster": "Continuïteit",
+         "polarity": "negatief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.8,
+         "time_lag": "medium",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L017",
+            "L018",
+            "L019",
+            "L020",
+            "L037",
+            "L040",
+            "L044"
+         ],
+         "status": "A",
+         "mechanism": "Chronische blessures → stoppen",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "high",
+            "sens_clubklimaat": "high",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "low",
+            "sens_levensfase": "very_high"
+         }
+      },
+      {
+         "id": "E057",
+         "source": "N020",
+         "target": "N003",
+         "target_type": "node",
+         "source_label": "Zelfeffectiviteit",
+         "target_label": "Continuïteit",
+         "cluster": "Continuïteit",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.8,
+         "time_lag": "medium",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L036",
+            "L037",
+            "L039"
+         ],
+         "status": "A",
+         "mechanism": "Competentiegevoel → doorgaan",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "high",
+            "sens_clubklimaat": "high",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "low",
+            "sens_levensfase": "very_high"
+         }
+      },
+      {
+         "id": "E058",
+         "source": "N029",
+         "target": "N003",
+         "target_type": "node",
+         "source_label": "Financiële draagkracht",
+         "target_label": "Continuïteit",
+         "cluster": "Continuïteit",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.55,
+         "time_lag": "medium",
+         "bond_influence": "none",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L036"
+         ],
+         "status": "B",
+         "mechanism": "Kosten stapelen op over jaren",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "high",
+            "sens_clubklimaat": "high",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "low",
+            "sens_levensfase": "very_high"
+         }
+      },
+      {
+         "id": "E059",
+         "source": "N045",
+         "target": "N029",
+         "target_type": "node",
+         "source_label": "Economisch klimaat",
+         "target_label": "Financiële draagkracht",
+         "cluster": "Macro-moderaties",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.65,
+         "time_lag": "long",
+         "bond_influence": "none",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L035"
+         ],
+         "status": "B",
+         "mechanism": "Recessie → minder budget",
+         "slider_sensitivity": {
+            "sens_economisch": "very_high",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "none",
+            "sens_clubklimaat": "none",
+            "sens_vrijwilligers": "none",
+            "sens_seizoen_klimaat": "very_high",
+            "sens_levensfase": "none"
+         }
+      },
+      {
+         "id": "E060",
+         "source": "N046",
+         "target": "N036",
+         "target_type": "node",
+         "source_label": "Klimaattrends",
+         "target_label": "IJsbaanbeschikbaarheid",
+         "cluster": "Macro-moderaties",
+         "polarity": "negatief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.65,
+         "time_lag": "long",
+         "bond_influence": "none",
+         "disciplines": [
+            "Spec"
+         ],
+         "literature": [
+            "L029",
+            "L030",
+            "L031",
+            "L032",
+            "L033"
+         ],
+         "status": "A",
+         "mechanism": "Warmere winters → minder ijs",
+         "slider_sensitivity": {
+            "sens_economisch": "very_high",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "none",
+            "sens_clubklimaat": "none",
+            "sens_vrijwilligers": "none",
+            "sens_seizoen_klimaat": "very_high",
+            "sens_levensfase": "none"
+         }
+      },
+      {
+         "id": "E061",
+         "source": "N047",
+         "target": "N006",
+         "target_type": "node",
+         "source_label": "Energieprijzen",
+         "target_label": "Licentiekosten",
+         "cluster": "Macro-moderaties",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.4,
+         "time_lag": "long",
+         "bond_influence": "none",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L035"
+         ],
+         "status": "B",
+         "mechanism": "Hogere energie → duurder",
+         "slider_sensitivity": {
+            "sens_economisch": "very_high",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "none",
+            "sens_clubklimaat": "none",
+            "sens_vrijwilligers": "none",
+            "sens_seizoen_klimaat": "very_high",
+            "sens_levensfase": "none"
+         }
+      },
+      {
+         "id": "E062",
+         "source": "N047",
+         "target": "N036",
+         "target_type": "node",
+         "source_label": "Energieprijzen",
+         "target_label": "IJsbaanbeschikbaarheid",
+         "cluster": "Macro-moderaties",
+         "polarity": "negatief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.4,
+         "time_lag": "long",
+         "bond_influence": "none",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L033",
+            "L035"
+         ],
+         "status": "A",
+         "mechanism": "Duur ijs → minder uren",
+         "slider_sensitivity": {
+            "sens_economisch": "very_high",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "none",
+            "sens_clubklimaat": "none",
+            "sens_vrijwilligers": "none",
+            "sens_seizoen_klimaat": "very_high",
+            "sens_levensfase": "none"
+         }
+      },
+      {
+         "id": "E063",
+         "source": "N048",
+         "target": "N018",
+         "target_type": "node",
+         "source_label": "Mediaprofilering",
+         "target_label": "Intrinsieke motivatie",
+         "cluster": "Macro-moderaties",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.4,
+         "time_lag": "long",
+         "bond_influence": "low",
+         "disciplines": [
+            "Spec"
+         ],
+         "literature": [
+            "L050"
+         ],
+         "status": "B",
+         "mechanism": "Zichtbaarheid → interesse",
+         "slider_sensitivity": {
+            "sens_economisch": "very_high",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "none",
+            "sens_clubklimaat": "none",
+            "sens_vrijwilligers": "none",
+            "sens_seizoen_klimaat": "very_high",
+            "sens_levensfase": "none"
+         }
+      },
+      {
+         "id": "E064",
+         "source": "N049",
+         "target": "N018",
+         "target_type": "node",
+         "source_label": "Nationale successen",
+         "target_label": "Intrinsieke motivatie",
+         "cluster": "Macro-moderaties",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.4,
+         "time_lag": "long",
+         "bond_influence": "low",
+         "disciplines": [
+            "Spec"
+         ],
+         "literature": [
+            "L050"
+         ],
+         "status": "B",
+         "mechanism": "Helden → inspiratie",
+         "slider_sensitivity": {
+            "sens_economisch": "very_high",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "none",
+            "sens_clubklimaat": "none",
+            "sens_vrijwilligers": "none",
+            "sens_seizoen_klimaat": "very_high",
+            "sens_levensfase": "none"
+         }
+      },
+      {
+         "id": "E065",
+         "source": "N050",
+         "target": "N018",
+         "target_type": "node",
+         "source_label": "Sportvoorkeuren jeugd",
+         "target_label": "Intrinsieke motivatie",
+         "cluster": "Macro-moderaties",
+         "polarity": "negatief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.4,
+         "time_lag": "medium",
+         "bond_influence": "none",
+         "disciplines": [
+            "Spec"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Andere sporten → minder interesse",
+         "slider_sensitivity": {
+            "sens_economisch": "very_high",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "none",
+            "sens_clubklimaat": "none",
+            "sens_vrijwilligers": "none",
+            "sens_seizoen_klimaat": "very_high",
+            "sens_levensfase": "none"
+         }
+      },
+      {
+         "id": "E066",
+         "source": "N051",
+         "target": "N018",
+         "target_type": "node",
+         "source_label": "Duurzaamheidsdiscours",
+         "target_label": "Intrinsieke motivatie",
+         "cluster": "Macro-moderaties",
+         "polarity": "negatief",
+         "strength": "zwak",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.15,
+         "time_lag": "long",
+         "bond_influence": "none",
+         "disciplines": [
+            "Spec"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Negatief frame → minder aantrekkelijk",
+         "slider_sensitivity": {
+            "sens_economisch": "very_high",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "very_high",
+            "sens_clubklimaat": "none",
+            "sens_vrijwilligers": "none",
+            "sens_seizoen_klimaat": "very_high",
+            "sens_levensfase": "none"
+         }
+      },
+      {
+         "id": "E067",
+         "source": "N052",
+         "target": "N026",
+         "target_type": "node",
+         "source_label": "Ploegenstructuur",
+         "target_label": "Peergroep",
+         "cluster": "Discipline-specifiek",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.7,
+         "time_lag": "medium",
+         "bond_influence": "medium",
+         "disciplines": [
+            "MA"
+         ],
+         "literature": [
+            "L034"
+         ],
+         "status": "-",
+         "mechanism": "Ploeg = sociale eenheid",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "medium",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "high",
+            "sens_levensfase": "very_high"
+         }
+      },
+      {
+         "id": "E068",
+         "source": "N052",
+         "target": "N034",
+         "target_type": "node",
+         "source_label": "Ploegenstructuur",
+         "target_label": "Reiskosten",
+         "cluster": "Discipline-specifiek",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.45,
+         "time_lag": "long",
+         "bond_influence": "medium",
+         "disciplines": [
+            "MA"
+         ],
+         "literature": [
+            "L034"
+         ],
+         "status": "-",
+         "mechanism": "Ploeg deelt kosten",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "high",
+            "sens_clubklimaat": "very_high",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "high",
+            "sens_levensfase": "low"
+         }
+      },
+      {
+         "id": "E069",
+         "source": "N056",
+         "target": "N011",
+         "target_type": "node",
+         "source_label": "Seizoenscompensatie",
+         "target_label": "Trainingsvolume",
+         "cluster": "Discipline-specifiek",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.45,
+         "time_lag": "medium",
+         "bond_influence": "medium",
+         "disciplines": [
+            "ISK"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Zomertraining → consistent",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "medium",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "high",
+            "sens_levensfase": "low"
+         }
+      },
+      {
+         "id": "E070",
+         "source": "N056",
+         "target": "N003",
+         "target_type": "node",
+         "source_label": "Seizoenscompensatie",
+         "target_label": "Continuïteit",
+         "cluster": "Discipline-specifiek",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.45,
+         "time_lag": "long",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Jaarrond actief → behoud",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "medium",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "high",
+            "sens_levensfase": "low"
+         }
+      },
+      {
+         "id": "E071",
+         "source": "N046",
+         "target": "N056",
+         "target_type": "node",
+         "source_label": "Klimaattrends",
+         "target_label": "Seizoenscompensatie",
+         "cluster": "Discipline-specifiek",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.45,
+         "time_lag": "medium",
+         "bond_influence": "none",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L032"
+         ],
+         "status": "B",
+         "mechanism": "Minder ijs → meer skeeleren",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "medium",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "high",
+            "sens_levensfase": "low"
+         }
+      },
+      {
+         "id": "E072",
+         "source": "N007",
+         "target": "N001",
+         "target_type": "node",
+         "source_label": "Categorie-indeling",
+         "target_label": "Toelaatbaarheid",
+         "cluster": "Toelaatbaarheid",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "THRESHOLD_LOGISTIC",
+         "curve_params": {
+            "a": 10,
+            "t": 0.35
+         },
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.9,
+         "time_lag": "short",
+         "bond_influence": "high",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L054",
+            "L058"
+         ],
+         "status": "A",
+         "mechanism": "Categorie bepaalt startrecht",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "low",
+            "sens_bondsbeleid": "very_high",
+            "sens_prestatiecultuur": "none",
+            "sens_clubklimaat": "none",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "low"
+         }
+      },
+      {
+         "id": "E073",
+         "source": "N013",
+         "target": "N016",
+         "target_type": "node",
+         "source_label": "Technisch niveau",
+         "target_label": "Prestatieniveau",
+         "cluster": "Feitelijke deelname",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.8,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "B",
+         "mechanism": "Betere techniek → betere prestatie",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "high",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E074",
+         "source": "N013",
+         "target": "N008",
+         "target_type": "node",
+         "source_label": "Technisch niveau",
+         "target_label": "Kwalificatiestatus",
+         "cluster": "Toelaatbaarheid",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "THRESHOLD_LOGISTIC",
+         "curve_params": {
+            "a": 10,
+            "t": 0.35
+         },
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.65,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Spec"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Techniek nodig voor selectiewedstrijden",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "low",
+            "sens_bondsbeleid": "very_high",
+            "sens_prestatiecultuur": "none",
+            "sens_clubklimaat": "none",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "low"
+         }
+      },
+      {
+         "id": "E075",
+         "source": "N014",
+         "target": "N016",
+         "target_type": "node",
+         "source_label": "Fysieke capaciteit",
+         "target_label": "Prestatieniveau",
+         "cluster": "Feitelijke deelname",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.8,
+         "time_lag": "short",
+         "bond_influence": "low",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "B",
+         "mechanism": "Fysieke basis voor prestatie",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "high",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E076",
+         "source": "N014",
+         "target": "N015",
+         "target_type": "node",
+         "source_label": "Fysieke capaciteit",
+         "target_label": "Blessuregevoeligheid",
+         "cluster": "Feitelijke deelname",
+         "polarity": "negatief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {
+            "mu": 0.55,
+            "sigma": 0.4
+         },
+         "edge_type": "MEDIATING",
+         "base_weight": 0.55,
+         "time_lag": "short",
+         "bond_influence": "low",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L017"
+         ],
+         "status": "B",
+         "mechanism": "Betere conditie → minder blessures",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "high",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E077",
+         "source": "N017",
+         "target": "N011",
+         "target_type": "node",
+         "source_label": "Herstelcapaciteit",
+         "target_label": "Trainingsvolume",
+         "cluster": "Feitelijke deelname",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.55,
+         "time_lag": "short",
+         "bond_influence": "low",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Sneller herstel → meer trainen mogelijk",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "high",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E078",
+         "source": "N017",
+         "target": "N015",
+         "target_type": "node",
+         "source_label": "Herstelcapaciteit",
+         "target_label": "Blessuregevoeligheid",
+         "cluster": "Feitelijke deelname",
+         "polarity": "negatief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.55,
+         "time_lag": "short",
+         "bond_influence": "low",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Beter herstel → minder overbelasting",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "high",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E080",
+         "source": "N024",
+         "target": "N019",
+         "target_type": "node",
+         "source_label": "Doeloriëntatie",
+         "target_label": "Extrinsieke motivatie",
+         "cluster": "Psychologisch",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "INVERTED_U",
+         "curve_params": {
+            "mu": 0.6,
+            "sigma": 0.35
+         },
+         "edge_type": "SOCIAL_REGULATORY",
+         "base_weight": 0.5,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Ego-doelen → prestatiedruk",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "low",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "very_high",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "none",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E081",
+         "source": "N024",
+         "target": "N003",
+         "target_type": "node",
+         "source_label": "Doeloriëntatie",
+         "target_label": "Continuïteit",
+         "cluster": "Continuïteit",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.55,
+         "time_lag": "long",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Taakoriëntatie → langere sportcarrière",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "high",
+            "sens_clubklimaat": "high",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "low",
+            "sens_levensfase": "very_high"
+         }
+      },
+      {
+         "id": "E082",
+         "source": "N053",
+         "target": "N034",
+         "target_type": "node",
+         "source_label": "Internationale oriëntatie",
+         "target_label": "Reiskosten",
+         "cluster": "Discipline-specifiek",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.7,
+         "time_lag": "long",
+         "bond_influence": "low",
+         "disciplines": [
+            "ST"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Internationale wedstrijden → hoge kosten",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "medium",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "high",
+            "sens_levensfase": "low"
+         }
+      },
+      {
+         "id": "E083",
+         "source": "N054",
+         "target": "N018",
+         "target_type": "node",
+         "source_label": "Tactische complexiteit",
+         "target_label": "Intrinsieke motivatie",
+         "cluster": "Discipline-specifiek",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "INVERTED_U",
+         "curve_params": {
+            "mu": 0.6,
+            "sigma": 0.35
+         },
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.45,
+         "time_lag": "long",
+         "bond_influence": "low",
+         "disciplines": [
+            "ST"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Tactiek maakt het spannend/uitdagend",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "medium",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "very_high",
+            "sens_levensfase": "low"
+         }
+      },
+      {
+         "id": "E084",
+         "source": "N055",
+         "target": "N002",
+         "target_type": "node",
+         "source_label": "Wegveiligheid",
+         "target_label": "Feitelijke deelname",
+         "cluster": "Discipline-specifiek",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.45,
+         "time_lag": "long",
+         "bond_influence": "low",
+         "disciplines": [
+            "ISK"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Veiliger wegen → meer skeelerdeelname",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "medium",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "very_high",
+            "sens_levensfase": "low"
+         }
+      },
+      {
+         "id": "E085",
+         "source": "N027",
+         "target": "N003",
+         "target_type": "node",
+         "source_label": "SES",
+         "target_label": "Continuïteit",
+         "cluster": "Continuïteit",
+         "polarity": "negatief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.55,
+         "time_lag": "long",
+         "bond_influence": "low",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L005",
+            "L014",
+            "L015",
+            "L035",
+            "L042"
+         ],
+         "status": "A",
+         "mechanism": "Lagere SES → hoger dropout (cumulatieve kosten)",
+         "slider_sensitivity": {
+            "sens_economisch": "very_high",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "high",
+            "sens_clubklimaat": "high",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "low",
+            "sens_levensfase": "very_high"
+         }
+      },
+      {
+         "id": "E086",
+         "source": "N026",
+         "target": "N003",
+         "target_type": "node",
+         "source_label": "Peergroep",
+         "target_label": "Continuïteit",
+         "cluster": "Continuïteit",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.55,
+         "time_lag": "long",
+         "bond_influence": "low",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L012",
+            "L013",
+            "L015",
+            "L036",
+            "L041"
+         ],
+         "status": "A",
+         "mechanism": "Vrienden blijven → zelf blijven; sociale invloed",
+         "slider_sensitivity": {
+            "sens_economisch": "very_high",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "high",
+            "sens_clubklimaat": "high",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "low",
+            "sens_levensfase": "very_high"
+         }
+      },
+      {
+         "id": "E087",
+         "source": "N022",
+         "target": "N003",
+         "target_type": "node",
+         "source_label": "Ervaren wedstrijdspanning",
+         "target_label": "Continuïteit",
+         "cluster": "Continuïteit",
+         "polarity": "negatief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.55,
+         "time_lag": "medium",
+         "bond_influence": "low",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L004",
+            "L008",
+            "L044"
+         ],
+         "status": "A",
+         "mechanism": "Chronische angst → dropout (burnout)",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "high",
+            "sens_clubklimaat": "high",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "low",
+            "sens_levensfase": "very_high"
+         }
+      },
+      {
+         "id": "E088",
+         "source": "N024",
+         "target": "N018",
+         "target_type": "node",
+         "source_label": "Doeloriëntatie",
+         "target_label": "Intrinsieke motivatie",
+         "cluster": "Motivatie",
+         "polarity": "variabel",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.5,
+         "time_lag": "medium",
+         "bond_influence": "low",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L002",
+            "L038"
+         ],
+         "status": "A",
+         "mechanism": "Task → intrinsiek; ego → extrinsiek (AGT)",
+         "slider_sensitivity": {
+            "sens_economisch": "none",
+            "sens_accommodatie": "none",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "very_high",
+            "sens_clubklimaat": "high",
+            "sens_vrijwilligers": "none",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "low"
+         }
+      },
+      {
+         "id": "E089",
+         "source": "N002",
+         "target": "N020",
+         "target_type": "node",
+         "source_label": "Feitelijke deelname",
+         "target_label": "Zelfeffectiviteit",
+         "cluster": "Feitelijke deelname",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.8,
+         "time_lag": "medium",
+         "bond_influence": "low",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L039"
+         ],
+         "status": "A",
+         "mechanism": "Mastery experiences bouwen vertrouwen",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "high",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E090",
+         "source": "N059",
+         "target": "N057",
+         "target_type": "node",
+         "source_label": "Openingstijden publiek schaatsen",
+         "target_label": "Recreatieve participatie",
+         "cluster": "Recreatief",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.75,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Meer publieke schaatsuren → meer mogelijkheden → hogere participatiefrequentie",
+         "slider_sensitivity": {
+            "sens_economisch": "high",
+            "sens_accommodatie": "very_high",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "high"
+         }
+      },
+      {
+         "id": "E091",
+         "source": "N036",
+         "target": "N059",
+         "target_type": "node",
+         "source_label": "IJsbaanbeschikbaarheid",
+         "target_label": "Openingstijden publiek schaatsen",
+         "cluster": "Recreatief",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.5,
+         "time_lag": "medium",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Meer ijsbanen in regio → meer totale publieke uren beschikbaar",
+         "slider_sensitivity": {
+            "sens_economisch": "high",
+            "sens_accommodatie": "very_high",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "high"
+         }
+      },
+      {
+         "id": "E092",
+         "source": "N060",
+         "target": "N018",
+         "target_type": "node",
+         "source_label": "Autonomie / Zelfbepaling",
+         "target_label": "Intrinsieke motivatie",
+         "cluster": "Recreatief",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.75,
+         "time_lag": "short",
+         "bond_influence": "low",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L007"
+         ],
+         "status": "A",
+         "mechanism": "SDT: autonomie basisbehoefte → hogere intrinsieke motivatie",
+         "slider_sensitivity": {
+            "sens_economisch": "high",
+            "sens_accommodatie": "very_high",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "high"
+         }
+      },
+      {
+         "id": "E093",
+         "source": "N061",
+         "target": "N057",
+         "target_type": "node",
+         "source_label": "Participatieflexibiliteit",
+         "target_label": "Recreatieve participatie",
+         "cluster": "Recreatief",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.75,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L057"
+         ],
+         "status": "B",
+         "mechanism": "Hogere flexibiliteit → past beter rond wisselende agenda → hogere participatiekans",
+         "slider_sensitivity": {
+            "sens_economisch": "high",
+            "sens_accommodatie": "very_high",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "high"
+         }
+      },
+      {
+         "id": "E094",
+         "source": "N062",
+         "target": "N018",
+         "target_type": "node",
+         "source_label": "Informele sociale groepen",
+         "target_label": "Intrinsieke motivatie",
+         "cluster": "Recreatief",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.75,
+         "time_lag": "short",
+         "bond_influence": "low",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L069",
+            "L011",
+            "L062"
+         ],
+         "status": "B",
+         "mechanism": "Schaatsen met familie/vrienden → gezelligheid → verhoogt plezier (SDT verbondenheid)",
+         "slider_sensitivity": {
+            "sens_economisch": "high",
+            "sens_accommodatie": "very_high",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "high"
+         }
+      },
+      {
+         "id": "E095",
+         "source": "N062",
+         "target": "N057",
+         "target_type": "node",
+         "source_label": "Informele sociale groepen",
+         "target_label": "Recreatieve participatie",
+         "cluster": "Recreatief",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.5,
+         "time_lag": "short",
+         "bond_influence": "low",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L015"
+         ],
+         "status": "B",
+         "mechanism": "Samen afspreken schaatsen → hogere commitment en anticipatie → vaker gaan",
+         "slider_sensitivity": {
+            "sens_economisch": "high",
+            "sens_accommodatie": "very_high",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "very_high"
+         }
+      },
+      {
+         "id": "E096",
+         "source": "N063",
+         "target": "N057",
+         "target_type": "node",
+         "source_label": "Kwaliteit vroege sportervaring",
+         "target_label": "Recreatieve participatie",
+         "cluster": "Recreatief",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.75,
+         "time_lag": "long",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L059",
+            "L052",
+            "L011"
+         ],
+         "status": "A",
+         "mechanism": "Positieve jeugdervaring → hogere kans herstart volwassene (10-20 jaar later)",
+         "slider_sensitivity": {
+            "sens_economisch": "high",
+            "sens_accommodatie": "very_high",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "very_high"
+         }
+      },
+      {
+         "id": "E097",
+         "source": "N064",
+         "target": "N057",
+         "target_type": "node",
+         "source_label": "Post-carrière identiteit",
+         "target_label": "Recreatieve participatie",
+         "cluster": "Recreatief",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {
+            "a": 8,
+            "t": 0.4
+         },
+         "edge_type": "MEDIATING",
+         "base_weight": 0.75,
+         "time_lag": "medium",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L063"
+         ],
+         "status": "A",
+         "mechanism": "Meervoudige identiteit → makkelijker recreatief hervatten na competitieve carrière",
+         "slider_sensitivity": {
+            "sens_economisch": "very_high",
+            "sens_accommodatie": "very_high",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "high"
+         }
+      },
+      {
+         "id": "E098",
+         "source": "N065",
+         "target": "N057",
+         "target_type": "node",
+         "source_label": "Herintrede-programma’s",
+         "target_label": "Recreatieve participatie",
+         "cluster": "Recreatief",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.75,
+         "time_lag": "short",
+         "bond_influence": "high",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L051",
+            "L052",
+            "L010"
+         ],
+         "status": "B",
+         "mechanism": "Programma verlaagt drempel herstart (geleidelijke opbouw, peers, informele sfeer)",
+         "slider_sensitivity": {
+            "sens_economisch": "high",
+            "sens_accommodatie": "very_high",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "high"
+         }
+      },
+      {
+         "id": "E099",
+         "source": "N066",
+         "target": "E098",
+         "target_type": "edge",
+         "source_label": "Niet-participatie fase",
+         "target_label": "Herintrede-programma’s → Recreatieve participatie",
+         "cluster": "Recreatief",
+         "polarity": "moderator",
+         "strength": "midden",
+         "curve_type": "",
+         "curve_params": {},
+         "edge_type": "MODERATOR",
+         "base_weight": 0.5,
+         "time_lag": "",
+         "bond_influence": "none",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L051",
+            "L011"
+         ],
+         "status": "-",
+         "mechanism": "Langere pauze → sterker effect herintredeprogramma (meer behoefte ondersteuning)",
+         "slider_sensitivity": {
+            "sens_economisch": "high",
+            "sens_accommodatie": "very_high",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "high"
+         }
+      },
+      {
+         "id": "E100",
+         "source": "N067",
+         "target": "N018",
+         "target_type": "node",
+         "source_label": "Hybride event-beschikbaarheid",
+         "target_label": "Intrinsieke motivatie",
+         "cluster": "Recreatief",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.75,
+         "time_lag": "short",
+         "bond_influence": "high",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L069",
+            "L070"
+         ],
+         "status": "A",
+         "mechanism": "Hybride event zonder competitiedruk → meer plezier → hogere intrinsieke motivatie",
+         "slider_sensitivity": {
+            "sens_economisch": "high",
+            "sens_accommodatie": "very_high",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "high"
+         }
+      },
+      {
+         "id": "E101",
+         "source": "N067",
+         "target": "N065",
+         "target_type": "node",
+         "source_label": "Hybride event-beschikbaarheid",
+         "target_label": "Herintrede-programma’s",
+         "cluster": "Recreatief",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.5,
+         "time_lag": "short",
+         "bond_influence": "high",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L070"
+         ],
+         "status": "B",
+         "mechanism": "Hybride events als low-threshold on-ramp voor herintreders",
+         "slider_sensitivity": {
+            "sens_economisch": "high",
+            "sens_accommodatie": "very_high",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "high"
+         }
+      },
+      {
+         "id": "E102",
+         "source": "N058",
+         "target": "N057",
+         "target_type": "node",
+         "source_label": "Toegangskosten recreatief",
+         "target_label": "Recreatieve participatie",
+         "cluster": "Recreatief",
+         "polarity": "negatief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.5,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L035",
+            "L021"
+         ],
+         "status": "B",
+         "mechanism": "Hogere kosten → lagere participatie (drempelwerking vooral lage SES)",
+         "slider_sensitivity": {
+            "sens_economisch": "high",
+            "sens_accommodatie": "very_high",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "high"
+         }
+      },
+      {
+         "id": "E103",
+         "source": "N029",
+         "target": "E102",
+         "target_type": "edge",
+         "source_label": "Financiële draagkracht",
+         "target_label": "Toegangskosten → Recreatieve participatie",
+         "cluster": "Recreatief",
+         "polarity": "moderator",
+         "strength": "midden",
+         "curve_type": "",
+         "curve_params": {},
+         "edge_type": "MODERATOR",
+         "base_weight": 0.5,
+         "time_lag": "",
+         "bond_influence": "none",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L035"
+         ],
+         "status": "A",
+         "mechanism": "Hogere draagkracht → kostendrempel lager ervaren",
+         "slider_sensitivity": {
+            "sens_economisch": "very_high",
+            "sens_accommodatie": "very_high",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "high"
+         }
+      },
+      {
+         "id": "E104",
+         "source": "N030",
+         "target": "N061",
+         "target_type": "node",
+         "source_label": "Tijd beschikbaar",
+         "target_label": "Participatieflexibiliteit",
+         "cluster": "Recreatief",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.75,
+         "time_lag": "short",
+         "bond_influence": "medium",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [
+            "L057"
+         ],
+         "status": "B",
+         "mechanism": "Minder tijd → hogere behoefte flexibiliteit; bij hoge flexibiliteit toch participatie mogelijk",
+         "slider_sensitivity": {
+            "sens_economisch": "high",
+            "sens_accommodatie": "very_high",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "high"
+         }
+      },
+      {
+         "id": "E105",
+         "source": "N060",
+         "target": "N057",
+         "target_type": "node",
+         "source_label": "Autonomie / Zelfbepaling",
+         "target_label": "Recreatieve participatie",
+         "cluster": "Recreatief",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.5,
+         "time_lag": "short",
+         "bond_influence": "low",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "B",
+         "mechanism": "Direct effect: hogere autonomie → makkelijker participatie realiseren (geen coördinatie nodig)",
+         "slider_sensitivity": {
+            "sens_economisch": "high",
+            "sens_accommodatie": "very_high",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "high"
+         }
+      },
+      {
+         "id": "E106",
+         "source": "N047",
+         "target": "N058",
+         "target_type": "node",
+         "source_label": "Energieprijzen",
+         "target_label": "Toegangskosten recreatief",
+         "cluster": "Macro-moderaties",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.4,
+         "time_lag": "medium",
+         "bond_influence": "none",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Hogere energieprijzen → hogere ijsproductiekosten → doorberekenen in baankaart/entree",
+         "slider_sensitivity": {
+            "sens_economisch": "very_high",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "none",
+            "sens_clubklimaat": "none",
+            "sens_vrijwilligers": "none",
+            "sens_seizoen_klimaat": "very_high",
+            "sens_levensfase": "none"
+         }
+      },
+      {
+         "id": "E107",
+         "source": "N047",
+         "target": "N059",
+         "target_type": "node",
+         "source_label": "Energieprijzen",
+         "target_label": "Openingstijden publiek schaatsen",
+         "cluster": "Macro-moderaties",
+         "polarity": "negatief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.4,
+         "time_lag": "short",
+         "bond_influence": "none",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "-",
+         "mechanism": "Hogere energieprijzen → exploitant beperkt publieke uren (minder inkomsten dan cluburen)",
+         "slider_sensitivity": {
+            "sens_economisch": "very_high",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "none",
+            "sens_clubklimaat": "none",
+            "sens_vrijwilligers": "none",
+            "sens_seizoen_klimaat": "very_high",
+            "sens_levensfase": "none"
+         }
+      },
+      {
+         "id": "E108",
+         "source": "N068",
+         "target": "N032",
+         "target_type": "node",
+         "source_label": "Spelregels & veiligheidsregels",
+         "target_label": "Materiaalkosten",
+         "cluster": "Feitelijke deelname",
+         "polarity": "negatief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.55,
+         "time_lag": "short",
+         "bond_influence": "high",
+         "disciplines": [
+            "Spec"
+         ],
+         "literature": [],
+         "status": "B",
+         "mechanism": "Regelverplichte uitrusting (snijvast pak, helm) verhoogt materiaalkosten",
+         "slider_sensitivity": {
+            "sens_economisch": "high",
+            "sens_accommodatie": "high",
+            "sens_bondsbeleid": "very_high",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E109",
+         "source": "N068",
+         "target": "N054",
+         "target_type": "node",
+         "source_label": "Spelregels & veiligheidsregels",
+         "target_label": "Tactische complexiteit",
+         "cluster": "Discipline-specifiek",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.45,
+         "time_lag": "short",
+         "bond_influence": "high",
+         "disciplines": [
+            "Spec"
+         ],
+         "literature": [],
+         "status": "B",
+         "mechanism": "Competitieformat (mass start, relay) bepaalt tactische complexiteit",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "very_high",
+            "sens_prestatiecultuur": "medium",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "high",
+            "sens_levensfase": "low"
+         }
+      },
+      {
+         "id": "E110",
+         "source": "N068",
+         "target": "N052",
+         "target_type": "node",
+         "source_label": "Spelregels & veiligheidsregels",
+         "target_label": "Ploegenstructuur",
+         "cluster": "Discipline-specifiek",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.45,
+         "time_lag": "short",
+         "bond_influence": "high",
+         "disciplines": [
+            "MA",
+            "ST"
+         ],
+         "literature": [],
+         "status": "B",
+         "mechanism": "Relay-/ploegenregels bepalen teamsamenstelling en -grootte",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "medium",
+            "sens_bondsbeleid": "very_high",
+            "sens_prestatiecultuur": "medium",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "high",
+            "sens_levensfase": "low"
+         }
+      },
+      {
+         "id": "E111",
+         "source": "N068",
+         "target": "N007",
+         "target_type": "node",
+         "source_label": "Spelregels & veiligheidsregels",
+         "target_label": "Categorie-indeling",
+         "cluster": "Toelaatbaarheid",
+         "polarity": "positief",
+         "strength": "sterk",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "STRUCTURAL",
+         "base_weight": 0.9,
+         "time_lag": "short",
+         "bond_influence": "high",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "B",
+         "mechanism": "Spelregels definiëren categorie-indelingen en leeftijdsgrenzen",
+         "slider_sensitivity": {
+            "sens_economisch": "medium",
+            "sens_accommodatie": "low",
+            "sens_bondsbeleid": "very_high",
+            "sens_prestatiecultuur": "none",
+            "sens_clubklimaat": "none",
+            "sens_vrijwilligers": "low",
+            "sens_seizoen_klimaat": "none",
+            "sens_levensfase": "low"
+         }
+      },
+      {
+         "id": "E112",
+         "source": "N069",
+         "target": "N037",
+         "target_type": "node",
+         "source_label": "Institutionele prioriteitstelling",
+         "target_label": "IJsuurverdeling",
+         "cluster": "Organisatie",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.55,
+         "time_lag": "long",
+         "bond_influence": "high",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "B",
+         "mechanism": "Bondsprioriteiten sturen verdeling selectie vs. breedtesport uren",
+         "slider_sensitivity": {
+            "sens_economisch": "low",
+            "sens_accommodatie": "very_high",
+            "sens_bondsbeleid": "high",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "very_high",
+            "sens_seizoen_klimaat": "low",
+            "sens_levensfase": "none"
+         }
+      },
+      {
+         "id": "E113",
+         "source": "N069",
+         "target": "N059",
+         "target_type": "node",
+         "source_label": "Institutionele prioriteitstelling",
+         "target_label": "Openingstijden publiek schaatsen",
+         "cluster": "Recreatief",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.5,
+         "time_lag": "long",
+         "bond_influence": "high",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "B",
+         "mechanism": "Lobby bij gemeenten/exploitanten kan publieke uren veiligstellen",
+         "slider_sensitivity": {
+            "sens_economisch": "high",
+            "sens_accommodatie": "very_high",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "medium",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "high"
+         }
+      },
+      {
+         "id": "E114",
+         "source": "N069",
+         "target": "N036",
+         "target_type": "node",
+         "source_label": "Institutionele prioriteitstelling",
+         "target_label": "IJsbaanbeschikbaarheid",
+         "cluster": "Feitelijke deelname",
+         "polarity": "positief",
+         "strength": "zwak",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.3,
+         "time_lag": "long",
+         "bond_influence": "high",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "B",
+         "mechanism": "Indirecte invloed via lobby: verduurzaming, locatiebehoud (lange termijn)",
+         "slider_sensitivity": {
+            "sens_economisch": "high",
+            "sens_accommodatie": "very_high",
+            "sens_bondsbeleid": "medium",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "low",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "high",
+            "sens_levensfase": "medium"
+         }
+      },
+      {
+         "id": "E115",
+         "source": "N069",
+         "target": "N065",
+         "target_type": "node",
+         "source_label": "Institutionele prioriteitstelling",
+         "target_label": "Herintrede-programma’s",
+         "cluster": "Recreatief",
+         "polarity": "positief",
+         "strength": "midden",
+         "curve_type": "LINEAR",
+         "curve_params": {},
+         "edge_type": "MEDIATING",
+         "base_weight": 0.5,
+         "time_lag": "long",
+         "bond_influence": "high",
+         "disciplines": [
+            "Univ"
+         ],
+         "literature": [],
+         "status": "B",
+         "mechanism": "Beleidskeuze om te investeren in herintrede- en breedtesportprogramma's",
+         "slider_sensitivity": {
+            "sens_economisch": "high",
+            "sens_accommodatie": "very_high",
+            "sens_bondsbeleid": "low",
+            "sens_prestatiecultuur": "low",
+            "sens_clubklimaat": "high",
+            "sens_vrijwilligers": "medium",
+            "sens_seizoen_klimaat": "medium",
+            "sens_levensfase": "very_high"
+         }
+      }
+   ],
+   "sliders": [
+      {
+         "id": "S01",
+         "label": "Economisch klimaat",
+         "type": "Globaal",
+         "curve_type": "DAMPENING_THRESHOLD",
+         "curve_params": {
+            "t": 0.55,
+            "b": 5
+         },
+         "default": 0.5,
+         "range": [
+            0,
+            1
+         ],
+         "direction": "demping",
+         "sensitivity_key": "sens_economisch",
+         "definition": "Macro-economische condities die financiële draagkracht van deelnemers en clubs beïnvloeden: besteedbaar inkomen, werkloosheid, energieprijzen, sponsormarkt. Hoog = gunstig economisch klimaat, laag = recessie/crisis.",
+         "mechanism": "Onder de drempel (slider < 0.55) is het economisch klimaat neutraal — basisparticipatie blijft intact. Boven de drempel treedt demping op bij verslechtering: hogere kosten (licentie, materiaal, reis) reduceren deelname, clubs krijgen minder sponsoring, vrijwilligers prioriteren betaald werk. Het effect is breed maar het sterkst op kosten-gevoelige en logistieke paden.",
+         "related_nodes": [
+            "N048",
+            "N051",
+            "N018"
+         ],
+         "primary_clusters": [
+            "Toelaatbaarheid",
+            "Feitelijke deelname",
+            "Macro-moderaties"
+         ],
+         "evidence": [
+            "Downward (2014): economische barrières als primaire participatiedrempel in sport",
+            "Breuer & Wicker (2009): financiële restricties leiden tot selectieve sportuitval",
+            "Sport England Active Lives: participatie daalt meetbaar tijdens recessie"
+         ]
+      },
+      {
+         "id": "S02",
+         "label": "Accommodatietoegang",
+         "type": "Globaal",
+         "curve_type": "DAMPENING_THRESHOLD",
+         "curve_params": {
+            "t": 0.45,
+            "b": 6
+         },
+         "default": 0.55,
+         "range": [
+            0,
+            1
+         ],
+         "direction": "demping",
+         "sensitivity_key": "sens_accommodatie",
+         "definition": "Beschikbaarheid en toegankelijkheid van schaatsfaciliteiten: ijstijd-aanbod, baanbeschikbaarheid, openingstijden publiek schaatsen, afstand tot faciliteiten. Hoog = ruim aanbod en goede bereikbaarheid, laag = schaarste/sluiting.",
+         "mechanism": "Accommodatietoegang is de fysieke voorwaarde voor training en deelname. Onder de drempel (slider < 0.45) stopt de keten: geen ijs = geen training = geen deelname. Boven de drempel schaalt effect minder — meer ijstijd helpt, maar met afnemende meeropbrengst. Het effect is het sterkst op trainingsvolume en feitelijke deelname.",
+         "related_nodes": [
+            "N020",
+            "N021",
+            "N023",
+            "N059"
+         ],
+         "primary_clusters": [
+            "Feitelijke deelname",
+            "Organisatie",
+            "Recreatief"
+         ],
+         "evidence": [
+            "Hoekman et al. (2016): accommodatieafstand als sterkste voorspeller lokale sportparticipatie",
+            "Eime et al. (2017): facility access als top-3 determinant sportfrequentie",
+            "KNSB Meerjarenbeleid: ijstijdschaarste als structureel knelpunt"
+         ]
+      },
+      {
+         "id": "S03",
+         "label": "Bondsbeleid & regelgeving",
+         "type": "Selectief",
+         "curve_type": "INVERTED_U_MOD",
+         "curve_params": {
+            "mu": 0.55,
+            "sigma": 0.35
+         },
+         "default": 0.5,
+         "range": [
+            0,
+            1
+         ],
+         "direction": "optimum",
+         "sensitivity_key": "sens_bondsbeleid",
+         "definition": "Mate van regelgeving en formalisering door de schaatsbond: licentie-eisen, leeftijdsregels, kwalificatiesystemen, medische vereisten, competitiestructuur. Hoog = strikte regelgeving, laag = minimale formalisering.",
+         "mechanism": "Bondsbeleid heeft een optimum: te weinig structuur leidt tot onveiligheid en onduidelijkheid; te veel regelgeving verhoogt drempels en sluit potentiële deelnemers uit. Het effect is het sterkst op Toelaatbaarheid-edges (waar regels directe gates vormen) en Feitelijke deelname (competitiestructuur). Het optimum verschilt per participatietype — recreatief profiteert van minder formalisering, competitief van meer.",
+         "related_nodes": [
+            "N005",
+            "N006",
+            "N007",
+            "N008",
+            "N009",
+            "N010"
+         ],
+         "primary_clusters": [
+            "Toelaatbaarheid",
+            "Feitelijke deelname",
+            "Discipline-specifiek"
+         ],
+         "evidence": [
+            "Scheerder et al. (2011): institutionele barrières als drempel voor breedtesportparticipatie",
+            "Nichols et al. (2005): regelgevingscomplexiteit reduceert vrijwillige sportorganisatie",
+            "KNSB ledenonderzoek: licentiekosten en -complexiteit als uitvalreden"
+         ]
+      },
+      {
+         "id": "S04",
+         "label": "Prestatiecultuur",
+         "type": "Selectief",
+         "curve_type": "INVERTED_U_MOD",
+         "curve_params": {
+            "mu": 0.55,
+            "sigma": 0.3
+         },
+         "default": 0.5,
+         "range": [
+            0,
+            1
+         ],
+         "direction": "optimum",
+         "sensitivity_key": "sens_prestatiecultuur",
+         "definition": "Dominantie van prestatie-oriëntatie versus participatie-oriëntatie in de sportcultuur: selectiedruk, resultaatgerichtheid, competitie-nadruk, ego- vs. mastery-klimaat. Hoog = sterke nadruk op prestatie en selectie, laag = nadruk op plezier en deelname.",
+         "mechanism": "Prestatiecultuur heeft een smal optimum: matige prestatiedruk stimuleert motivatie en verbetering; te veel druk leidt tot angst, dropout en uitsluiting van minder talentvolle deelnemers. Te weinig druk kan leiden tot gebrek aan uitdaging. Het effect is het sterkst op psychologische edges (zelfeffectiviteit, enjoyment, motivatie) en continuïteit.",
+         "related_nodes": [
+            "N033",
+            "N030",
+            "N031",
+            "N032",
+            "N036"
+         ],
+         "primary_clusters": [
+            "Psychologisch",
+            "Motivatie",
+            "Continuïteit"
+         ],
+         "evidence": [
+            "Duda (2001): mastery-klimaat voorspelt intrinsieke motivatie en persistentie",
+            "Ntoumanis (2012): ego-oriëntatie geassocieerd met angst en dropout",
+            "Fraser-Thomas et al. (2008): vroege specialisatie en selectiedruk als dropout-predictor"
+         ]
+      },
+      {
+         "id": "S05",
+         "label": "Clubklimaat & sociale cohesie",
+         "type": "Selectief",
+         "curve_type": "INVERTED_U_MOD",
+         "curve_params": {
+            "mu": 0.65,
+            "sigma": 0.4
+         },
+         "default": 0.55,
+         "range": [
+            0,
+            1
+         ],
+         "direction": "optimum",
+         "sensitivity_key": "sens_clubklimaat",
+         "definition": "Kwaliteit van de sociale omgeving in club/vereniging: inclusiviteit, groepscohesie, onderlinge steun, welkom-gevoel, sociale veiligheid. Hoog = sterk sociaal klimaat, laag = kil/exclusief klimaat.",
+         "mechanism": "Clubklimaat heeft een breed optimum — een goed sociaal klimaat versterkt bijna alle sociale en psychologische paden. Te laag klimaat leidt tot isolatie en uitval. Extreem hoog kan leiden tot groepsdruk of in-group/out-group dynamiek, maar dit optimum is breed (hoog sigma). Het effect is het sterkst op sociale edges, enjoyment en continuïteit.",
+         "related_nodes": [
+            "N043",
+            "N044",
+            "N041",
+            "N062"
+         ],
+         "primary_clusters": [
+            "Sociaal",
+            "Continuïteit",
+            "Recreatief",
+            "Psychologisch"
+         ],
+         "evidence": [
+            "Sarrazin et al. (2002): perceived social support als sterkste predictor sportcontinuering",
+            "Allen (2003): belongingness in sportclubs voorspelt commitment en enjoyment",
+            "Eime et al. (2013): clubklimaat als mediator tussen participatie en welzijnsuitkomsten"
+         ]
+      },
+      {
+         "id": "S06",
+         "label": "Vrijwilligerscapaciteit",
+         "type": "Globaal",
+         "curve_type": "LINEAR_MOD",
+         "curve_params": {
+            "gamma": 0.35
+         },
+         "default": 0.5,
+         "range": [
+            0,
+            1
+         ],
+         "direction": "versterking",
+         "sensitivity_key": "sens_vrijwilligers",
+         "definition": "Beschikbaarheid en inzet van vrijwilligers voor sportorganisatie: trainers, bestuursleden, wedstrijdofficials, baanpersoneel, evenementorganisatie. Hoog = voldoende en gemotiveerde vrijwilligers, laag = structureel tekort.",
+         "mechanism": "Vrijwilligerscapaciteit is een lineaire versterker: meer vrijwilligers = meer trainingsaanbod, wedstrijdorganisatie en clubactiviteiten. Er is geen duidelijk optimum (meer is beter, tot organisatorische verzadiging). Het effect is het sterkst op organisatie-edges (trainers, programma-aanbod) en wedstrijdaanbod.",
+         "related_nodes": [
+            "N049",
+            "N045",
+            "N046",
+            "N027"
+         ],
+         "primary_clusters": [
+            "Organisatie",
+            "Feitelijke deelname"
+         ],
+         "evidence": [
+            "Cuskelly et al. (2006): vrijwilligerstekort als primaire bedreiging sportclubcontinuïteit",
+            "Nichols et al. (2005): vrijwilligerscapaciteit bepaalt programma-aanbod en kwaliteit",
+            "Breuer & Wicker (2009): vrijwilligersinzet als sterkste voorspeller clubprestatie"
+         ]
+      },
+      {
+         "id": "S07",
+         "label": "Seizoen & klimaat",
+         "type": "Selectief",
+         "curve_type": "LINEAR_MOD",
+         "curve_params": {
+            "gamma": 0.4
+         },
+         "default": 0.5,
+         "range": [
+            0,
+            1
+         ],
+         "direction": "versterking",
+         "sensitivity_key": "sens_seizoen_klimaat",
+         "definition": "Seizoensgebonden en klimatologische factoren die schaatsparticipatie beïnvloeden: winterduur, vorstdagen (natuurijs), indoorseizoen, seizoenscompensatie (inline skating). Hoog = gunstige condities (lang winters, veel ijs), laag = ongunstig (korte winters, klimaatopwarming).",
+         "mechanism": "Seizoen en klimaat zijn lineaire versterkende factoren voor schaatsen als seizoenssport. Langere winters en meer vorstdagen betekenen meer natuurijsmogelijkheden en langere indoorseizoenenen. Het effect is het sterkst op baanbeschikbaarheid, seizoensplanning en recreatieve participatie. Klimaattrends (opwarming) werken structureel negatief op lange termijn.",
+         "related_nodes": [
+            "N050",
+            "N020",
+            "N029",
+            "N059"
+         ],
+         "primary_clusters": [
+            "Macro-moderaties",
+            "Feitelijke deelname",
+            "Recreatief",
+            "Discipline-specifiek"
+         ],
+         "evidence": [
+            "Muehlemann et al. (2016): klimaattrends reduceren winter sport participatie in West-Europa",
+            "KNSB Jaarverslag: correlatie vorstdagen en recreatieve schaatsdeelname",
+            "Hovemann & Wicker (2009): seizoenslengte als determinant sportbondsledenaantal"
+         ]
+      },
+      {
+         "id": "S08",
+         "label": "Levensfase & transitie",
+         "type": "Selectief",
+         "curve_type": "LINEAR_MOD",
+         "curve_params": {
+            "gamma": 0.3
+         },
+         "default": 0.5,
+         "range": [
+            0,
+            1
+         ],
+         "direction": "demping",
+         "sensitivity_key": "sens_levensfase",
+         "definition": "Impact van levensfasetransities op sportparticipatie: school-naar-werk, studie-naar-carrière, gezinsvorming, verhuizing, pensioen. Hoog = stabiele levensfase, laag = actieve transitieperiode met veel verandering.",
+         "mechanism": "Levensfasetransities zijn de sterkste predictor van sportuitval — niet omdat motivatie verdwijnt, maar omdat tijdsdruk, prioriteiten en logistiek veranderen. Het effect is het sterkst op continuïteit, trainingsvolume en recreatieve participatie. Bij lage slider-waarde (actieve transitie) worden deze paden gedempt.",
+         "related_nodes": [
+            "N010",
+            "N042",
+            "N003",
+            "N057"
+         ],
+         "primary_clusters": [
+            "Continuïteit",
+            "Feitelijke deelname",
+            "Recreatief"
+         ],
+         "evidence": [
+            "Engel & Nagel (2011): levensfasetransities als sterkste predictor dropout in georganiseerde sport",
+            "Scheerder et al. (2006): gezinsvorming reduceert sportparticipatie met 30-50%",
+            "Coakley (1992): 'growing out of sport' als transitiefenomeen, niet motivatieverlies"
+         ]
+      }
+   ]
+}
