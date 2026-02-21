@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Release notes — Graaf Zeppelin{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 1.5rem;">Release notes</h1>
+
+<div class="card">
+    <div id="releases-list">
+        <p style="color: var(--text-muted);">Laden...</p>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const res = await fetch('/api/releases/');
+        if (res.ok) {
+            const data = await res.json();
+            if (data.releases.length === 0) {
+                document.getElementById('releases-list').innerHTML =
+                    '<p style="color: var(--text-muted);">Nog geen releases gepubliceerd.</p>';
+                return;
+            }
+            const html = data.releases.map(r => `
+                <div class="release-item">
+                    <div>
+                        <span class="release-version">v${r.version}</span>
+                        ${r.is_major ? '<span class="release-major">MAJOR</span>' : ''}
+                        <span class="release-date">${new Date(r.created_at).toLocaleDateString('nl-NL')}</span>
+                    </div>
+                    <h3 style="margin: 0.5rem 0 0.25rem;">${r.title}</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; white-space: pre-line;">${r.description}</p>
+                    ${r.migration_guide ? `
+                        <details style="margin-top: 0.5rem;">
+                            <summary style="cursor: pointer; font-weight: 500; color: var(--accent);">
+                                Migratieguide
+                            </summary>
+                            <div style="margin-top: 0.5rem; padding: 0.75rem; background: #fffbeb; border-radius: var(--radius); font-size: 0.9rem; white-space: pre-line;">
+                                ${r.migration_guide}
+                            </div>
+                        </details>
+                    ` : ''}
+                </div>
+            `).join('');
+            document.getElementById('releases-list').innerHTML = html;
+        }
+    } catch (e) {
+        document.getElementById('releases-list').innerHTML =
+            '<div class="alert alert-error">Kon releases niet laden.</div>';
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+{% block title %}Causaal Model — Graaf Zeppelin{% endblock %}
+
+{% block head %}
+<script src="https://d3js.org/d3.v7.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 1.5rem;">Causaal Model — Sportdeelname</h1>
+
+<div class="grid grid-2">
+    <div>
+        <div class="card">
+            <div class="card-header">Grafiekweergave</div>
+            <div id="graph-container"></div>
+        </div>
+    </div>
+    <div>
+        <div class="card">
+            <div class="card-header">Factoren</div>
+            <div id="factor-list">
+                <p style="color: var(--text-muted);">Laden...</p>
+            </div>
+        </div>
+
+        <div class="card" id="factor-detail" style="display: none;">
+            <div class="card-header" id="detail-title">Factor details</div>
+            <div id="detail-content"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Interventie simuleren</div>
+            <form id="intervention-form" onsubmit="simulateIntervention(event)">
+                <div class="form-group">
+                    <label for="intervene-factor">Factor</label>
+                    <select id="intervene-factor" name="factor_id" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="intervene-change">Verandering (%)</label>
+                    <input type="range" id="intervene-change" name="change"
+                           min="-100" max="100" value="20"
+                           oninput="document.getElementById('change-label').textContent = this.value + '%'">
+                    <span id="change-label" style="font-size: 0.9rem; color: var(--text-muted);">20%</span>
+                </div>
+                <button type="submit" class="btn btn-secondary">Simuleer</button>
+            </form>
+            <div id="intervention-results" style="margin-top: 1rem;"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+const CATEGORY_COLORS = {
+    uitkomst: '#dc2626',
+    individueel: '#2563eb',
+    sociaal: '#7c3aed',
+    aanbod: '#059669',
+    omgeving: '#d97706',
+    beleid: '#0891b2',
+};
+
+let graphData = { factors: [], relations: [] };
+
+async function loadGraph() {
+    const [factorsRes, relationsRes] = await Promise.all([
+        fetch('/api/graph/factors'),
+        fetch('/api/graph/relations'),
+    ]);
+
+    if (!factorsRes.ok || !relationsRes.ok) return;
+
+    const factorsData = await factorsRes.json();
+    const relationsData = await relationsRes.json();
+
+    graphData.factors = factorsData.factors;
+    graphData.relations = relationsData.relations;
+
+    renderFactorList();
+    renderFactorSelect();
+    renderGraph();
+}
+
+function renderFactorList() {
+    const html = graphData.factors.map(f => `
+        <div class="factor-item" onclick="showFactorDetail('${f.id}')">
+            <span class="factor-name">${f.label}</span>
+            <span class="factor-category">${f.category}</span>
+        </div>
+    `).join('');
+    document.getElementById('factor-list').innerHTML = html;
+}
+
+function renderFactorSelect() {
+    const select = document.getElementById('intervene-factor');
+    select.innerHTML = graphData.factors.map(f =>
+        `<option value="${f.id}">${f.label}</option>`
+    ).join('');
+}
+
+async function showFactorDetail(factorId) {
+    const res = await fetch(`/api/graph/factors/${factorId}`);
+    if (!res.ok) return;
+    const info = await res.json();
+
+    const detail = document.getElementById('factor-detail');
+    detail.style.display = 'block';
+    document.getElementById('detail-title').textContent = info.label;
+
+    let html = `<p style="margin-bottom: 0.75rem; color: var(--text-muted);">${info.description || ''}</p>`;
+
+    if (info.causes && info.causes.length > 0) {
+        html += '<p style="font-weight: 500; margin-top: 0.5rem;">Wordt beïnvloed door:</p><ul>';
+        info.causes.forEach(c => {
+            html += `<li>${c.label} (${c.relation.direction}, sterkte: ${c.relation.strength})</li>`;
+        });
+        html += '</ul>';
+    }
+
+    if (info.effects && info.effects.length > 0) {
+        html += '<p style="font-weight: 500; margin-top: 0.5rem;">Beïnvloedt:</p><ul>';
+        info.effects.forEach(e => {
+            html += `<li>${e.label} (${e.relation.direction}, sterkte: ${e.relation.strength})</li>`;
+        });
+        html += '</ul>';
+    }
+
+    document.getElementById('detail-content').innerHTML = html;
+}
+
+async function simulateIntervention(e) {
+    e.preventDefault();
+    const factorId = document.getElementById('intervene-factor').value;
+    const change = parseInt(document.getElementById('intervene-change').value) / 100;
+
+    const res = await fetch('/api/graph/intervene', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({factor_id: factorId, change: change})
+    });
+
+    if (!res.ok) {
+        document.getElementById('intervention-results').innerHTML =
+            '<div class="alert alert-error">Fout bij simulatie</div>';
+        return;
+    }
+
+    const data = await res.json();
+    let html = '<p style="font-weight: 500;">Verwachte effecten:</p>';
+    data.effects.forEach(effect => {
+        const color = effect.estimated_impact > 0 ? 'var(--success)' : 'var(--error)';
+        const arrow = effect.estimated_impact > 0 ? '\u2191' : '\u2193';
+        html += `<div class="factor-item">
+            <span>${effect.label}</span>
+            <span style="color: ${color}; font-weight: 600;">
+                ${arrow} ${(effect.estimated_impact * 100).toFixed(1)}%
+            </span>
+        </div>`;
+    });
+
+    document.getElementById('intervention-results').innerHTML = html;
+}
+
+function renderGraph() {
+    const container = document.getElementById('graph-container');
+    const width = container.clientWidth || 600;
+    const height = 500;
+
+    container.innerHTML = '';
+
+    const svg = d3.select('#graph-container')
+        .append('svg')
+        .attr('width', width)
+        .attr('height', height);
+
+    // Arrow marker
+    svg.append('defs').append('marker')
+        .attr('id', 'arrowhead')
+        .attr('viewBox', '0 -5 10 10')
+        .attr('refX', 20)
+        .attr('refY', 0)
+        .attr('markerWidth', 6)
+        .attr('markerHeight', 6)
+        .attr('orient', 'auto')
+        .append('path')
+        .attr('d', 'M0,-5L10,0L0,5')
+        .attr('fill', '#94a3b8');
+
+    const nodes = graphData.factors.map(f => ({...f}));
+    const links = graphData.relations.map(r => ({
+        source: r.cause,
+        target: r.effect,
+        strength: r.strength,
+        direction: r.direction,
+    }));
+
+    const simulation = d3.forceSimulation(nodes)
+        .force('link', d3.forceLink(links).id(d => d.id).distance(100))
+        .force('charge', d3.forceManyBody().strength(-300))
+        .force('center', d3.forceCenter(width / 2, height / 2))
+        .force('collision', d3.forceCollide().radius(30));
+
+    const link = svg.append('g')
+        .selectAll('line')
+        .data(links)
+        .enter().append('line')
+        .attr('stroke', d => d.direction === 'positive' ? '#86efac' : '#fca5a5')
+        .attr('stroke-width', d => Math.max(1, d.strength * 4))
+        .attr('stroke-opacity', 0.7)
+        .attr('marker-end', 'url(#arrowhead)');
+
+    const node = svg.append('g')
+        .selectAll('circle')
+        .data(nodes)
+        .enter().append('circle')
+        .attr('r', 12)
+        .attr('fill', d => CATEGORY_COLORS[d.category] || '#64748b')
+        .attr('stroke', '#fff')
+        .attr('stroke-width', 2)
+        .style('cursor', 'pointer')
+        .on('click', (e, d) => showFactorDetail(d.id))
+        .call(d3.drag()
+            .on('start', (e, d) => { if (!e.active) simulation.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
+            .on('drag', (e, d) => { d.fx = e.x; d.fy = e.y; })
+            .on('end', (e, d) => { if (!e.active) simulation.alphaTarget(0); d.fx = null; d.fy = null; })
+        );
+
+    const label = svg.append('g')
+        .selectAll('text')
+        .data(nodes)
+        .enter().append('text')
+        .text(d => d.label)
+        .attr('font-size', '10px')
+        .attr('dx', 16)
+        .attr('dy', 4)
+        .attr('fill', '#475569');
+
+    simulation.on('tick', () => {
+        link
+            .attr('x1', d => d.source.x)
+            .attr('y1', d => d.source.y)
+            .attr('x2', d => d.target.x)
+            .attr('y2', d => d.target.y);
+        node
+            .attr('cx', d => d.x)
+            .attr('cy', d => d.y);
+        label
+            .attr('x', d => d.x)
+            .attr('y', d => d.y);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', loadGraph);
+</script>
+{% endblock %}

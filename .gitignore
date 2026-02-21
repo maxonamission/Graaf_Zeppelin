@@ -47,3 +47,9 @@ htmlcov/
 
 # Output files
 output/
+
+# Database
+*.db
+
+# Environment
+.env

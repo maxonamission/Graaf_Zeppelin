@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Licentie — Graaf Zeppelin{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 1.5rem;">Licentie-informatie</h1>
+
+<div class="grid grid-2">
+    <div class="card" id="license-card">
+        <div class="card-header">Uw licentie</div>
+        <div id="license-info">
+            <p style="color: var(--text-muted);">Laden...</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">Licentie tiers</div>
+        <table style="width: 100%; font-size: 0.9rem; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 2px solid var(--border);">
+                    <th style="text-align: left; padding: 0.5rem;">Tier</th>
+                    <th style="text-align: right; padding: 0.5rem;">Queries/maand</th>
+                    <th style="text-align: right; padding: 0.5rem;">Gebruikers</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 0.5rem;">Basis</td>
+                    <td style="text-align: right; padding: 0.5rem;">100</td>
+                    <td style="text-align: right; padding: 0.5rem;">3</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 0.5rem;">Professional</td>
+                    <td style="text-align: right; padding: 0.5rem;">1.000</td>
+                    <td style="text-align: right; padding: 0.5rem;">15</td>
+                </tr>
+                <tr>
+                    <td style="padding: 0.5rem;">Enterprise</td>
+                    <td style="text-align: right; padding: 0.5rem;">10.000</td>
+                    <td style="text-align: right; padding: 0.5rem;">100</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const res = await fetch('/api/license/info');
+        if (res.ok) {
+            const lic = await res.json();
+            document.getElementById('license-info').innerHTML = `
+                <div style="display: grid; gap: 0.75rem;">
+                    <div>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">Organisatie</span>
+                        <div style="font-weight: 500;">${lic.organization}</div>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">Tier</span>
+                        <div style="font-weight: 500; text-transform: capitalize;">${lic.tier}</div>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">Geldig tot</span>
+                        <div style="font-weight: 500;">${new Date(lic.expires_at).toLocaleDateString('nl-NL')}</div>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">Queries gebruikt</span>
+                        <div>
+                            <span style="font-weight: 500;">${lic.queries_used}</span>
+                            <span style="color: var(--text-muted);"> / ${lic.queries_limit}</span>
+                        </div>
+                        <div style="background: var(--border); border-radius: 4px; height: 8px; margin-top: 0.25rem;">
+                            <div style="background: var(--primary); border-radius: 4px; height: 100%;
+                                        width: ${Math.min(100, (lic.queries_used / lic.queries_limit) * 100)}%;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">Status</span>
+                        <div style="color: ${lic.is_active ? 'var(--success)' : 'var(--error)'}; font-weight: 500;">
+                            ${lic.is_active ? 'Actief' : 'Inactief'}
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            document.getElementById('license-info').innerHTML =
+                '<div class="alert alert-error">Geen licentie gevonden. Neem contact op met uw beheerder.</div>';
+        }
+    } catch (e) {
+        document.getElementById('license-info').innerHTML =
+            '<div class="alert alert-error">Kon licentie-informatie niet laden.</div>';
+    }
+});
+</script>
+{% endblock %}
