@@ -1,12 +1,13 @@
-"""Shared API dependencies — current user, license validation."""
+"""Shared API dependencies — current user, license validation, graph access."""
 
 from __future__ import annotations
 
-from fastapi import Cookie, Depends, HTTPException
+from fastapi import Cookie, Depends, HTTPException, Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.auth import decode_access_token
+from app.core.dag_engine import CausalDAG
 from app.db import get_db
 from app.models.user import User
 
@@ -34,3 +35,11 @@ async def get_current_user(
         raise HTTPException(status_code=401, detail="Gebruiker niet gevonden")
 
     return user
+
+
+def get_dag(request: Request) -> CausalDAG:
+    """Get the cached CausalDAG from application state."""
+    dag = getattr(request.app.state, "dag", None)
+    if dag is None:
+        raise HTTPException(status_code=503, detail="Graph model niet geladen")
+    return dag

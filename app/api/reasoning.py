@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_current_user
+from app.api.deps import get_current_user, get_dag
 from app.core.dag_engine import CausalDAG
 from app.core.license_manager import LicenseManager
 from app.core.llm_connector import LLMConnector, LLMProviderError
@@ -34,20 +34,16 @@ class InterventionReasoningRequest(BaseModel):
     model: str | None = None
 
 
-def _load_dag() -> CausalDAG:
-    return CausalDAG.load("data/models/sportdeelname_v1.json")
-
-
 @router.post("/query")
 async def reason_query(
     request: ReasoningRequest,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
+    dag: CausalDAG = Depends(get_dag),
 ):
     """Ask a causal reasoning question. Uses the DAG to constrain LLM reasoning."""
     await _check_license(user, db)
 
-    dag = _load_dag()
     builder = PromptBuilder(dag)
     messages = builder.build_full_prompt(request.query, request.factor_ids)
 
@@ -74,11 +70,11 @@ async def reason_intervention(
     request: InterventionReasoningRequest,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
+    dag: CausalDAG = Depends(get_dag),
 ):
     """Analyse an intervention using DAG + LLM reasoning."""
     await _check_license(user, db)
 
-    dag = _load_dag()
     builder = PromptBuilder(dag)
 
     system_prompt = builder.build_system_prompt()

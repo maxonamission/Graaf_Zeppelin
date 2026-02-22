@@ -5338,6 +5338,26 @@
             "Downward (2014): economische barrières als primaire participatiedrempel in sport",
             "Breuer & Wicker (2009): financiële restricties leiden tot selectieve sportuitval",
             "Sport England Active Lives: participatie daalt meetbaar tijdens recessie"
+         ],
+         "qualifiers": [
+            {
+               "question": "Hoe ervaren jullie leden de financiële drempel om te sporten?",
+               "options": [
+                  {"label": "Geen drempel, kosten zijn laag", "value": 0.8},
+                  {"label": "Voor de meesten betaalbaar", "value": 0.6},
+                  {"label": "Sommigen haken af op kosten", "value": 0.35},
+                  {"label": "Kosten zijn een groot probleem", "value": 0.15}
+               ]
+            },
+            {
+               "question": "Hoe is de financiële situatie van jullie club/vereniging?",
+               "options": [
+                  {"label": "Gezond, voldoende sponsoring en subsidie", "value": 0.8},
+                  {"label": "Stabiel, maar weinig marge", "value": 0.55},
+                  {"label": "Onder druk, bezuinigingen nodig", "value": 0.3},
+                  {"label": "Ernstige financiële problemen", "value": 0.1}
+               ]
+            }
          ]
       },
       {
@@ -5373,6 +5393,26 @@
             "Hoekman et al. (2016): accommodatieafstand als sterkste voorspeller lokale sportparticipatie",
             "Eime et al. (2017): facility access als top-3 determinant sportfrequentie",
             "KNSB Meerjarenbeleid: ijstijdschaarste als structureel knelpunt"
+         ],
+         "qualifiers": [
+            {
+               "question": "Hoe is de beschikbaarheid van sportfaciliteiten voor jullie leden?",
+               "options": [
+                  {"label": "Ruim voldoende, korte reisafstand", "value": 0.85},
+                  {"label": "Voldoende, maar soms vol of ver weg", "value": 0.6},
+                  {"label": "Beperkt, regelmatig capaciteitstekort", "value": 0.35},
+                  {"label": "Structureel tekort, lange reistijden", "value": 0.15}
+               ]
+            },
+            {
+               "question": "Hoe ervaren jullie leden de bereikbaarheid van trainingslocaties?",
+               "options": [
+                  {"label": "Makkelijk bereikbaar (< 15 min)", "value": 0.8},
+                  {"label": "Redelijk (15-30 min)", "value": 0.55},
+                  {"label": "Lastig (30-60 min)", "value": 0.3},
+                  {"label": "Moeilijk bereikbaar (> 60 min)", "value": 0.1}
+               ]
+            }
          ]
       },
       {
@@ -5410,6 +5450,26 @@
             "Scheerder et al. (2011): institutionele barrières als drempel voor breedtesportparticipatie",
             "Nichols et al. (2005): regelgevingscomplexiteit reduceert vrijwillige sportorganisatie",
             "KNSB ledenonderzoek: licentiekosten en -complexiteit als uitvalreden"
+         ],
+         "qualifiers": [
+            {
+               "question": "Hoeveel regelgeving en formele eisen ervaren jullie leden?",
+               "options": [
+                  {"label": "Minimaal, laagdrempelig meedoen", "value": 0.2},
+                  {"label": "Beperkt, enkele basiseisen", "value": 0.4},
+                  {"label": "Gemiddeld, duidelijke structuur", "value": 0.6},
+                  {"label": "Veel regels, hoge drempel", "value": 0.85}
+               ]
+            },
+            {
+               "question": "Hoe ervaren jullie leden de licentie- en inschrijfprocedures?",
+               "options": [
+                  {"label": "Simpel en snel geregeld", "value": 0.3},
+                  {"label": "Enige administratie, maar werkbaar", "value": 0.5},
+                  {"label": "Omslachtig, kost moeite", "value": 0.7},
+                  {"label": "Complex, schrikt mensen af", "value": 0.9}
+               ]
+            }
          ]
       },
       {
@@ -5446,6 +5506,26 @@
             "Duda (2001): mastery-klimaat voorspelt intrinsieke motivatie en persistentie",
             "Ntoumanis (2012): ego-oriëntatie geassocieerd met angst en dropout",
             "Fraser-Thomas et al. (2008): vroege specialisatie en selectiedruk als dropout-predictor"
+         ],
+         "qualifiers": [
+            {
+               "question": "Hoe zou je de cultuur in jouw vereniging omschrijven?",
+               "options": [
+                  {"label": "Vooral plezier en meedoen", "value": 0.2},
+                  {"label": "Mix van plezier en presteren", "value": 0.5},
+                  {"label": "Sterk gericht op resultaten", "value": 0.75},
+                  {"label": "Vrijwel uitsluitend topprestatie", "value": 0.95}
+               ]
+            },
+            {
+               "question": "Op welke leeftijd begint selectie?",
+               "options": [
+                  {"label": "Geen formele selectie", "value": 0.15},
+                  {"label": "Vanaf 14-16 jaar", "value": 0.45},
+                  {"label": "Vanaf 10-12 jaar", "value": 0.7},
+                  {"label": "Vanaf 8 jaar of jonger", "value": 0.9}
+               ]
+            }
          ]
       },
       {
@@ -5482,6 +5562,26 @@
             "Sarrazin et al. (2002): perceived social support als sterkste predictor sportcontinuering",
             "Allen (2003): belongingness in sportclubs voorspelt commitment en enjoyment",
             "Eime et al. (2013): clubklimaat als mediator tussen participatie en welzijnsuitkomsten"
+         ],
+         "qualifiers": [
+            {
+               "question": "Hoe zou je de sfeer binnen jullie vereniging omschrijven?",
+               "options": [
+                  {"label": "Warm, iedereen welkom en betrokken", "value": 0.85},
+                  {"label": "Gezellig, goede onderlinge band", "value": 0.65},
+                  {"label": "Functioneel, mensen komen voor de sport", "value": 0.4},
+                  {"label": "Kil, weinig onderling contact", "value": 0.15}
+               ]
+            },
+            {
+               "question": "Hoe inclusief is jullie vereniging voor nieuwe leden?",
+               "options": [
+                  {"label": "Zeer laagdrempelig, actief wervend", "value": 0.8},
+                  {"label": "Open, maar je moet zelf initiatief nemen", "value": 0.55},
+                  {"label": "Lastig om erbij te horen als nieuwkomer", "value": 0.3},
+                  {"label": "Gesloten, vaste groep", "value": 0.1}
+               ]
+            }
          ]
       },
       {
@@ -5515,6 +5615,26 @@
             "Cuskelly et al. (2006): vrijwilligerstekort als primaire bedreiging sportclubcontinuïteit",
             "Nichols et al. (2005): vrijwilligerscapaciteit bepaalt programma-aanbod en kwaliteit",
             "Breuer & Wicker (2009): vrijwilligersinzet als sterkste voorspeller clubprestatie"
+         ],
+         "qualifiers": [
+            {
+               "question": "Hoe is de vrijwilligerssituatie bij jullie vereniging?",
+               "options": [
+                  {"label": "Ruim voldoende, enthousiaste groep", "value": 0.85},
+                  {"label": "Voldoende, maar druk op vaste kern", "value": 0.55},
+                  {"label": "Tekort, moeilijk om mensen te vinden", "value": 0.3},
+                  {"label": "Ernstig tekort, activiteiten vallen uit", "value": 0.1}
+               ]
+            },
+            {
+               "question": "Zijn er voldoende gekwalificeerde trainers beschikbaar?",
+               "options": [
+                  {"label": "Ja, ruim voldoende", "value": 0.8},
+                  {"label": "Net genoeg, maar geen reserve", "value": 0.5},
+                  {"label": "Tekort, niet alle groepen hebben een trainer", "value": 0.25},
+                  {"label": "Ernstig tekort", "value": 0.1}
+               ]
+            }
          ]
       },
       {
@@ -5550,6 +5670,26 @@
             "Muehlemann et al. (2016): klimaattrends reduceren winter sport participatie in West-Europa",
             "KNSB Jaarverslag: correlatie vorstdagen en recreatieve schaatsdeelname",
             "Hovemann & Wicker (2009): seizoenslengte als determinant sportbondsledenaantal"
+         ],
+         "qualifiers": [
+            {
+               "question": "Hoe lang duurt het actieve sportseizoen bij jullie?",
+               "options": [
+                  {"label": "Jaarrond (indoor + outdoor)", "value": 0.85},
+                  {"label": "Lang seizoen (8+ maanden)", "value": 0.65},
+                  {"label": "Gemiddeld seizoen (5-7 maanden)", "value": 0.45},
+                  {"label": "Kort seizoen (< 5 maanden)", "value": 0.2}
+               ]
+            },
+            {
+               "question": "Zijn er alternatieve trainingsmogelijkheden buiten het seizoen?",
+               "options": [
+                  {"label": "Ja, volwaardig alternatief beschikbaar", "value": 0.8},
+                  {"label": "Beperkt, enkele opties", "value": 0.5},
+                  {"label": "Nauwelijks", "value": 0.25},
+                  {"label": "Nee, volledige stop buiten seizoen", "value": 0.1}
+               ]
+            }
          ]
       },
       {
@@ -5584,6 +5724,26 @@
             "Engel & Nagel (2011): levensfasetransities als sterkste predictor dropout in georganiseerde sport",
             "Scheerder et al. (2006): gezinsvorming reduceert sportparticipatie met 30-50%",
             "Coakley (1992): 'growing out of sport' als transitiefenomeen, niet motivatieverlies"
+         ],
+         "qualifiers": [
+            {
+               "question": "Welke leeftijdsgroep betreft je vraag vooral?",
+               "options": [
+                  {"label": "Jeugd (< 12 jaar)", "value": 0.7},
+                  {"label": "Tieners (12-18 jaar)", "value": 0.45},
+                  {"label": "Jongvolwassenen (18-30 jaar)", "value": 0.25},
+                  {"label": "Volwassenen (30+ jaar)", "value": 0.5}
+               ]
+            },
+            {
+               "question": "Zitten jullie leden in een stabiele of veranderende levensfase?",
+               "options": [
+                  {"label": "Stabiel, weinig verloop", "value": 0.75},
+                  {"label": "Gemengd, normaal verloop", "value": 0.5},
+                  {"label": "Veel transities (studie, werk, verhuizing)", "value": 0.25},
+                  {"label": "Hoge uitval door levensveranderingen", "value": 0.1}
+               ]
+            }
          ]
       }
    ]

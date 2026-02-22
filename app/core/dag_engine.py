@@ -3,25 +3,56 @@ DAG Engine — Graph-based causal reasoning engine.
 
 Uses NetworkX to represent and query directed acyclic graphs (DAGs)
 for causal inference in the sports participation domain.
+
+Supports both v1 schema (factors/relations) and v2 schema
+(nodes/edges with domains, moderators, sliders).
 """
 
 from __future__ import annotations
 
 import json
+import math
+from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
 import networkx as nx
 
+# Mapping from v2 polarity strings to v1 direction strings
+_POLARITY_MAP = {
+    "positief": "positive",
+    "negatief": "negative",
+    "variabel": "variable",
+    "positive": "positive",
+    "negative": "negative",
+}
+
+# Mapping from v2 strength labels to numeric fallback (used only if base_weight missing)
+_STRENGTH_MAP = {
+    "sterk": 0.8,
+    "midden": 0.5,
+    "zwak": 0.2,
+}
+
 
 class CausalDAG:
-    """A directed acyclic graph representing causal relationships."""
+    """A directed graph representing causal relationships.
+
+    Despite the name, v2 models may contain feedback loops and are
+    therefore general directed graphs rather than strict DAGs.
+    """
 
     def __init__(self, name: str, version: str, description: str = ""):
         self.name = name
         self.version = version
         self.description = description
         self.graph = nx.DiGraph()
+        self.moderators: dict[str, list[dict[str, Any]]] = defaultdict(list)
+        self.sliders: list[dict[str, Any]] = []
+        self.metadata: dict[str, Any] = {}
+        self._schema_version: int = 1
+
+    # ── Node operations ──────────────────────────────────────────────────
 
     def add_factor(
         self,
@@ -40,6 +71,8 @@ class CausalDAG:
             **attrs,
         )
 
+    # ── Edge operations ──────────────────────────────────────────────────
+
     def add_relation(
         self,
         cause: str,
@@ -47,6 +80,8 @@ class CausalDAG:
         direction: str = "positive",
         strength: float = 0.5,
         description: str = "",
+        *,
+        check_dag: bool = True,
         **attrs: Any,
     ) -> None:
         """Add a causal relation (edge) between two factors.
@@ -57,6 +92,7 @@ class CausalDAG:
             direction: 'positive' or 'negative'.
             strength: 0.0 (weak) to 1.0 (strong).
             description: Human-readable description of the relation.
+            check_dag: If True, validate that the graph remains acyclic.
         """
         if cause not in self.graph:
             raise ValueError(f"Factor '{cause}' does not exist in the graph")
@@ -74,18 +110,32 @@ class CausalDAG:
             **attrs,
         )
 
-        # Validate DAG property (no cycles)
-        if not nx.is_directed_acyclic_graph(self.graph):
+        # Validate DAG property (no cycles) — only for v1 models
+        if check_dag and not nx.is_directed_acyclic_graph(self.graph):
             self.graph.remove_edge(cause, effect)
             raise ValueError(
                 f"Adding relation {cause} → {effect} would create a cycle"
             )
 
+    def add_moderator(
+        self,
+        edge_id: str,
+        moderator_node: str,
+        **attrs: Any,
+    ) -> None:
+        """Register a moderator relationship (node → edge)."""
+        self.moderators[edge_id].append({
+            "moderator_node": moderator_node,
+            **attrs,
+        })
+
+    # ── Query: nodes ─────────────────────────────────────────────────────
+
     def get_causes(self, factor_id: str) -> list[dict[str, Any]]:
         """Get all direct causes (parents) of a factor."""
         causes = []
         for pred in self.graph.predecessors(factor_id):
-            edge_data = self.graph.edges[pred, factor_id]
+            edge_data = dict(self.graph.edges[pred, factor_id])
             causes.append(
                 {
                     "factor": pred,
@@ -99,7 +149,7 @@ class CausalDAG:
         """Get all direct effects (children) of a factor."""
         effects = []
         for succ in self.graph.successors(factor_id):
-            edge_data = self.graph.edges[factor_id, succ]
+            edge_data = dict(self.graph.edges[factor_id, succ])
             effects.append(
                 {
                     "factor": succ,
@@ -110,11 +160,13 @@ class CausalDAG:
         return effects
 
     def get_causal_paths(
-        self, source: str, target: str
+        self, source: str, target: str, max_length: int = 5
     ) -> list[list[str]]:
         """Find all causal paths from source to target."""
         try:
-            return list(nx.all_simple_paths(self.graph, source, target))
+            return list(
+                nx.all_simple_paths(self.graph, source, target, cutoff=max_length)
+            )
         except nx.NetworkXError:
             return []
 
@@ -125,6 +177,150 @@ class CausalDAG:
     def get_descendants(self, factor_id: str) -> set[str]:
         """Get all downstream factors (transitive effects)."""
         return nx.descendants(self.graph, factor_id)
+
+    def get_factor_info(self, factor_id: str) -> dict[str, Any] | None:
+        """Get full information about a factor including moderators."""
+        if factor_id not in self.graph:
+            return None
+
+        info = {
+            "id": factor_id,
+            **self.graph.nodes[factor_id],
+            "causes": self.get_causes(factor_id),
+            "effects": self.get_effects(factor_id),
+            "ancestors": list(self.get_ancestors(factor_id)),
+            "descendants": list(self.get_descendants(factor_id)),
+        }
+
+        # Add moderator info for edges connected to this node
+        if self._schema_version >= 2:
+            moderated_edges = []
+            for edge_id, mods in self.moderators.items():
+                for mod in mods:
+                    if mod["moderator_node"] == factor_id:
+                        moderated_edges.append({
+                            "edge_id": edge_id,
+                            **mod,
+                        })
+            if moderated_edges:
+                info["moderates_edges"] = moderated_edges
+
+        return info
+
+    def get_all_factors(
+        self,
+        domain: str | None = None,
+        cluster: str | None = None,
+        status: str | None = None,
+    ) -> list[dict[str, Any]]:
+        """Get all factors with optional filtering."""
+        factors = []
+        for node in self.graph.nodes:
+            attrs = self.graph.nodes[node]
+            if domain and attrs.get("domain") != domain:
+                continue
+            if cluster and attrs.get("cluster") != cluster:
+                continue
+            if status and attrs.get("status") != status:
+                continue
+            factors.append({"id": node, **attrs})
+        return factors
+
+    def get_all_relations(
+        self,
+        cluster: str | None = None,
+        polarity: str | None = None,
+        edge_type: str | None = None,
+    ) -> list[dict[str, Any]]:
+        """Get all causal relations with optional filtering."""
+        relations = []
+        for u, v, data in self.graph.edges(data=True):
+            if cluster and data.get("cluster") != cluster:
+                continue
+            if polarity and data.get("direction") != polarity:
+                continue
+            if edge_type and data.get("edge_type") != edge_type:
+                continue
+            relations.append({"cause": u, "effect": v, **data})
+        return relations
+
+    # ── Query: domains ───────────────────────────────────────────────────
+
+    def get_domains(self) -> dict[str, int]:
+        """Get domain names with node counts."""
+        domains: dict[str, int] = defaultdict(int)
+        for node in self.graph.nodes:
+            domain = self.graph.nodes[node].get("domain", "")
+            if domain:
+                domains[domain] += 1
+        return dict(sorted(domains.items()))
+
+    def get_nodes_by_domain(self, domain: str) -> list[dict[str, Any]]:
+        """Get all nodes in a specific domain."""
+        return self.get_all_factors(domain=domain)
+
+    # ── Query: sliders ───────────────────────────────────────────────────
+
+    def get_sliders(self) -> list[dict[str, Any]]:
+        """Get all slider definitions."""
+        return list(self.sliders)
+
+    def get_slider(self, slider_id: str) -> dict[str, Any] | None:
+        """Get a single slider by ID."""
+        for s in self.sliders:
+            if s.get("id") == slider_id:
+                return s
+        return None
+
+    def get_slider_qualifiers(self, slider_id: str) -> list[dict[str, Any]] | None:
+        """Get qualifying questions for a specific slider."""
+        slider = self.get_slider(slider_id)
+        if not slider:
+            return None
+        return slider.get("qualifiers", [])
+
+    def get_relevant_sliders(self, factor_ids: list[str]) -> list[dict[str, Any]]:
+        """Find sliders that are relevant for the given factors.
+
+        A slider is relevant if any of the given factor IDs appears in the
+        slider's related_nodes, or if the factor belongs to a cluster that
+        the slider primarily affects.
+        """
+        if not factor_ids:
+            return list(self.sliders)
+
+        # Collect clusters for the given factors
+        factor_clusters: set[str] = set()
+        for fid in factor_ids:
+            node = self.graph.nodes.get(fid)
+            if node:
+                cluster = node.get("cluster", "")
+                if cluster:
+                    factor_clusters.add(cluster)
+
+        relevant = []
+        for slider in self.sliders:
+            related_nodes = set(slider.get("related_nodes", []))
+            primary_clusters = set(slider.get("primary_clusters", []))
+
+            # Check direct node overlap
+            if related_nodes & set(factor_ids):
+                relevant.append(slider)
+                continue
+
+            # Check cluster overlap
+            if primary_clusters & factor_clusters:
+                relevant.append(slider)
+
+        return relevant
+
+    # ── Query: moderators ────────────────────────────────────────────────
+
+    def get_edge_moderators(self, edge_id: str) -> list[dict[str, Any]]:
+        """Get all moderators for a specific edge."""
+        return list(self.moderators.get(edge_id, []))
+
+    # ── Simulation ───────────────────────────────────────────────────────
 
     def simulate_intervention(
         self, factor_id: str, change: float
@@ -145,7 +341,13 @@ class CausalDAG:
 
                 edge = self.graph.edges[current, successor]
                 strength = edge["strength"]
-                direction_multiplier = 1.0 if edge["direction"] == "positive" else -1.0
+                direction = edge.get("direction", "positive")
+                if direction == "positive":
+                    direction_multiplier = 1.0
+                elif direction == "negative":
+                    direction_multiplier = -1.0
+                else:
+                    direction_multiplier = 1.0  # variable/unknown
                 impact = current_impact * strength * direction_multiplier
 
                 new_path = path + [successor]
@@ -155,6 +357,7 @@ class CausalDAG:
                         **self.graph.nodes[successor],
                         "estimated_impact": round(impact, 3),
                         "path": new_path,
+                        "mechanism": edge.get("mechanism", ""),
                     }
                 )
                 propagate(successor, impact, new_path)
@@ -166,36 +369,11 @@ class CausalDAG:
         affected.sort(key=lambda x: abs(x["estimated_impact"]), reverse=True)
         return affected
 
-    def get_factor_info(self, factor_id: str) -> dict[str, Any] | None:
-        """Get full information about a factor."""
-        if factor_id not in self.graph:
-            return None
-        return {
-            "id": factor_id,
-            **self.graph.nodes[factor_id],
-            "causes": self.get_causes(factor_id),
-            "effects": self.get_effects(factor_id),
-            "ancestors": list(self.get_ancestors(factor_id)),
-            "descendants": list(self.get_descendants(factor_id)),
-        }
-
-    def get_all_factors(self) -> list[dict[str, Any]]:
-        """Get all factors with their basic attributes."""
-        return [
-            {"id": node, **self.graph.nodes[node]}
-            for node in self.graph.nodes
-        ]
-
-    def get_all_relations(self) -> list[dict[str, Any]]:
-        """Get all causal relations."""
-        return [
-            {"cause": u, "effect": v, **data}
-            for u, v, data in self.graph.edges(data=True)
-        ]
+    # ── Summary ──────────────────────────────────────────────────────────
 
     def get_graph_summary(self) -> dict[str, Any]:
         """Get summary statistics of the graph."""
-        return {
+        summary: dict[str, Any] = {
             "name": self.name,
             "version": self.version,
             "description": self.description,
@@ -208,6 +386,19 @@ class CausalDAG:
                 n for n in self.graph.nodes if self.graph.out_degree(n) == 0
             ],
         }
+
+        if self._schema_version >= 2:
+            summary["domains"] = self.get_domains()
+            summary["num_sliders"] = len(self.sliders)
+            summary["num_moderators"] = sum(
+                len(mods) for mods in self.moderators.values()
+            )
+            if self.metadata.get("graph_metrics"):
+                summary["graph_metrics"] = self.metadata["graph_metrics"]
+
+        return summary
+
+    # ── Serialization ────────────────────────────────────────────────────
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize the graph to a dictionary."""
@@ -226,20 +417,132 @@ class CausalDAG:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> CausalDAG:
-        """Deserialize a graph from a dictionary."""
+        """Deserialize a graph from a dictionary. Auto-detects v1 vs v2 schema."""
+        is_v2 = "nodes" in data and "edges" in data
+
+        if is_v2:
+            return cls._from_dict_v2(data)
+        return cls._from_dict_v1(data)
+
+    @classmethod
+    def _from_dict_v1(cls, data: dict[str, Any]) -> CausalDAG:
+        """Load v1 schema (factors/relations)."""
         dag = cls(
             name=data["name"],
             version=data["version"],
             description=data.get("description", ""),
         )
+        dag._schema_version = 1
+
         for factor in data["factors"]:
+            factor = dict(factor)  # don't mutate original
             factor_id = factor.pop("id")
             dag.add_factor(factor_id, **factor)
 
         for relation in data["relations"]:
+            relation = dict(relation)
             cause = relation.pop("cause")
             effect = relation.pop("effect")
             dag.add_relation(cause, effect, **relation)
+
+        return dag
+
+    @classmethod
+    def _from_dict_v2(cls, data: dict[str, Any]) -> CausalDAG:
+        """Load v2 schema (nodes/edges/sliders with domains, moderators, etc.)."""
+        meta = data.get("metadata", {})
+        summary = meta.get("summary", {})
+
+        dag = cls(
+            name=meta.get("project", data.get("name", "Unknown")),
+            version=meta.get("version", "0.0.0"),
+            description=summary.get("description", ""),
+        )
+        dag._schema_version = 2
+        dag.metadata = meta
+
+        # Load nodes
+        for node in data["nodes"]:
+            node_id = node["id"]
+            dag.graph.add_node(
+                node_id,
+                label=node.get("label", ""),
+                description=node.get("definition", ""),
+                definition=node.get("definition", ""),
+                domain=node.get("domain", ""),
+                level=node.get("level", ""),
+                bond_influence=node.get("bond_influence", ""),
+                disciplines=node.get("disciplines", []),
+                status=node.get("status", ""),
+                category=node.get("domain", ""),  # backward compat
+                degree=node.get("degree", 0),
+                in_degree=node.get("in_degree", 0),
+                out_degree=node.get("out_degree", 0),
+            )
+
+        # Load edges — separate regular edges from moderator edges
+        for edge in data["edges"]:
+            target_type = edge.get("target_type", "node")
+
+            if target_type == "edge":
+                # Moderator edge: store separately
+                dag.moderators[edge["target"]].append({
+                    "id": edge.get("id", ""),
+                    "moderator_node": edge["source"],
+                    "moderator_label": edge.get("source_label", ""),
+                    "target_edge": edge["target"],
+                    "target_label": edge.get("target_label", ""),
+                    "mechanism": edge.get("mechanism", ""),
+                    "strength": _STRENGTH_MAP.get(
+                        edge.get("strength", ""), edge.get("base_weight", 0.5)
+                    ),
+                    "polarity": edge.get("polarity", ""),
+                    "literature": edge.get("literature", []),
+                })
+                continue
+
+            source = edge["source"]
+            target = edge["target"]
+
+            if source not in dag.graph or target not in dag.graph:
+                continue
+
+            # Map polarity to direction for backward compat
+            polarity = edge.get("polarity", "positief")
+            direction = _POLARITY_MAP.get(polarity, polarity)
+
+            # Use base_weight as numeric strength
+            strength = edge.get("base_weight", _STRENGTH_MAP.get(
+                edge.get("strength", "midden"), 0.5
+            ))
+
+            dag.graph.add_edge(
+                source,
+                target,
+                id=edge.get("id", ""),
+                direction=direction,
+                polarity=polarity,
+                strength=strength,
+                description=edge.get("mechanism", ""),
+                mechanism=edge.get("mechanism", ""),
+                label=edge.get("label", ""),
+                source_label=edge.get("source_label", ""),
+                target_label=edge.get("target_label", ""),
+                cluster=edge.get("cluster", ""),
+                edge_type=edge.get("edge_type", ""),
+                curve_type=edge.get("curve_type", ""),
+                curve_params=edge.get("curve_params", {}),
+                literature=edge.get("literature", []),
+                slider_sensitivity=edge.get("slider_sensitivity", {}),
+                disciplines=edge.get("disciplines", []),
+                bond_influence=edge.get("bond_influence", ""),
+                time_lag=edge.get("time_lag", ""),
+                status=edge.get("status", ""),
+                moderators=edge.get("moderators", []),
+            )
+
+        # Load sliders
+        dag.sliders = data.get("sliders", [])
 
         return dag
 
@@ -252,7 +555,7 @@ class CausalDAG:
 
     @classmethod
     def load(cls, path: str | Path) -> CausalDAG:
-        """Load a graph from a JSON file."""
+        """Load a graph from a JSON file. Auto-detects v1/v2 schema."""
         with open(path, encoding="utf-8") as f:
             data = json.load(f)
         return cls.from_dict(data)
