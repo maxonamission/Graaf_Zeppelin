@@ -9,7 +9,9 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from app.api import auth, graph, license, reasoning, releases
+from app.config import settings
 from app.core.auth import decode_access_token
+from app.core.dag_engine import CausalDAG
 from app.db import init_db
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -18,6 +20,8 @@ BASE_DIR = Path(__file__).resolve().parent
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
+    # Load graph model once at startup
+    app.state.dag = CausalDAG.load(settings.graph_model_path)
     yield
 
 

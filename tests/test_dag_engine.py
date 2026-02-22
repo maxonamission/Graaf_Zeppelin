@@ -1,4 +1,4 @@
-"""Tests for the DAG engine."""
+"""Tests for the DAG engine — v1 and v2 schema support."""
 
 import json
 import tempfile
@@ -21,7 +21,143 @@ def make_simple_dag() -> CausalDAG:
     return dag
 
 
-class TestCausalDAG:
+def make_v2_data() -> dict:
+    """Create minimal v2 schema data for testing."""
+    return {
+        "metadata": {
+            "project": "Test Model v2",
+            "version": "2.0.0",
+            "summary": {"description": "Test v2 model"},
+            "graph_metrics": {"avg_degree": 2.0},
+        },
+        "nodes": [
+            {
+                "id": "N001",
+                "label": "Uitkomst",
+                "domain": "Uitkomsten",
+                "level": "L0",
+                "bond_influence": "none",
+                "disciplines": ["Univ"],
+                "status": "-",
+                "definition": "De uitkomst",
+                "degree": 3,
+                "in_degree": 2,
+                "out_degree": 1,
+            },
+            {
+                "id": "N002",
+                "label": "Motivatie",
+                "domain": "Psychologisch",
+                "level": "L1",
+                "bond_influence": "medium",
+                "disciplines": ["Univ"],
+                "status": "A",
+                "definition": "Intrinsieke motivatie",
+            },
+            {
+                "id": "N003",
+                "label": "Kosten",
+                "domain": "Middelen",
+                "level": "L1",
+                "bond_influence": "high",
+                "disciplines": ["Univ"],
+                "status": "-",
+                "definition": "Financiële kosten",
+            },
+        ],
+        "edges": [
+            {
+                "id": "E001",
+                "source": "N002",
+                "target": "N001",
+                "target_type": "node",
+                "source_label": "Motivatie",
+                "target_label": "Uitkomst",
+                "polarity": "positief",
+                "strength": "sterk",
+                "base_weight": 0.8,
+                "mechanism": "Motivatie drijft deelname",
+                "cluster": "Psychologisch",
+                "edge_type": "MEDIATING",
+                "curve_type": "LINEAR",
+                "curve_params": {},
+                "literature": ["L001"],
+                "slider_sensitivity": {"sens_test": "high"},
+                "disciplines": ["Univ"],
+                "bond_influence": "medium",
+                "time_lag": "",
+                "status": "A",
+            },
+            {
+                "id": "E002",
+                "source": "N003",
+                "target": "N001",
+                "target_type": "node",
+                "source_label": "Kosten",
+                "target_label": "Uitkomst",
+                "polarity": "negatief",
+                "strength": "midden",
+                "base_weight": 0.5,
+                "mechanism": "Hogere kosten verlagen deelname",
+                "cluster": "Middelen",
+                "edge_type": "STRUCTURAL",
+                "curve_type": "",
+                "curve_params": {},
+                "literature": [],
+                "slider_sensitivity": {"sens_test": "medium"},
+                "disciplines": ["Univ"],
+                "bond_influence": "high",
+                "time_lag": "",
+                "status": "-",
+            },
+            {
+                "id": "E003",
+                "source": "N003",
+                "target": "E002",
+                "target_type": "edge",
+                "source_label": "Kosten",
+                "target_label": "Kosten → Uitkomst",
+                "polarity": "moderator",
+                "strength": "midden",
+                "base_weight": 0.5,
+                "mechanism": "Kosten modereren eigen effect",
+                "cluster": "Middelen",
+                "edge_type": "MODERATOR",
+                "curve_type": "",
+                "curve_params": {},
+                "literature": [],
+                "slider_sensitivity": {},
+                "disciplines": ["Univ"],
+                "bond_influence": "none",
+                "time_lag": "",
+                "status": "-",
+            },
+        ],
+        "sliders": [
+            {
+                "id": "S01",
+                "label": "Test Slider",
+                "type": "Globaal",
+                "curve_type": "LINEAR_MOD",
+                "curve_params": {"gamma": 0.3},
+                "default": 0.5,
+                "range": [0, 1],
+                "direction": "versterking",
+                "sensitivity_key": "sens_test",
+                "definition": "Test slider definitie",
+                "mechanism": "Lineaire versterking",
+                "related_nodes": ["N002"],
+                "primary_clusters": ["Psychologisch"],
+                "evidence": ["Test (2024): test evidence"],
+            },
+        ],
+    }
+
+
+# ── v1 tests (backward compat) ──────────────────────────────────────────
+
+
+class TestCausalDAGv1:
     def test_add_factors(self):
         dag = CausalDAG(name="t", version="0.1.0")
         dag.add_factor("x", label="X")
@@ -81,7 +217,6 @@ class TestCausalDAG:
         dag = make_simple_dag()
         effects = dag.simulate_intervention("a", 0.5)
         assert len(effects) > 0
-        # Check that factor B is affected
         affected_ids = {e["factor"] for e in effects}
         assert "b" in affected_ids
         assert "c" in affected_ids
@@ -124,15 +259,178 @@ class TestCausalDAG:
             assert dag2.name == "test"
             assert dag2.graph.number_of_nodes() == 3
 
-    def test_load_sportdeelname_model(self):
-        """Test that the actual sportdeelname model loads correctly."""
+    def test_load_sportdeelname_v1(self):
+        """Test that the v1 sportdeelname model loads correctly."""
         dag = CausalDAG.load("data/models/sportdeelname_v1.json")
         summary = dag.get_graph_summary()
         assert summary["num_factors"] == 15
         assert summary["num_relations"] > 20
         assert summary["name"] == "Sportdeelname"
-        # Sportdeelname should not be a root (gezondheid feeds into it)
-        # but it should have many causes
         info = dag.get_factor_info("sportdeelname")
         assert info is not None
         assert len(info["causes"]) > 3
+
+
+# ── v2 tests ─────────────────────────────────────────────────────────────
+
+
+class TestCausalDAGv2:
+    def test_load_v2_schema(self):
+        """Test v2 schema detection and loading."""
+        data = make_v2_data()
+        dag = CausalDAG.from_dict(data)
+        assert dag._schema_version == 2
+        assert dag.name == "Test Model v2"
+        assert dag.version == "2.0.0"
+
+    def test_v2_nodes_loaded(self):
+        dag = CausalDAG.from_dict(make_v2_data())
+        assert dag.graph.number_of_nodes() == 3
+        node = dag.graph.nodes["N002"]
+        assert node["label"] == "Motivatie"
+        assert node["domain"] == "Psychologisch"
+        assert node["definition"] == "Intrinsieke motivatie"
+
+    def test_v2_regular_edges_loaded(self):
+        """Regular edges (target_type=node) become NetworkX edges."""
+        dag = CausalDAG.from_dict(make_v2_data())
+        # 2 regular edges (E001, E002), E003 is moderator
+        assert dag.graph.number_of_edges() == 2
+        edge = dag.graph.edges["N002", "N001"]
+        assert edge["direction"] == "positive"
+        assert edge["strength"] == 0.8
+        assert edge["mechanism"] == "Motivatie drijft deelname"
+
+    def test_v2_moderator_edges_stored_separately(self):
+        """Moderator edges (target_type=edge) are NOT in NetworkX graph."""
+        dag = CausalDAG.from_dict(make_v2_data())
+        # E003 is a moderator targeting E002
+        assert "E002" in dag.moderators
+        mods = dag.moderators["E002"]
+        assert len(mods) == 1
+        assert mods[0]["moderator_node"] == "N003"
+        assert mods[0]["mechanism"] == "Kosten modereren eigen effect"
+
+    def test_v2_polarity_mapping(self):
+        """Polarity 'positief'→'positive', 'negatief'→'negative'."""
+        dag = CausalDAG.from_dict(make_v2_data())
+        e1 = dag.graph.edges["N002", "N001"]
+        assert e1["direction"] == "positive"
+        assert e1["polarity"] == "positief"
+        e2 = dag.graph.edges["N003", "N001"]
+        assert e2["direction"] == "negative"
+        assert e2["polarity"] == "negatief"
+
+    def test_v2_base_weight_as_strength(self):
+        """base_weight is used as numeric strength, not the string field."""
+        dag = CausalDAG.from_dict(make_v2_data())
+        e1 = dag.graph.edges["N002", "N001"]
+        assert e1["strength"] == 0.8  # base_weight, not "sterk"
+
+    def test_v2_sliders_loaded(self):
+        dag = CausalDAG.from_dict(make_v2_data())
+        sliders = dag.get_sliders()
+        assert len(sliders) == 1
+        assert sliders[0]["id"] == "S01"
+        assert sliders[0]["label"] == "Test Slider"
+
+    def test_v2_get_slider(self):
+        dag = CausalDAG.from_dict(make_v2_data())
+        s = dag.get_slider("S01")
+        assert s is not None
+        assert s["curve_type"] == "LINEAR_MOD"
+        assert dag.get_slider("NONEXISTENT") is None
+
+    def test_v2_domains(self):
+        dag = CausalDAG.from_dict(make_v2_data())
+        domains = dag.get_domains()
+        assert "Psychologisch" in domains
+        assert domains["Psychologisch"] == 1
+        assert "Uitkomsten" in domains
+        assert domains["Uitkomsten"] == 1
+
+    def test_v2_nodes_by_domain(self):
+        dag = CausalDAG.from_dict(make_v2_data())
+        psych = dag.get_nodes_by_domain("Psychologisch")
+        assert len(psych) == 1
+        assert psych[0]["id"] == "N002"
+
+    def test_v2_filter_factors(self):
+        dag = CausalDAG.from_dict(make_v2_data())
+        all_factors = dag.get_all_factors()
+        assert len(all_factors) == 3
+        by_domain = dag.get_all_factors(domain="Psychologisch")
+        assert len(by_domain) == 1
+        by_status = dag.get_all_factors(status="A")
+        assert len(by_status) == 1
+
+    def test_v2_filter_relations(self):
+        dag = CausalDAG.from_dict(make_v2_data())
+        all_rels = dag.get_all_relations()
+        assert len(all_rels) == 2
+        by_cluster = dag.get_all_relations(cluster="Psychologisch")
+        assert len(by_cluster) == 1
+
+    def test_v2_edge_moderators(self):
+        dag = CausalDAG.from_dict(make_v2_data())
+        mods = dag.get_edge_moderators("E002")
+        assert len(mods) == 1
+        assert mods[0]["moderator_node"] == "N003"
+        assert dag.get_edge_moderators("NONEXISTENT") == []
+
+    def test_v2_summary_includes_domains(self):
+        dag = CausalDAG.from_dict(make_v2_data())
+        summary = dag.get_graph_summary()
+        assert "domains" in summary
+        assert "num_sliders" in summary
+        assert summary["num_sliders"] == 1
+        assert "num_moderators" in summary
+        assert summary["num_moderators"] == 1
+
+    def test_v2_metadata_stored(self):
+        dag = CausalDAG.from_dict(make_v2_data())
+        assert dag.metadata.get("project") == "Test Model v2"
+        assert dag.metadata.get("graph_metrics", {}).get("avg_degree") == 2.0
+
+    def test_v2_factor_info_includes_moderates(self):
+        """Factor info for a moderator node includes moderated edges."""
+        dag = CausalDAG.from_dict(make_v2_data())
+        info = dag.get_factor_info("N003")
+        assert info is not None
+        assert "moderates_edges" in info
+        assert len(info["moderates_edges"]) == 1
+        assert info["moderates_edges"][0]["edge_id"] == "E002"
+
+    def test_v2_simulate_intervention(self):
+        dag = CausalDAG.from_dict(make_v2_data())
+        effects = dag.simulate_intervention("N002", 0.5)
+        assert len(effects) > 0
+        affected_ids = {e["factor"] for e in effects}
+        assert "N001" in affected_ids
+
+    def test_load_v2_from_file(self):
+        """Test v2 schema loads from file."""
+        data = make_v2_data()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "v2_model.json"
+            with open(path, "w") as f:
+                json.dump(data, f)
+            dag = CausalDAG.load(path)
+            assert dag._schema_version == 2
+            assert dag.graph.number_of_nodes() == 3
+
+    def test_load_sportdeelname_v2(self):
+        """Test that the full v2.3.0 sportdeelname model loads correctly."""
+        dag = CausalDAG.load("data/models/sportdeelname_graph.json")
+        summary = dag.get_graph_summary()
+        assert dag._schema_version == 2
+        assert summary["num_factors"] == 69
+        # 114 total - 4 moderators - 2 duplicate pairs (NetworkX merges) = 108
+        assert summary["num_relations"] == 108
+        assert summary["num_sliders"] == 8
+        assert summary["num_moderators"] == 4
+        assert len(summary["domains"]) >= 7
+        # Check a known node
+        info = dag.get_factor_info("N018")
+        assert info is not None
+        assert info["label"] == "Intrinsieke motivatie"
