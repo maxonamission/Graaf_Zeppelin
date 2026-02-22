@@ -272,6 +272,48 @@ class CausalDAG:
                 return s
         return None
 
+    def get_slider_qualifiers(self, slider_id: str) -> list[dict[str, Any]] | None:
+        """Get qualifying questions for a specific slider."""
+        slider = self.get_slider(slider_id)
+        if not slider:
+            return None
+        return slider.get("qualifiers", [])
+
+    def get_relevant_sliders(self, factor_ids: list[str]) -> list[dict[str, Any]]:
+        """Find sliders that are relevant for the given factors.
+
+        A slider is relevant if any of the given factor IDs appears in the
+        slider's related_nodes, or if the factor belongs to a cluster that
+        the slider primarily affects.
+        """
+        if not factor_ids:
+            return list(self.sliders)
+
+        # Collect clusters for the given factors
+        factor_clusters: set[str] = set()
+        for fid in factor_ids:
+            node = self.graph.nodes.get(fid)
+            if node:
+                cluster = node.get("cluster", "")
+                if cluster:
+                    factor_clusters.add(cluster)
+
+        relevant = []
+        for slider in self.sliders:
+            related_nodes = set(slider.get("related_nodes", []))
+            primary_clusters = set(slider.get("primary_clusters", []))
+
+            # Check direct node overlap
+            if related_nodes & set(factor_ids):
+                relevant.append(slider)
+                continue
+
+            # Check cluster overlap
+            if primary_clusters & factor_clusters:
+                relevant.append(slider)
+
+        return relevant
+
     # ── Query: moderators ────────────────────────────────────────────────
 
     def get_edge_moderators(self, edge_id: str) -> list[dict[str, Any]]:

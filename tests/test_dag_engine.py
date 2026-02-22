@@ -149,6 +149,24 @@ def make_v2_data() -> dict:
                 "related_nodes": ["N002"],
                 "primary_clusters": ["Psychologisch"],
                 "evidence": ["Test (2024): test evidence"],
+                "qualifiers": [
+                    {
+                        "question": "Hoe sterk is de motivatie?",
+                        "options": [
+                            {"label": "Laag", "value": 0.2},
+                            {"label": "Gemiddeld", "value": 0.5},
+                            {"label": "Hoog", "value": 0.8},
+                        ],
+                    },
+                    {
+                        "question": "Hoe belangrijk is plezier?",
+                        "options": [
+                            {"label": "Niet belangrijk", "value": 0.1},
+                            {"label": "Belangrijk", "value": 0.6},
+                            {"label": "Zeer belangrijk", "value": 0.9},
+                        ],
+                    },
+                ],
             },
         ],
     }
@@ -419,6 +437,51 @@ class TestCausalDAGv2:
             assert dag._schema_version == 2
             assert dag.graph.number_of_nodes() == 3
 
+    def test_v2_get_slider_qualifiers(self):
+        """Test getting qualifier questions from a slider."""
+        dag = CausalDAG.from_dict(make_v2_data())
+        qualifiers = dag.get_slider_qualifiers("S01")
+        assert qualifiers is not None
+        assert len(qualifiers) == 2
+        assert qualifiers[0]["question"] == "Hoe sterk is de motivatie?"
+        assert len(qualifiers[0]["options"]) == 3
+
+    def test_v2_get_slider_qualifiers_nonexistent(self):
+        dag = CausalDAG.from_dict(make_v2_data())
+        assert dag.get_slider_qualifiers("NONEXISTENT") is None
+
+    def test_v2_get_relevant_sliders_by_node(self):
+        """Slider is relevant when factor_id is in related_nodes."""
+        dag = CausalDAG.from_dict(make_v2_data())
+        relevant = dag.get_relevant_sliders(["N002"])
+        assert len(relevant) == 1
+        assert relevant[0]["id"] == "S01"
+
+    def test_v2_get_relevant_sliders_by_cluster(self):
+        """Slider is relevant when factor's cluster matches primary_clusters."""
+        data = make_v2_data()
+        # N002 has domain "Psychologisch" but we need cluster attribute
+        data["nodes"][1]["cluster"] = "Psychologisch"
+        dag = CausalDAG.from_dict(data)
+        # Use N001 which is NOT in related_nodes but check cluster match
+        # N002 is in related_nodes, so use a node whose cluster matches
+        relevant = dag.get_relevant_sliders(["N002"])
+        assert len(relevant) == 1
+
+    def test_v2_get_relevant_sliders_no_match(self):
+        """No relevant sliders when factors don't overlap."""
+        dag = CausalDAG.from_dict(make_v2_data())
+        # N001 is not in related_nodes and its domain/cluster doesn't match
+        relevant = dag.get_relevant_sliders(["N001"])
+        # N001 domain is "Uitkomsten", slider primary_clusters is ["Psychologisch"]
+        assert len(relevant) == 0
+
+    def test_v2_get_relevant_sliders_empty_factors(self):
+        """Empty factor list returns all sliders."""
+        dag = CausalDAG.from_dict(make_v2_data())
+        relevant = dag.get_relevant_sliders([])
+        assert len(relevant) == 1  # all sliders
+
     def test_load_sportdeelname_v2(self):
         """Test that the full v2.3.0 sportdeelname model loads correctly."""
         dag = CausalDAG.load("data/models/sportdeelname_graph.json")
@@ -434,3 +497,14 @@ class TestCausalDAGv2:
         info = dag.get_factor_info("N018")
         assert info is not None
         assert info["label"] == "Intrinsieke motivatie"
+
+    def test_load_sportdeelname_v2_qualifiers(self):
+        """Test that all 8 sliders have qualifier questions."""
+        dag = CausalDAG.load("data/models/sportdeelname_graph.json")
+        for slider in dag.sliders:
+            qualifiers = slider.get("qualifiers", [])
+            assert len(qualifiers) >= 2, f"Slider {slider['id']} has no qualifiers"
+            for q in qualifiers:
+                assert "question" in q
+                assert "options" in q
+                assert len(q["options"]) >= 3

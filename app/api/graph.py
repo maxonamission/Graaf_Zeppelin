@@ -30,6 +30,15 @@ class SimulateRequest(BaseModel):
     sliders: list[SliderInput]
 
 
+class QualifierAnswer(BaseModel):
+    slider_id: str
+    answers: list[float]  # one value per qualifier question
+
+
+class QualifyRequest(BaseModel):
+    responses: list[QualifierAnswer]
+
+
 # ── Summary & metadata ──────────────────────────────────────────────────
 
 
@@ -175,6 +184,45 @@ async def list_sliders(
     return {"sliders": dag.get_sliders(), "count": len(dag.sliders)}
 
 
+# ── Slider qualification ─────────────────────────────────────────────────
+# NOTE: These routes MUST be registered before /sliders/{slider_id}
+# to prevent FastAPI from matching "qualify" as a slider_id.
+
+
+@router.get("/sliders/qualify/relevant")
+async def get_relevant_qualifiers(
+    factor_ids: str = Query(
+        ..., description="Comma-separated factor IDs to find relevant sliders for"
+    ),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+    dag: CausalDAG = Depends(get_dag),
+):
+    """Get qualifying questions only for sliders relevant to the given factors.
+
+    This prevents the agent from asking all 8x2 questions every time.
+    Only sliders whose related_nodes or primary_clusters overlap with
+    the queried factors are returned.
+    """
+    await _check_license(user, db)
+    ids = [fid.strip() for fid in factor_ids.split(",") if fid.strip()]
+    relevant = dag.get_relevant_sliders(ids)
+    result = []
+    for slider in relevant:
+        qualifiers = slider.get("qualifiers", [])
+        if qualifiers:
+            result.append({
+                "slider_id": slider["id"],
+                "slider_label": slider.get("label", ""),
+                "qualifiers": qualifiers,
+            })
+    return {
+        "factor_ids": ids,
+        "sliders": result,
+        "count": len(result),
+    }
+
+
 @router.get("/sliders/{slider_id}")
 async def get_slider(
     slider_id: str,
@@ -188,6 +236,78 @@ async def get_slider(
     if not slider:
         raise HTTPException(status_code=404, detail=f"Slider '{slider_id}' niet gevonden")
     return slider
+
+
+@router.get("/sliders/{slider_id}/qualify")
+async def get_slider_qualifiers(
+    slider_id: str,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+    dag: CausalDAG = Depends(get_dag),
+):
+    """Get qualifying questions for a specific slider."""
+    await _check_license(user, db)
+    qualifiers = dag.get_slider_qualifiers(slider_id)
+    if qualifiers is None:
+        raise HTTPException(status_code=404, detail=f"Slider '{slider_id}' niet gevonden")
+    slider = dag.get_slider(slider_id)
+    return {
+        "slider_id": slider_id,
+        "slider_label": slider.get("label", ""),
+        "qualifiers": qualifiers,
+        "count": len(qualifiers),
+    }
+
+
+@router.post("/sliders/qualify")
+async def resolve_qualifiers(
+    request: QualifyRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+    dag: CausalDAG = Depends(get_dag),
+):
+    """Convert qualifier answers into slider values.
+
+    Takes the user's answers to qualifying questions and computes the
+    average value per slider, ready for use in /simulate.
+    """
+    await _check_license(user, db)
+    slider_values = {}
+    for response in request.responses:
+        slider = dag.get_slider(response.slider_id)
+        if not slider:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Slider '{response.slider_id}' niet gevonden",
+            )
+        qualifiers = slider.get("qualifiers", [])
+        if not qualifiers:
+            raise HTTPException(
+                status_code=422,
+                detail=f"Slider '{response.slider_id}' heeft geen kwalificerende vragen",
+            )
+        if len(response.answers) != len(qualifiers):
+            raise HTTPException(
+                status_code=422,
+                detail=(
+                    f"Slider '{response.slider_id}' verwacht {len(qualifiers)} "
+                    f"antwoorden, maar kreeg er {len(response.answers)}"
+                ),
+            )
+        for val in response.answers:
+            if not 0.0 <= val <= 1.0:
+                raise HTTPException(
+                    status_code=422,
+                    detail="Antwoordwaarden moeten tussen 0 en 1 liggen",
+                )
+        slider_values[response.slider_id] = round(
+            sum(response.answers) / len(response.answers), 4
+        )
+
+    return {
+        "slider_values": slider_values,
+        "count": len(slider_values),
+    }
 
 
 # ── Slider simulation ───────────────────────────────────────────────────
