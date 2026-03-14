@@ -158,6 +158,83 @@ def test_gexf_to_json_conversion():
     print("✓ GEXF to JSON conversion test passed")
 
 
+def test_from_dict_validation():
+    """Test that from_dict performs basic schema validation."""
+    print("Testing from_dict validation...")
+
+    # Valid data should work
+    valid_data = {
+        "nodes": [{"id": "n1", "label": "Node 1"}],
+        "edges": [{"source": "n1", "target": "n1", "label": "self"}],
+    }
+    kg = KnowledgeGraph.from_dict(valid_data)
+    assert len(kg.nodes) == 1, "Valid data should load 1 node"
+    assert len(kg.edges) == 1, "Valid data should load 1 edge"
+
+    # Empty data should work (nodes and edges default to [])
+    kg_empty = KnowledgeGraph.from_dict({})
+    assert len(kg_empty.nodes) == 0, "Empty dict should have 0 nodes"
+    assert len(kg_empty.edges) == 0, "Empty dict should have 0 edges"
+
+    # Non-dict input should raise ValueError
+    try:
+        KnowledgeGraph.from_dict("not a dict")
+        assert False, "Should raise ValueError for non-dict input"
+    except ValueError as e:
+        assert "Expected a dictionary" in str(e)
+
+    # Non-list nodes should raise ValueError
+    try:
+        KnowledgeGraph.from_dict({"nodes": "not a list"})
+        assert False, "Should raise ValueError for non-list nodes"
+    except ValueError as e:
+        assert "'nodes' to be a list" in str(e)
+
+    # Non-list edges should raise ValueError
+    try:
+        KnowledgeGraph.from_dict({"edges": "not a list"})
+        assert False, "Should raise ValueError for non-list edges"
+    except ValueError as e:
+        assert "'edges' to be a list" in str(e)
+
+    # Node missing 'id' should raise ValueError
+    try:
+        KnowledgeGraph.from_dict({"nodes": [{"label": "No ID"}]})
+        assert False, "Should raise ValueError for node missing 'id'"
+    except ValueError as e:
+        assert "missing required field 'id'" in str(e)
+
+    # Edge missing 'source' should raise ValueError
+    try:
+        KnowledgeGraph.from_dict({"edges": [{"target": "n1"}]})
+        assert False, "Should raise ValueError for edge missing 'source'"
+    except ValueError as e:
+        assert "missing required field 'source'" in str(e)
+
+    # Edge missing 'target' should raise ValueError
+    try:
+        KnowledgeGraph.from_dict({"edges": [{"source": "n1"}]})
+        assert False, "Should raise ValueError for edge missing 'target'"
+    except ValueError as e:
+        assert "missing required field 'target'" in str(e)
+
+    # Non-dict node should raise ValueError
+    try:
+        KnowledgeGraph.from_dict({"nodes": ["not a dict"]})
+        assert False, "Should raise ValueError for non-dict node"
+    except ValueError as e:
+        assert "not a dictionary" in str(e)
+
+    # Non-dict edge should raise ValueError
+    try:
+        KnowledgeGraph.from_dict({"edges": [42]})
+        assert False, "Should raise ValueError for non-dict edge"
+    except ValueError as e:
+        assert "not a dictionary" in str(e)
+
+    print("✓ from_dict validation test passed")
+
+
 def main():
     """Run all tests."""
     print("=" * 60)
@@ -172,6 +249,7 @@ def main():
         test_json_to_gexf_conversion,
         test_json_to_markdown_conversion,
         test_gexf_to_json_conversion,
+        test_from_dict_validation,
     ]
     
     passed = 0
