@@ -42,8 +42,31 @@
             <div class="reasoning-chat" id="chat-messages">
                 <div class="message message-assistant">
                     Welkom! Stel een vraag over sportdeelname en ik redeneer op basis
-                    van het causale model. Bijvoorbeeld: "Wat gebeurt er als we investeren
-                    in betere coaching?"
+                    van het causale model. Klik op een voorbeeldvraag om te beginnen,
+                    of stel je eigen vraag.
+                </div>
+                <div id="example-questions" class="example-questions">
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+                        Probeer een van deze vragen:
+                    </p>
+                    <button class="example-question" onclick="useExample(this)">
+                        Wat gebeurt er als we investeren in betere coaching?
+                    </button>
+                    <button class="example-question" onclick="useExample(this)">
+                        Welke factoren hebben de meeste invloed op sportdeelname?
+                    </button>
+                    <button class="example-question" onclick="useExample(this)">
+                        Hoe hangt de kwaliteit van accommodaties samen met ledenbehoud?
+                    </button>
+                    <button class="example-question" onclick="useExample(this)">
+                        Wat is het effect van vrijwilligersbeleid op de clubcultuur?
+                    </button>
+                    <button class="example-question" onclick="useExample(this)">
+                        Welke interventies verbeteren de instroom van jeugdleden?
+                    </button>
+                    <button class="example-question" onclick="useExample(this)">
+                        Hoe beinvloedt de bereikbaarheid van sportfaciliteiten de deelname?
+                    </button>
                 </div>
             </div>
             <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border);">
@@ -75,6 +98,51 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (e) { /* ignore */ }
 });
 
+function useExample(btn) {
+    const input = document.getElementById('chat-input');
+    input.value = btn.textContent.trim();
+    // Hide example questions after selection
+    const examples = document.getElementById('example-questions');
+    if (examples) examples.style.display = 'none';
+    input.focus();
+}
+
+function hideExamples() {
+    const examples = document.getElementById('example-questions');
+    if (examples) examples.style.display = 'none';
+}
+
+function formatErrorMessage(status, detail) {
+    if (status === 401) {
+        return 'Je sessie is verlopen. Log opnieuw in om door te gaan.';
+    }
+    if (status === 403) {
+        if (detail && detail.includes('querylimiet')) {
+            return 'Je maandelijkse limiet is bereikt. Upgrade je account of wacht tot volgende maand.';
+        }
+        if (detail && detail.includes('licentie')) {
+            return 'Er is een probleem met je licentie. Controleer je licentiestatus op de licentiepagina.';
+        }
+        return 'Toegang geweigerd: ' + (detail || 'Onvoldoende rechten.');
+    }
+    if (status === 429) {
+        return 'Te veel verzoeken. Wacht enkele minuten en probeer het opnieuw.';
+    }
+    if (status === 502) {
+        if (detail && (detail.includes('401') || detail.includes('Invalid') || detail.includes('invalid'))) {
+            return 'Je API key is ongeldig. Controleer de key in de LLM configuratie hierboven.';
+        }
+        if (detail && detail.includes('429')) {
+            return 'De AI-service heeft een rate limit bereikt. Wacht enkele minuten en probeer het opnieuw.';
+        }
+        return 'De AI-service is tijdelijk niet bereikbaar. Probeer het later opnieuw.';
+    }
+    if (status >= 500) {
+        return 'Er is een serverfout opgetreden. Probeer het later opnieuw.';
+    }
+    return detail || 'Er is een onbekende fout opgetreden.';
+}
+
 async function sendQuery(e) {
     e.preventDefault();
 
@@ -83,9 +151,12 @@ async function sendQuery(e) {
 
     const apiKey = document.getElementById('llm-key').value;
     if (!apiKey) {
-        alert('Voer eerst je LLM API key in.');
+        addMessage('Voer eerst je LLM API key in bij de configuratie links.', 'error');
         return;
     }
+
+    // Hide examples on first interaction
+    hideExamples();
 
     // Show user message
     addMessage(query, 'user');
@@ -99,6 +170,9 @@ async function sendQuery(e) {
     ).map(cb => cb.value);
 
     try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 60000);
+
         const res = await fetch('/api/reasoning/query', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -108,18 +182,29 @@ async function sendQuery(e) {
                 api_key: apiKey,
                 model: document.getElementById('llm-model').value || null,
                 factor_ids: selectedFactors.length > 0 ? selectedFactors : null,
-            })
+            }),
+            signal: controller.signal,
         });
+
+        clearTimeout(timeoutId);
 
         if (res.ok) {
             const data = await res.json();
             addMessage(data.response, 'assistant');
         } else {
-            const error = await res.json();
-            addMessage(`Fout: ${error.detail}`, 'assistant');
+            let detail = '';
+            try {
+                const error = await res.json();
+                detail = error.detail || '';
+            } catch (_) {}
+            addMessage(formatErrorMessage(res.status, detail), 'error');
         }
     } catch (err) {
-        addMessage('Verbindingsfout. Controleer je API key en probeer het opnieuw.', 'assistant');
+        if (err.name === 'AbortError') {
+            addMessage('Het antwoord duurt te lang. De AI-service reageert niet binnen de tijdslimiet. Probeer het later opnieuw.', 'error');
+        } else {
+            addMessage('Verbindingsfout. Controleer je internetverbinding en probeer het opnieuw.', 'error');
+        }
     }
 
     document.getElementById('send-btn').disabled = false;

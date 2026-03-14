@@ -51,7 +51,12 @@ async def reason_query(
     try:
         response = await connector.generate(messages)
     except LLMProviderError as e:
-        raise HTTPException(status_code=502, detail=f"LLM fout: {e}")
+        raise HTTPException(status_code=502, detail=_format_llm_error(str(e)))
+    except Exception:
+        raise HTTPException(
+            status_code=502,
+            detail="De AI-service is tijdelijk niet bereikbaar. Probeer het later opnieuw.",
+        )
 
     # Record usage
     lm = LicenseManager(db)
@@ -91,7 +96,12 @@ async def reason_intervention(
     try:
         response = await connector.generate(messages)
     except LLMProviderError as e:
-        raise HTTPException(status_code=502, detail=f"LLM fout: {e}")
+        raise HTTPException(status_code=502, detail=_format_llm_error(str(e)))
+    except Exception:
+        raise HTTPException(
+            status_code=502,
+            detail="De AI-service is tijdelijk niet bereikbaar. Probeer het later opnieuw.",
+        )
 
     # Also include raw simulation data
     effects = dag.simulate_intervention(request.factor_id, request.change)
@@ -106,6 +116,20 @@ async def reason_intervention(
         "simulation": effects,
         "model_version": dag.version,
     }
+
+
+def _format_llm_error(error_msg: str) -> str:
+    """Translate LLM provider errors to user-friendly Dutch messages."""
+    msg = error_msg.lower()
+    if "401" in msg or "invalid" in msg or "unauthorized" in msg:
+        return "Je API key is ongeldig. Controleer de key in je LLM configuratie."
+    if "429" in msg or "rate" in msg:
+        return "De AI-service heeft een rate limit bereikt. Wacht enkele minuten en probeer het opnieuw."
+    if "timeout" in msg:
+        return "Het antwoord duurde te lang. Probeer het later opnieuw."
+    if "500" in msg or "internal" in msg:
+        return "De AI-service heeft een interne fout. Probeer het later opnieuw."
+    return f"AI-fout: {error_msg}"
 
 
 async def _check_license(user: User, db: AsyncSession) -> None:

@@ -78,7 +78,10 @@ class LicenseManager:
             raise LicenseError("Licentie is gedeactiveerd")
 
         now = datetime.now(timezone.utc)
-        if license_obj.expires_at < now:
+        expires_at = license_obj.expires_at
+        if expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=timezone.utc)
+        if expires_at < now:
             raise LicenseError("Licentie is verlopen")
 
         limits = TIER_LIMITS.get(LicenseTier(license_obj.tier))

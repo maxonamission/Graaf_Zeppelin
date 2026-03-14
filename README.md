@@ -1,112 +1,116 @@
-# Graaf Zeppelin
+# Graaf Zeppelin — Beleidsverkenner voor Sportdeelname
 
-Causaal redeneerplatform voor sportdeelname. Combineert een wetenschappelijk onderbouwd causaal model (KNSB Sportdeelnamemodel) met een REST API en LLM-integratie, zodat sportbonden via AI-agents beleidsvragen kunnen beantwoorden.
+Een webapplicatie waarmee beleidsmedewerkers van sportbonden, gemeenten en clubs
+beleid kunnen verkennen en interventies kunnen doorrekenen. De app combineert een
+wetenschappelijk onderbouwd causaal model (DAG) met LLM-integratie, zodat
+niet-technische gebruikers in natuurlijke taal vragen kunnen stellen over
+sportbeleid en onderbouwde antwoorden krijgen.
 
-A causal reasoning platform for sports participation. Combines a scientifically grounded causal model (KNSB Sports Participation Model) with a REST API and LLM integration, enabling sports federations to answer policy questions through AI agents.
+## Wat kan een gebruiker?
 
-## Features
+- **Beleid verkennen** — Bekijk welke factoren sportdeelname beinvloeden en hoe ze
+  samenhangen via een interactieve grafiekviewer
+- **Interventies simuleren** — Pas beleidssliders aan en zie welke factoren worden
+  beinvloed (bijv. "Wat als we investeren in betere accommodaties?")
+- **Vragen stellen aan de AI** — Stel beleidsvragen in natuurlijke taal en krijg
+  antwoorden die zijn gegrond in het causale model
+- **Kwalificatievragen beantwoorden** — De app stelt gerichte vragen om de juiste
+  sliderwaarden te bepalen voor jouw situatie
 
-- **Causaal model** — 69 factoren, 108 relaties, 8 beleidsinstrumenten (sliders) met wetenschappelijke onderbouwing
-- **REST API** — Endpoints voor nodes, edges, domeinen, paden, sliders en simulatie
-- **LLM-redenering** — Causaal gegronde antwoorden via OpenAI/Anthropic (BYOK)
-- **Slider-simulatie** — Simuleer beleidsinterventies met wiskundige curvemodellen
-- **Dual-schema** — Ondersteunt zowel het simpele v1-model als het uitgebreide v2.3.0-model
-- **Format conversie** — JSON, GEXF en Markdown export
-- **Licentiesysteem** — API-key management per organisatie
+## Scope
 
-## Snelstart
+| Onderdeel | Rol | Toelichting |
+|-----------|-----|-------------|
+| **App** (`app/`) | Het product | Webapplicatie met API en frontend |
+| **Causaal model** (`data/models/`) | Externe input | Wordt separaat ontwikkeld; de app laadt het model as-is |
+| **Conversie-tools** (`graaf_zeppelin/`) | Developer tooling | Hulpmiddelen voor de modelontwikkelaar |
+
+## Installatie
 
 ```bash
 git clone https://github.com/maxonamission/Graaf_Zeppelin.git
 cd Graaf_Zeppelin
 pip install -r requirements.txt
-pip install -e .
 
-# Start de API
+# Start de applicatie
 uvicorn app.main:app --reload
 ```
 
-De API is beschikbaar op `http://localhost:8000`. Documentatie: `http://localhost:8000/docs`.
+Open `http://localhost:8000` in je browser. API-documentatie: `http://localhost:8000/docs`.
 
-## API Endpoints
+### Vereisten
 
-| Endpoint | Methode | Beschrijving |
-|----------|---------|-------------|
-| `/api/graph/summary` | GET | Model-overzicht: domeinen, metrics, slider-count |
-| `/api/graph/domains` | GET | Alle domeinen met node-counts |
-| `/api/graph/factors` | GET | Alle factoren (`?domain=`, `?cluster=`, `?status=`) |
-| `/api/graph/factors/{id}` | GET | Factor-detail met oorzaken, effecten, moderators |
-| `/api/graph/relations` | GET | Alle relaties (`?cluster=`, `?polarity=`, `?edge_type=`) |
-| `/api/graph/paths/{from}/{to}` | GET | Causale paden tussen twee factoren |
-| `/api/graph/sliders` | GET | Alle beleidsinstrumenten |
-| `/api/graph/sliders/{id}` | GET | Slider-detail met curve en evidence |
-| `/api/graph/intervene` | POST | Simuleer impact van een factorverandering |
-| `/api/graph/simulate` | POST | Simuleer slider-aanpassingen op edge-gewichten |
-| `/api/reasoning/query` | POST | LLM-beantwoording met causale context (BYOK) |
-| `/api/reasoning/intervene` | POST | LLM-analyse van interventie (BYOK) |
+- Python 3.11+
+- Packages: zie `requirements.txt` (FastAPI, SQLAlchemy, NetworkX, httpx, etc.)
 
-## Architectuur
+## Hoe werkt het?
+
+```
+┌─────────────────────────────┐
+│     Web Frontend             │
+│     (Jinja2 + HTMX + D3)    │    Geen JS-framework nodig
+│                              │
+│  • Beleidsverkenner          │    Doelgroep: niet-technische
+│  • Interventie-simulator     │    beleidsmedewerkers
+│  • AI-assistent (chat)       │
+│  • Dashboard & licentie      │
+└────────────┬────────────────┘
+             │ HTTP
+┌────────────▼────────────────┐
+│     FastAPI Backend          │
+│                              │
+│  /api/graph     → model verkennen, sliders, simulatie
+│  /api/reasoning → LLM-redenering (BYOK)
+│  /api/auth      → login, registratie
+│  /api/license   → licentie & quota
+└────────────┬────────────────┘
+             │
+┌────────────▼────────────────┐
+│     Causaal Model (extern)   │
+│     data/models/*.json       │
+│                              │
+│  69 factoren, 108 relaties   │
+│  8 beleidssliders            │
+│  9 domeinen                  │
+└─────────────────────────────┘
+```
+
+### Kernprincipes
+
+1. **Model as-is** — de app laadt het causaal model zonder het te wijzigen
+2. **Gebruiker koppelt eigen LLM** — via API key (OpenAI, Anthropic)
+3. **Licentie = toegang** — geen geldige licentie = geen API-toegang
+4. **Herhaalbare output** — de DAG constraineert het LLM, niet andersom
+5. **Eenvoud voor de gebruiker** — geen technische kennis nodig
+
+## Projectstructuur
 
 ```
 app/
   main.py                 # FastAPI app, graph caching bij startup
   config.py               # Instellingen (model path, DB, secrets)
   api/
-    graph.py              # Graph API endpoints
-    reasoning.py          # LLM-redenering endpoints
-    auth.py               # Authenticatie
+    graph.py              # Graph & slider endpoints
+    reasoning.py          # LLM-redenering met foutafhandeling
+    auth.py               # Registratie & login
     deps.py               # Gedeelde dependencies (auth, graph)
   core/
-    dag_engine.py          # CausalDAG — NetworkX-based graph engine (v1+v2)
-    slider_engine.py       # Curve-functies en slider-simulatie
-    prompt_builder.py      # Gestructureerde LLM-prompts
-    llm_connector.py       # Multi-provider LLM client
-    license_manager.py     # Licentie-validatie en quota
-  models/                  # SQLAlchemy ORM (User, License, Release)
-  templates/               # Jinja2 HTML (dashboard, graph viewer)
+    dag_engine.py         # CausalDAG — NetworkX-based graph engine
+    slider_engine.py      # Curve-functies en slider-simulatie
+    prompt_builder.py     # DAG → gestructureerde LLM-prompts
+    llm_connector.py      # Multi-provider LLM client
+    license_manager.py    # Licentie-validatie en quota
+    auth.py               # JWT tokens en wachtwoordhashing
+  models/                 # SQLAlchemy ORM (User, License, Release)
+  templates/              # Jinja2 HTML (dashboard, graph viewer, chat)
+  static/                 # CSS
 
 data/models/
-  sportdeelname_v1.json    # Simpel model (15 factoren, 26 relaties)
-  sportdeelname_graph.json # Uitgebreid v2.3.0 model (69 nodes, 114 edges, 8 sliders)
-```
+  sportdeelname_graph.json  # Uitgebreid v2.3.0 model
+  sportdeelname_v1.json     # Simpel model (voor referentie)
 
-## Causaal model
-
-Het sportdeelnamemodel beschrijft factoren die sportdeelname beïnvloeden, verdeeld over 9 domeinen:
-
-| Domein | Factoren | Voorbeeld |
-|--------|----------|-----------|
-| Psychologisch | 11 | Intrinsieke motivatie, Zelfeffectiviteit |
-| Sociaal | 5 | Clubklimaat, Peergroep, Coach-atleet relatie |
-| Training & Prestatie | 7 | Trainingsvolume, Prestatieniveau |
-| Organisatie & Aanbod | 13 | IJsbaanbeschikbaarheid, Wedstrijdformat |
-| Middelen & Logistiek | 8 | Financiële draagkracht, Reisafstand |
-| Regels & Administratie | 8 | Licentiestatus, Categorie-indeling |
-| Macro-context | 8 | Economisch klimaat, Klimaattrends |
-| Discipline-specifiek | 5 | Ploegenstructuur, Seizoenscompensatie |
-| Uitkomsten | 4 | Feitelijke deelname, Continuïteit |
-
-### Sliders (beleidsinstrumenten)
-
-8 configureerbare sliders met wiskundige curvemodellen:
-
-- **Economisch klimaat** — Dampening threshold (recessie-effect)
-- **Accommodatietoegang** — Dampening threshold (minimale ijstijd)
-- **Bondsbeleid & regelgeving** — Inverted-U (optimum tussen te veel/weinig regels)
-- **Prestatiecultuur** — Inverted-U (smal optimum, druk vs. uitdaging)
-- **Clubklimaat & sociale cohesie** — Inverted-U (breed optimum)
-- **Vrijwilligerscapaciteit** — Lineair (meer = beter)
-- **Seizoen & klimaat** — Lineair (langere winter = meer participatie)
-- **Levensfase & transitie** — Lineair dempend (sterkste dropout-predictor)
-
-## CLI Tool
-
-```bash
-# JSON naar GEXF
-python -m graaf_zeppelin.cli convert examples/knowledge_graph.json output.gexf
-
-# JSON naar Markdown
-python -m graaf_zeppelin.cli convert examples/knowledge_graph.json output.md
+stories/                  # Kanban: backlog/, doing/, done/
+tests/                    # Pytest test suite
 ```
 
 ## Tests
@@ -115,7 +119,27 @@ python -m graaf_zeppelin.cli convert examples/knowledge_graph.json output.md
 python -m pytest tests/ -v
 ```
 
-71 tests dekken: DAG engine (v1+v2), slider-curven, API endpoints, prompt builder, en format conversie.
+De test suite dekt:
+
+- **DAG Engine** — model laden, queries, pad-analyse, simulatie
+- **Slider Engine** — curvemodellen (dampening, inverted-U, lineair)
+- **Prompt Builder** — LLM-prompt templates en constraints
+- **Auth** — JWT-tokens, wachtwoordhashing
+- **License Manager** — tiers, quota, validatie
+- **LLM Connector** — provider-configuratie, API-calls (gemockt)
+- **Release Manager** — versioning, release-queries
+- **API endpoints** — publieke pagina's, auth, graph, sliders
+- **Integratietests** — registratie → login → verken → simuleer → AI-vraag
+
+## CLI Tool (developer tooling)
+
+```bash
+# JSON naar GEXF
+python -m graaf_zeppelin.cli convert examples/knowledge_graph.json output.gexf
+
+# JSON naar Markdown
+python -m graaf_zeppelin.cli convert examples/knowledge_graph.json output.md
+```
 
 ## Licentie
 

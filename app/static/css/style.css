@@ -211,6 +211,34 @@ nav .nav-links a:hover, nav .nav-links a.active { color: white; }
     background: #f1f5f9;
     color: var(--text);
 }
+.message-error {
+    background: #fef2f2;
+    color: var(--error);
+    border: 1px solid #fecaca;
+}
+
+/* Example questions */
+.example-questions {
+    padding: 0.75rem 1rem;
+}
+.example-question {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 0.6rem 0.8rem;
+    margin-bottom: 0.4rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--primary);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.example-question:hover {
+    background: #eff6ff;
+    border-color: var(--primary-light);
+}
 
 /* Release notes */
 .release-item { padding: 1rem 0; border-bottom: 1px solid var(--border); }
