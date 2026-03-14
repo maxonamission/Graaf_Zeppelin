@@ -7,6 +7,7 @@ from pydantic import BaseModel, EmailStr
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.deps import get_current_user
 from app.core.auth import create_access_token, hash_password, verify_password
 from app.core.license_manager import LicenseManager
 from app.db import get_db
@@ -60,7 +61,7 @@ async def register(data: RegisterRequest, db: AsyncSession = Depends(get_db)):
     await db.commit()
 
     token = create_access_token({"sub": user.email})
-    return {"access_token": token, "token_type": "bearer"}
+    return {"access_token": token, "token_type": "bearer", "needs_onboarding": True}
 
 
 @router.post("/login")
@@ -83,4 +84,28 @@ async def login(data: LoginRequest, db: AsyncSession = Depends(get_db)):
             raise HTTPException(status_code=403, detail=f"Licentieprobleem: {e}")
 
     token = create_access_token({"sub": user.email})
-    return {"access_token": token, "token_type": "bearer"}
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "needs_onboarding": not user.has_completed_onboarding,
+    }
+
+
+@router.post("/onboarding/complete")
+async def complete_onboarding(
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Mark the onboarding flow as completed for the current user."""
+    user.has_completed_onboarding = True
+    await db.commit()
+    return {"completed": True}
+
+
+@router.get("/onboarding/status")
+async def onboarding_status(
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Check if the current user needs onboarding."""
+    return {"needs_onboarding": not user.has_completed_onboarding}

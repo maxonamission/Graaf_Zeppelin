@@ -2,6 +2,82 @@
 {% block title %}Dashboard — Graaf Zeppelin{% endblock %}
 
 {% block content %}
+<!-- Onboarding modal -->
+<div id="onboarding-overlay" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; display: none; align-items: center; justify-content: center;">
+    <div style="background: white; border-radius: var(--radius); max-width: 520px; width: 90%; box-shadow: var(--shadow-lg); overflow: hidden;">
+        <div style="padding: 1.5rem;">
+            <!-- Step indicators -->
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; justify-content: center;">
+                <span class="onboard-dot active" data-dot="1" style="width: 10px; height: 10px; border-radius: 50%; background: var(--primary);"></span>
+                <span class="onboard-dot" data-dot="2" style="width: 10px; height: 10px; border-radius: 50%; background: var(--border);"></span>
+                <span class="onboard-dot" data-dot="3" style="width: 10px; height: 10px; border-radius: 50%; background: var(--border);"></span>
+            </div>
+
+            <div id="onboard-step-1">
+                <h2 style="font-size: 1.25rem; margin-bottom: 0.75rem;">Welkom bij Graaf Zeppelin!</h2>
+                <p style="color: var(--text-muted); margin-bottom: 1rem;">
+                    Dit platform helpt je om sportdeelnamebeleid te verkennen met behulp van
+                    een wetenschappelijk causaal model. Drie hoofdfuncties:
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+                        <div class="quick-action-icon explore" style="flex-shrink: 0;">&#9881;</div>
+                        <div>
+                            <strong style="font-size: 0.9rem;">Beleidsverkenner</strong>
+                            <p style="font-size: 0.8rem; color: var(--text-muted);">Stap-voor-stap beleidsvraag beantwoorden met simulatie en advies.</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+                        <div class="quick-action-icon ask" style="flex-shrink: 0;">&#9993;</div>
+                        <div>
+                            <strong style="font-size: 0.9rem;">AI-vraag</strong>
+                            <p style="font-size: 0.8rem; color: var(--text-muted);">Vrije vraag stellen aan de AI-assistent over het causale model.</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+                        <div class="quick-action-icon simulate" style="flex-shrink: 0;">&#9670;</div>
+                        <div>
+                            <strong style="font-size: 0.9rem;">Model verkennen</strong>
+                            <p style="font-size: 0.8rem; color: var(--text-muted);">Interactieve grafiek van factoren, domeinen en causale verbanden.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="onboard-step-2" style="display: none;">
+                <h2 style="font-size: 1.25rem; margin-bottom: 0.75rem;">Hoe werkt de Beleidsverkenner?</h2>
+                <p style="color: var(--text-muted); margin-bottom: 1rem;">
+                    In vier stappen van beleidsvraag naar concreet advies:
+                </p>
+                <ol style="padding-left: 1.25rem; font-size: 0.9rem; line-height: 1.8;">
+                    <li><strong>Stel je vraag</strong> — beschrijf je beleidsdoel</li>
+                    <li><strong>Beantwoord kwalificatievragen</strong> — stem de instrumenten af op jouw situatie</li>
+                    <li><strong>Bekijk simulatieresultaten</strong> — zie welke verbanden beïnvloed worden</li>
+                    <li><strong>Ontvang advies</strong> — concrete aanbevelingen in begrijpelijke taal</li>
+                </ol>
+            </div>
+
+            <div id="onboard-step-3" style="display: none;">
+                <h2 style="font-size: 1.25rem; margin-bottom: 0.75rem;">Klaar om te beginnen!</h2>
+                <p style="color: var(--text-muted); margin-bottom: 1rem;">
+                    Je kunt direct aan de slag. Begin met de Beleidsverkenner of stel een vrije vraag.
+                    Je vindt alles terug via het Dashboard.
+                </p>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">
+                    Tip: kijk op de <a href="/license">Licentiepagina</a> voor je verbruik en accountinstellingen.
+                </p>
+            </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 1rem 1.5rem; border-top: 1px solid var(--border); background: var(--bg);">
+            <button class="btn btn-outline" onclick="skipOnboarding()">Overslaan</button>
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-outline" id="onboard-prev" style="display: none;" onclick="onboardStep(-1)">Vorige</button>
+                <button class="btn btn-primary" id="onboard-next" onclick="onboardStep(1)">Volgende</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <h1 style="margin-bottom: 1.5rem;">Dashboard</h1>
 
 <!-- Free tier banner (shown when applicable) -->
@@ -81,14 +157,57 @@
 </div>
 
 <script>
+let onboardCurrentStep = 1;
+const onboardTotalSteps = 3;
+
 document.addEventListener('DOMContentLoaded', async () => {
     await Promise.all([
         loadModelSummary(),
         loadLicenseInfo(),
         loadRecentConversations(),
         loadFreeQuota(),
+        checkOnboarding(),
     ]);
 });
+
+async function checkOnboarding() {
+    try {
+        const res = await fetch('/api/auth/onboarding/status');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.needs_onboarding) {
+            document.getElementById('onboarding-overlay').style.display = 'flex';
+        }
+    } catch (e) { /* ignore */ }
+}
+
+function onboardStep(dir) {
+    document.getElementById(`onboard-step-${onboardCurrentStep}`).style.display = 'none';
+    onboardCurrentStep += dir;
+
+    if (onboardCurrentStep > onboardTotalSteps) {
+        completeOnboarding();
+        return;
+    }
+
+    document.getElementById(`onboard-step-${onboardCurrentStep}`).style.display = '';
+
+    // Update dots
+    document.querySelectorAll('.onboard-dot').forEach(dot => {
+        dot.style.background = parseInt(dot.dataset.dot) === onboardCurrentStep ? 'var(--primary)' : 'var(--border)';
+    });
+
+    // Update buttons
+    document.getElementById('onboard-prev').style.display = onboardCurrentStep > 1 ? '' : 'none';
+    document.getElementById('onboard-next').textContent = onboardCurrentStep === onboardTotalSteps ? 'Aan de slag!' : 'Volgende';
+}
+
+async function skipOnboarding() { await completeOnboarding(); }
+
+async function completeOnboarding() {
+    document.getElementById('onboarding-overlay').style.display = 'none';
+    try { await fetch('/api/auth/onboarding/complete', { method: 'POST' }); } catch (e) { /* ok */ }
+}
 
 async function loadModelSummary() {
     try {

@@ -19,6 +19,7 @@ class User(Base):
     license_key: Mapped[str | None] = mapped_column(
         String(50), ForeignKey("licenses.key"), nullable=True
     )
+    has_completed_onboarding: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )

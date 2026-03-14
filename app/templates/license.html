@@ -2,8 +2,9 @@
 {% block title %}Licentie — Graaf Zeppelin{% endblock %}
 
 {% block content %}
-<h1 style="margin-bottom: 1.5rem;">Licentie-informatie</h1>
+<h1 style="margin-bottom: 1.5rem;">Licentie &amp; Account</h1>
 
+<!-- Current license info -->
 <div class="grid grid-2">
     <div class="card" id="license-card">
         <div class="card-header">Uw licentie</div>
@@ -12,84 +13,268 @@
         </div>
     </div>
 
-    <div class="card">
-        <div class="card-header">Licentie tiers</div>
-        <table style="width: 100%; font-size: 0.9rem; border-collapse: collapse;">
-            <thead>
-                <tr style="border-bottom: 2px solid var(--border);">
-                    <th style="text-align: left; padding: 0.5rem;">Tier</th>
-                    <th style="text-align: right; padding: 0.5rem;">Queries/maand</th>
-                    <th style="text-align: right; padding: 0.5rem;">Gebruikers</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr style="border-bottom: 1px solid var(--border);">
-                    <td style="padding: 0.5rem;">Basis</td>
-                    <td style="text-align: right; padding: 0.5rem;">100</td>
-                    <td style="text-align: right; padding: 0.5rem;">3</td>
-                </tr>
-                <tr style="border-bottom: 1px solid var(--border);">
-                    <td style="padding: 0.5rem;">Professional</td>
-                    <td style="text-align: right; padding: 0.5rem;">1.000</td>
-                    <td style="text-align: right; padding: 0.5rem;">15</td>
-                </tr>
-                <tr>
-                    <td style="padding: 0.5rem;">Enterprise</td>
-                    <td style="text-align: right; padding: 0.5rem;">10.000</td>
-                    <td style="text-align: right; padding: 0.5rem;">100</td>
-                </tr>
-            </tbody>
-        </table>
+    <!-- Credits / quota panel -->
+    <div class="card" id="credits-card">
+        <div class="card-header">Uw verbruik</div>
+        <div id="credits-info">
+            <p style="color: var(--text-muted);">Laden...</p>
+        </div>
     </div>
 </div>
 
+<!-- Tier comparison -->
+<div class="card" style="margin-top: 1rem;">
+    <div class="card-header">Kies uw accountvorm</div>
+    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">
+        Twee opties: wij leveren de AI (vast quotum + flexibel) of u koppelt uw eigen API key (onbeperkt).
+    </p>
+
+    <div class="grid grid-2">
+        <!-- Option A: We provide LLM -->
+        <div class="tier-card" id="tier-option-a" style="border: 2px solid var(--border); border-radius: var(--radius); padding: 1.25rem; transition: border-color 0.2s;">
+            <h3 style="margin-bottom: 0.5rem; font-size: 1rem;">Optie A: Wij leveren de AI</h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+                Geen technische setup nodig. Wij regelen de AI-verbinding.
+            </p>
+            <table style="width: 100%; font-size: 0.8rem; border-collapse: collapse;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--border);">
+                        <th style="text-align: left; padding: 0.4rem;">Tier</th>
+                        <th style="text-align: right; padding: 0.4rem;">Vast/mnd</th>
+                        <th style="text-align: right; padding: 0.4rem;">Extra</th>
+                        <th style="text-align: right; padding: 0.4rem;">Gebruikers</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 0.4rem; font-weight: 500;">Basis</td>
+                        <td style="text-align: right; padding: 0.4rem;">25 vragen</td>
+                        <td style="text-align: right; padding: 0.4rem;">Bundels van 10</td>
+                        <td style="text-align: right; padding: 0.4rem;">3</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 0.4rem; font-weight: 500;">Professional</td>
+                        <td style="text-align: right; padding: 0.4rem;">100 vragen</td>
+                        <td style="text-align: right; padding: 0.4rem;">Bundels van 25</td>
+                        <td style="text-align: right; padding: 0.4rem;">15</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.4rem; font-weight: 500;">Enterprise</td>
+                        <td style="text-align: right; padding: 0.4rem;">Onbeperkt</td>
+                        <td style="text-align: right; padding: 0.4rem;">-</td>
+                        <td style="text-align: right; padding: 0.4rem;">100</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.75rem;">
+                Ideaal als u een voorspelbaar budget wilt. Vast quotum inbegrepen, flexibel bijkopen als nodig.
+            </p>
+        </div>
+
+        <!-- Option B: BYOK -->
+        <div class="tier-card" id="tier-option-b" style="border: 2px solid var(--border); border-radius: var(--radius); padding: 1.25rem; transition: border-color 0.2s;">
+            <h3 style="margin-bottom: 0.5rem; font-size: 1rem;">Optie B: Eigen LLM (BYOK)</h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+                Koppel uw eigen OpenAI of Anthropic API key. Onbeperkt vragen.
+            </p>
+            <div style="font-size: 0.85rem; margin-bottom: 0.75rem;">
+                <div style="display: flex; justify-content: space-between; padding: 0.3rem 0; border-bottom: 1px solid var(--border);">
+                    <span>Modellicentie</span>
+                    <strong>Vast bedrag/mnd</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 0.3rem 0; border-bottom: 1px solid var(--border);">
+                    <span>Aantal vragen</span>
+                    <strong>Onbeperkt</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 0.3rem 0; border-bottom: 1px solid var(--border);">
+                    <span>LLM-kosten</span>
+                    <strong>Eigen rekening</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 0.3rem 0;">
+                    <span>Gebruikers</span>
+                    <strong>10</strong>
+                </div>
+            </div>
+            <p style="font-size: 0.75rem; color: var(--text-muted);">
+                Ideaal voor power users met veel vragen. U betaalt de LLM-kosten rechtstreeks aan de provider.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- BYOK Key management -->
+<div class="card" id="byok-section" style="margin-top: 1rem; display: none;">
+    <div class="card-header">API Key beheer (BYOK)</div>
+    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">
+        Uw API keys worden versleuteld opgeslagen en verschijnen nooit in logs.
+    </p>
+    <div id="stored-keys"></div>
+    <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border);">
+        <div class="grid grid-2">
+            <div class="form-group">
+                <label>Provider</label>
+                <select id="key-provider">
+                    <option value="openai">OpenAI</option>
+                    <option value="anthropic">Anthropic</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>API Key</label>
+                <input type="password" id="key-value" placeholder="sk-...">
+            </div>
+        </div>
+        <button class="btn btn-primary" onclick="storeApiKey()">Opslaan</button>
+    </div>
+</div>
+
+<!-- Quota warnings -->
+<div id="quota-warning" class="alert alert-info" style="display: none; margin-top: 1rem;"></div>
+
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
+    await Promise.all([loadLicense(), loadApiKeys()]);
+});
+
+async function loadLicense() {
     try {
         const res = await fetch('/api/license/info');
-        if (res.ok) {
-            const lic = await res.json();
-            document.getElementById('license-info').innerHTML = `
-                <div style="display: grid; gap: 0.75rem;">
-                    <div>
-                        <span style="font-size: 0.8rem; color: var(--text-muted);">Organisatie</span>
-                        <div style="font-weight: 500;">${lic.organization}</div>
-                    </div>
-                    <div>
-                        <span style="font-size: 0.8rem; color: var(--text-muted);">Tier</span>
-                        <div style="font-weight: 500; text-transform: capitalize;">${lic.tier}</div>
-                    </div>
-                    <div>
-                        <span style="font-size: 0.8rem; color: var(--text-muted);">Geldig tot</span>
-                        <div style="font-weight: 500;">${new Date(lic.expires_at).toLocaleDateString('nl-NL')}</div>
-                    </div>
-                    <div>
-                        <span style="font-size: 0.8rem; color: var(--text-muted);">Queries gebruikt</span>
-                        <div>
-                            <span style="font-weight: 500;">${lic.queries_used}</span>
-                            <span style="color: var(--text-muted);"> / ${lic.queries_limit}</span>
-                        </div>
-                        <div style="background: var(--border); border-radius: 4px; height: 8px; margin-top: 0.25rem;">
-                            <div style="background: var(--primary); border-radius: 4px; height: 100%;
-                                        width: ${Math.min(100, (lic.queries_used / lic.queries_limit) * 100)}%;"></div>
-                        </div>
-                    </div>
-                    <div>
-                        <span style="font-size: 0.8rem; color: var(--text-muted);">Status</span>
-                        <div style="color: ${lic.is_active ? 'var(--success)' : 'var(--error)'}; font-weight: 500;">
-                            ${lic.is_active ? 'Actief' : 'Inactief'}
-                        </div>
+        if (!res.ok) {
+            document.getElementById('license-info').innerHTML =
+                '<div class="alert alert-info">Geen licentie gevonden. Neem contact op met uw beheerder.</div>';
+            return;
+        }
+        const lic = await res.json();
+
+        // Highlight current tier in comparison
+        const isByok = lic.tier === 'byok';
+        if (isByok) {
+            document.getElementById('tier-option-b').style.borderColor = 'var(--primary)';
+            document.getElementById('byok-section').style.display = '';
+        } else {
+            document.getElementById('tier-option-a').style.borderColor = 'var(--primary)';
+        }
+
+        document.getElementById('license-info').innerHTML = `
+            <div style="display: grid; gap: 0.75rem;">
+                <div>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">Organisatie</span>
+                    <div style="font-weight: 500;">${escapeHtml(lic.organization)}</div>
+                </div>
+                <div>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">Tier</span>
+                    <div style="font-weight: 500; text-transform: capitalize;">${escapeHtml(lic.tier)}${isByok ? ' (Eigen LLM)' : ''}</div>
+                </div>
+                <div>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">Geldig tot</span>
+                    <div style="font-weight: 500;">${new Date(lic.expires_at).toLocaleDateString('nl-NL')}</div>
+                </div>
+                <div>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">Status</span>
+                    <div style="color: ${lic.is_active ? 'var(--success)' : 'var(--error)'}; font-weight: 500;">
+                        ${lic.is_active ? 'Actief' : 'Inactief'}
                     </div>
                 </div>
-            `;
-        } else {
-            document.getElementById('license-info').innerHTML =
-                '<div class="alert alert-error">Geen licentie gevonden. Neem contact op met uw beheerder.</div>';
-        }
+            </div>
+        `;
+
+        // Credits / usage
+        renderCredits(lic);
     } catch (e) {
         document.getElementById('license-info').innerHTML =
             '<div class="alert alert-error">Kon licentie-informatie niet laden.</div>';
     }
-});
+}
+
+function renderCredits(lic) {
+    const pct = Math.min(100, (lic.queries_used / lic.queries_limit) * 100);
+    const barClass = pct >= 90 ? 'danger' : pct >= 70 ? 'warning' : 'ok';
+
+    document.getElementById('credits-info').innerHTML = `
+        <div style="margin-bottom: 1rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                <span style="font-size: 0.85rem;">Vast quotum</span>
+                <span style="font-weight: 600;">${lic.queries_used} / ${lic.queries_limit}</span>
+            </div>
+            <div class="quota-bar">
+                <div class="quota-fill ${barClass}" style="width: ${pct}%;"></div>
+            </div>
+        </div>
+        ${pct >= 80 && pct < 100 ? `<div class="alert alert-info" style="margin-bottom: 0.5rem;">
+            U heeft ${Math.round(pct)}% van uw maandelijkse quotum gebruikt. Overweeg extra credits bij te kopen.
+        </div>` : ''}
+        ${pct >= 100 ? `<div class="alert alert-error" style="margin-bottom: 0.5rem;">
+            Uw maandelijkse quotum is bereikt. Koop extra credits of upgrade uw tier.
+        </div>` : ''}
+    `;
+
+    // Show quota warning banner
+    if (pct >= 80) {
+        const warning = document.getElementById('quota-warning');
+        warning.style.display = '';
+        if (pct >= 100) {
+            warning.className = 'alert alert-error';
+            warning.innerHTML = '<strong>Quotum bereikt.</strong> U kunt geen nieuwe vragen stellen zonder extra credits of een upgrade.';
+        } else {
+            warning.innerHTML = `<strong>Let op:</strong> U heeft ${Math.round(pct)}% van uw maandelijks quotum verbruikt (${lic.queries_used}/${lic.queries_limit}).`;
+        }
+    }
+}
+
+async function loadApiKeys() {
+    try {
+        const res = await fetch('/api/license/api-keys');
+        if (!res.ok) return;
+        const data = await res.json();
+
+        if (data.keys && data.keys.length > 0) {
+            document.getElementById('byok-section').style.display = '';
+            document.getElementById('stored-keys').innerHTML = data.keys.map(k => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid var(--border);">
+                    <div>
+                        <span style="font-weight: 500; text-transform: capitalize;">${escapeHtml(k.provider)}</span>
+                        <span style="color: var(--text-muted); font-size: 0.8rem; margin-left: 0.5rem;">${escapeHtml(k.hint)}</span>
+                    </div>
+                    <button class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; color: var(--error);"
+                            onclick="deleteApiKey(${k.id})">Verwijderen</button>
+                </div>
+            `).join('');
+        }
+    } catch (e) { /* ignore for non-BYOK users */ }
+}
+
+async function storeApiKey() {
+    const provider = document.getElementById('key-provider').value;
+    const key = document.getElementById('key-value').value;
+    if (!key || key.length < 10) {
+        alert('Voer een geldige API key in.');
+        return;
+    }
+
+    const res = await fetch('/api/license/api-keys', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ provider, api_key: key }),
+    });
+
+    if (res.ok) {
+        document.getElementById('key-value').value = '';
+        await loadApiKeys();
+    } else {
+        const err = await res.json().catch(() => ({}));
+        alert(err.detail || 'Opslaan mislukt.');
+    }
+}
+
+async function deleteApiKey(keyId) {
+    if (!confirm('Weet u zeker dat u deze API key wilt verwijderen?')) return;
+    const res = await fetch(`/api/license/api-keys/${keyId}`, { method: 'DELETE' });
+    if (res.ok) await loadApiKeys();
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text || '';
+    return div.innerHTML;
+}
 </script>
 {% endblock %}

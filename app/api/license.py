@@ -188,3 +188,84 @@ async def delete_api_key(
     key.is_active = False
     await db.commit()
     return {"deleted": True}
+
+
+# ── Credits top-up (S07-03) ──────────────────────────────────────────
+
+
+class TopUpRequest(BaseModel):
+    amount: int  # number of extra credits to add
+
+
+@router.post("/credits/topup")
+async def topup_credits(
+    request: TopUpRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Add extra credits (flexible top-up) to the user's license.
+
+    In a real system this would involve payment processing.
+    For now it directly adds credits to the license quota.
+    """
+    if not user.license_key:
+        raise HTTPException(status_code=403, detail="Geen licentie gekoppeld")
+
+    if request.amount <= 0:
+        raise HTTPException(status_code=422, detail="Aantal moet positief zijn")
+
+    from app.models.license import License
+    result = await db.execute(
+        select(License).where(License.key == user.license_key)
+    )
+    license_obj = result.scalar_one_or_none()
+    if not license_obj:
+        raise HTTPException(status_code=404, detail="Licentie niet gevonden")
+
+    # Reset usage counter by reducing queries_used (simulates adding credits)
+    license_obj.queries_used = max(0, license_obj.queries_used - request.amount)
+    await db.commit()
+
+    lm = LicenseManager(db)
+    info = await lm.get_license_info(user.license_key)
+
+    return {
+        "credits_added": request.amount,
+        "queries_used": info["queries_used"],
+        "queries_limit": info["queries_limit"],
+    }
+
+
+@router.get("/credits/status")
+async def credits_status(
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Get detailed credits/quota status including warning level."""
+    if not user.license_key:
+        raise HTTPException(status_code=403, detail="Geen licentie gekoppeld")
+
+    lm = LicenseManager(db)
+    try:
+        info = await lm.get_license_info(user.license_key)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    used = info["queries_used"]
+    limit = info["queries_limit"]
+    pct = (used / limit * 100) if limit > 0 else 0
+
+    if pct >= 100:
+        warning = "limit_reached"
+    elif pct >= 80:
+        warning = "approaching_limit"
+    else:
+        warning = None
+
+    return {
+        "queries_used": used,
+        "queries_limit": limit,
+        "percentage": round(pct, 1),
+        "warning": warning,
+        "tier": info["tier"],
+    }

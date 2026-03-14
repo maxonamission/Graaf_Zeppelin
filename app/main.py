@@ -8,7 +8,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app.api import auth, conversations, graph, license, reasoning, releases, wizard
+from app.api import auth, conversations, graph, license, models, reasoning, releases, wizard
 from app.config import settings
 from app.core.auth import decode_access_token
 from app.core.dag_engine import CausalDAG
@@ -44,6 +44,7 @@ app.include_router(releases.router)
 app.include_router(license.router)
 app.include_router(conversations.router)
 app.include_router(wizard.router)
+app.include_router(models.router)
 
 
 def _get_user_from_cookie(request: Request) -> dict | None:
