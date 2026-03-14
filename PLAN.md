@@ -1,206 +1,146 @@
-# Graaf Zeppelin — Causal Reasoning Platform voor Sportdeelname
+# Graaf Zeppelin — Beleidsverkenner voor Sportdeelname
 
-## Visie
-Een webapplicatie die sportprofessionals (bonden, gemeenten, clubs) toegang geeft
-tot een graph-based causaal model (DAG) waarmee ze — via hun eigen LLM — betrouwbaar
-en herhaalbaar kunnen redeneren over sportdeelname in hun domein.
+## Product
 
-## Kernprincipes
-1. **Model blijft server-side** — de DAG wordt nooit als bestand gedistribueerd
-2. **Gebruiker koppelt eigen LLM** — via API key (OpenAI, Anthropic, etc.)
+Een webapplicatie waarmee beleidsmedewerkers van sportbonden, gemeenten en clubs
+beleid kunnen verkennen en interventies kunnen doorrekenen. De app gebruikt een
+extern aangeleverd causaal model (DAG) als redeneerstructuur en combineert dit met
+LLM-integratie voor natuurlijke taal interactie.
+
+### Scope-afbakening
+
+| Onderdeel | Rol | Verantwoordelijkheid |
+|-----------|-----|----------------------|
+| **App** (`app/`) | Het product | Wordt hier ontwikkeld |
+| **Causaal model** (`data/models/`) | Externe input | Wordt separaat ontwikkeld; de app laadt het model as-is |
+| **Conversie-tools** (`graaf_zeppelin/`) | Developer tooling | Hulpmiddelen voor de modelontwikkelaar; niet nodig in de app |
+
+### Doelgroep
+
+Beleidsmedewerkers bij sportbonden, gemeenten en clubs die:
+- Geen technische achtergrond hebben
+- Willen begrijpen welke factoren sportdeelname beïnvloeden
+- Interventies willen verkennen ("wat als we meer investeren in coaching?")
+- Onderbouwde beleidsadviezen nodig hebben
+
+### Kernprincipes
+
+1. **Model as-is** — de app laadt het causaal model zonder het te wijzigen
+2. **Gebruiker koppelt eigen LLM** — via API key (OpenAI, Anthropic)
 3. **Licentie = toegang** — geen geldige licentie = geen API-toegang
 4. **Herhaalbare output** — de DAG constraineert het LLM, niet andersom
+5. **Eenvoud voor de gebruiker** — geen technische kennis nodig
 
 ---
 
 ## Architectuur
 
 ```
-┌─────────────────────────┐
-│     Web Frontend        │
-│     (Jinja2 + HTMX)     │ ◄── Simpel, snel, geen JS-framework nodig
-│                         │     voor niet-technische doelgroep
-│  • DAG visualisatie     │
-│  • Query interface      │
-│  • Licentie dashboard   │
-│  • Release notes        │
-└────────┬────────────────┘
-         │ HTTP
-┌────────▼────────────────┐
-│     FastAPI Backend      │
-│                         │
-│  /api/auth    → login, license check
-│  /api/graph   → DAG query, visualisatie
-│  /api/reason  → LLM reasoning via DAG
-│  /api/releases → release notes, versies
-│                         │
-│  Core:                  │
-│  • DAGEngine    — graph ops, pad-analyse
-│  • PromptBuilder — DAG → LLM prompt
-│  • LicenseManager — key validatie
-│  • ReleaseManager — versioning, migratie
-└────────┬────────────────┘
-         │
-┌────────▼────────────────┐
-│     SQLite / PostgreSQL  │
-│                         │
-│  • users & licenses     │
-│  • DAG models (versioned)│
-│  • reasoning sessions   │
-│  • release history      │
-└─────────────────────────┘
+┌─────────────────────────────┐
+│     Web Frontend             │
+│     (Jinja2 + HTMX + D3)    │ ◄── Simpel, geen JS-framework
+│                              │
+│  • Beleidsverkenner          │     Doelgroep is niet-technisch
+│  • Interventie-simulator     │
+│  • AI-assistent (chat)       │
+│  • Dashboard & licentie      │
+└────────────┬────────────────┘
+             │ HTTP
+┌────────────▼────────────────┐
+│     FastAPI Backend          │
+│                              │
+│  /api/graph    → model verkennen, simuleren
+│  /api/reasoning → LLM-redenering
+│  /api/auth     → login, registratie
+│  /api/license  → licentie & quota
+│  /api/releases → release notes
+│                              │
+│  Core:                       │
+│  • DAGEngine      — graph laden & queries
+│  • SliderEngine   — interventie-simulatie
+│  • PromptBuilder  — DAG → LLM prompt
+│  • LLMConnector   — multi-provider client
+│  • LicenseManager — licentie & quota
+└────────────┬────────────────┘
+             │
+┌────────────▼────────────────┐
+│     Causaal Model (extern)   │
+│     data/models/*.json       │
+│                              │
+│  Wordt as-is geladen.        │
+│  Separaat ontwikkeld.        │
+└─────────────────────────────┘
 ```
-
-## Waarom Jinja2 + HTMX (geen React)?
-- Doelgroep is niet-technisch → simpelheid > complexiteit
-- Geen build pipeline nodig → snellere ontwikkeling
-- HTMX geeft SPA-achtig gedrag zonder JavaScript-framework
-- Minder onderhoudslast op lange termijn
-- Graph visualisatie via server-rendered SVG of D3.js widget
 
 ---
 
-## Componenten
+## Bestaande componenten
 
-### 1. DAG Engine (`core/dag_engine.py`)
-- Laadt causale graaf (nodes = factoren, edges = causale relaties)
-- Ondersteunt queries: "welke factoren beïnvloeden X?"
-- Pad-analyse: "wat is het causale pad van A naar B?"
-- Interventie-simulatie: "wat als we factor X met 20% verbeteren?"
-- Graaf representatie: NetworkX (Python)
+### Gebouwd en werkend
 
-### 2. Prompt Builder (`core/prompt_builder.py`)
-- Vertaalt DAG-paden naar gestructureerde LLM-prompts
-- Zorgt voor herhaalbaarheid: zelfde graph + zelfde query = zelfde prompt
-- Injecteert domeincontext (sportdeelname terminologie)
-- Ondersteunt templates per use case
+| Component | Module | Status | Tests |
+|-----------|--------|--------|-------|
+| DAG Engine | `core/dag_engine.py` | ✅ Volledig (v1+v2 schema, queries, simulatie) | 33 |
+| Slider Engine | `core/slider_engine.py` | ✅ Volledig (3 curvemodellen, multi-slider) | 12 |
+| Prompt Builder | `core/prompt_builder.py` | ✅ Volledig (4 templates, 6 constraints, NL) | 7 |
+| LLM Connector | `core/llm_connector.py` | ✅ Volledig (OpenAI, Anthropic, BYOK) | — |
+| License Manager | `core/license_manager.py` | ✅ Volledig (3 tiers, quota, key-generatie) | — |
+| Auth | `core/auth.py` | ✅ Volledig (JWT, wachtwoordhashing) | — |
+| Release Manager | `core/release_manager.py` | ✅ Volledig (versioning, migratieguides) | — |
+| Graph API | `api/graph.py` | ✅ 12 endpoints (factoren, relaties, paden, sliders, simulatie) | — |
+| Reasoning API | `api/reasoning.py` | ✅ 2 endpoints (query, interventie) | — |
+| Frontend | `templates/` + `static/` | ✅ 8 pagina's (dashboard, graph, chat, licentie, etc.) | — |
+| API Tests | `tests/test_api.py` | ⚠️ 7 tests, async fixture-probleem | 0/7 |
 
-### 3. LLM Connector (`core/llm_connector.py`)
-- Gebruiker koppelt eigen API key (encrypted opgeslagen)
-- Ondersteunt OpenAI, Anthropic, lokale modellen (Ollama)
-- Rate limiting per licentie-tier
-- Response caching voor identieke queries
+### Nog niet gebouwd
 
-### 4. License Manager (`core/license_manager.py`)
-- Licentie per organisatie (bond, gemeente, club)
-- Tiers: basis, professional, enterprise
-- Online validatie bij elke sessie
-- Usage tracking (queries per maand)
-- Geen offline modus = geen model kopiëren
-
-### 5. Release Manager (`core/release_manager.py`)
-- Semantic versioning voor DAG-model
-- Release notes bij elke update
-- **Trendbreuk-preventie**: major releases krijgen:
-  - Migratieguide
-  - Parallelle draaiperiode (oud + nieuw model)
-  - Vergelijkingsrapport (output oud vs nieuw)
-- Automatische notificatie aan gebruikers
-
----
-
-## Data Model — Sportdeelname DAG
-
-Voorbeeldnodes (factoren):
-- Bereikbaarheid faciliteiten
-- Kwaliteit begeleiding/coaching
-- Kosten deelname
-- Sociaal netwerk / vriendengroep
-- Aanbod / programmering
-- Veiligheid & inclusie
-- Tijd/agenda beschikbaarheid
-
-Voorbeeldrelaties:
-- Bereikbaarheid → Sportdeelname (positief, sterk)
-- Kosten → Sportdeelname (negatief, matig)
-- Sociaal netwerk → Motivatie → Sportdeelname (indirect)
-
----
-
-## Projectstructuur
-
-```
-Graaf_Zeppelin/
-├── app/
-│   ├── __init__.py
-│   ├── main.py                 # FastAPI applicatie
-│   ├── config.py               # Settings & env vars
-│   ├── api/
-│   │   ├── __init__.py
-│   │   ├── auth.py             # Login, registratie
-│   │   ├── license.py          # Licentie-endpoints
-│   │   ├── graph.py            # DAG query endpoints
-│   │   ├── reasoning.py        # LLM reasoning endpoints
-│   │   └── releases.py         # Release notes endpoints
-│   ├── core/
-│   │   ├── __init__.py
-│   │   ├── dag_engine.py       # Graph engine (NetworkX)
-│   │   ├── prompt_builder.py   # DAG → LLM prompt
-│   │   ├── llm_connector.py    # Multi-provider LLM client
-│   │   ├── license_manager.py  # Licentie logica
-│   │   └── release_manager.py  # Versioning & release notes
-│   ├── models/
-│   │   ├── __init__.py
-│   │   ├── user.py             # SQLAlchemy models
-│   │   ├── license.py
-│   │   ├── graph.py
-│   │   └── release.py
-│   ├── templates/              # Jinja2 templates
-│   │   ├── base.html
-│   │   ├── dashboard.html
-│   │   ├── graph_viewer.html
-│   │   ├── reasoning.html
-│   │   ├── releases.html
-│   │   └── license.html
-│   └── static/
-│       ├── css/
-│       ├── js/                 # Minimale JS (HTMX + D3)
-│       └── img/
-├── data/
-│   └── models/                 # DAG model bestanden (JSON)
-│       └── sportdeelname_v1.json
-├── tests/
-│   ├── test_dag_engine.py
-│   ├── test_prompt_builder.py
-│   ├── test_license.py
-│   └── test_api.py
-├── alembic/                    # DB migraties
-├── requirements.txt
-├── Dockerfile
-├── docker-compose.yml
-├── .env.example
-└── README.md
-```
+| Component | Prioriteit | Toelichting |
+|-----------|------------|-------------|
+| Begeleide beleidsverkenning | Hoog | Workflow: vraag → relevante sliders → kwalificatie → simulatie → advies |
+| Slider-kwalificatievragen UX | Hoog | Vertaling van abstracte sliderwaarden naar begrijpelijke vragen |
+| Interventie-rapportage | Midden | Export of samenvatting van simulatieresultaten |
+| Onboarding flow | Midden | Eerste-gebruik uitleg voor niet-technische gebruikers |
+| API-tests fixen | Midden | Async fixture-incompatibiliteit oplossen |
+| Error handling & feedback | Midden | Duidelijke meldingen bij fouten, limieten, model-beperkingen |
+| Docker deployment | Laag | Containerisatie voor productie |
+| Monitoring & logging | Laag | Observability voor productie |
 
 ---
 
 ## Fasering
 
-### Fase 1 — Fundament
-- [x] Projectstructuur opzetten
-- [x] DAG engine met NetworkX (v1+v2, 562 regels, 33 tests)
-- [x] Voorbeeld sportdeelname model (v1: 15 factoren + v2.3.0: 69 factoren)
-- [x] FastAPI met basisroutes (12+ endpoints)
-- [x] Jinja2 templates met HTMX
-- [x] Licentie-check (basis)
-- [x] SQLite database setup (async SQLAlchemy)
+### Fase 1 — Beleidsverkenner werkend maken ← **huidige focus**
 
-### Fase 2 — LLM Integratie
-- [x] Prompt builder (DAG → prompt, 4 templates, 6 constraints)
-- [x] LLM connector (OpenAI / Anthropic, BYOK)
-- [x] Query interface in frontend
-- [ ] Response caching
+De kern van het product: een beleidsmedewerker kan beleid verkennen en interventies doorrekenen.
 
-### Fase 3 — Productie-ready
-- [x] Robuuste licentie-manager met tiers (basis/professional/enterprise)
-- [x] Release notes systeem (semantic versioning, migratieguides)
-- [ ] Trendbreuk-detectie & migratie tooling
-- [ ] PostgreSQL migratie
+- [ ] **Begeleide interventie-flow**: gebruiker stelt beleidsvraag → app bepaalt relevante sliders → stelt kwalificatievragen → simuleert → toont resultaat met uitleg
+- [ ] **Slider-kwalificatie UX**: de 16 kwalificatievragen (2 per slider) presenteren als begrijpelijke multiple-choice in de interface
+- [ ] **Resultaatpagina**: simulatie-uitkomsten tonen als leesbaar overzicht (welke factoren worden beïnvloed, hoe sterk, via welk pad)
+- [ ] **Graph viewer verbeteren**: kleur-codering op domein, hover-info met factorbeschrijving, visuele markering van interventie-effecten
+- [ ] **Dashboard aanscherpen**: snelkoppelingen naar meest relevante acties (verken, simuleer, vraag AI)
+
+### Fase 2 — AI-assistent bruikbaar maken
+
+De LLM-integratie moet naadloos werken voor niet-technische gebruikers.
+
+- [ ] **Voorbeeldvragen aanbieden**: klikbare suggesties die de gebruiker op weg helpen
+- [ ] **Factor-selectie vereenvoudigen**: automatisch relevante factoren selecteren op basis van de vraag (niet handmatig aanvinken)
+- [ ] **Antwoord-kwaliteit borgen**: response valideren tegen model (zijn genoemde factoren echt in het model?)
+- [ ] **Sessie-geschiedenis**: eerdere vragen en antwoorden terugzien
+- [ ] **Foutafhandeling LLM**: duidelijke melding bij API-fout, rate limit, ongeldige key
+
+### Fase 3 — Stabiliteit & kwaliteit
+
+- [ ] API-tests fixen (async fixture-probleem in `test_api.py`)
+- [ ] Integratietests toevoegen (volledige flow: login → verken → simuleer → AI-vraag)
+- [ ] Error handling en gebruikersfeedback verbeteren
+- [ ] README.md bijwerken naar productfocus (beleidsverkenner, niet platform-beschrijving)
+- [ ] Onboarding: eerste-gebruik uitleg of korte tutorial
+
+### Fase 4 — Productie & uitbreiding
+
 - [ ] Docker deployment
+- [ ] PostgreSQL migratie (productie-database)
 - [ ] Monitoring & logging
-
-### Fase 4 — Uitbreiding
-- [ ] Obsidian Publish content integratie
-- [ ] Meerdere domeinmodellen
-- [ ] API voor externe integraties
-- [ ] Export: rapporten, presentaties
+- [ ] Interventie-rapportage: PDF/Markdown export van simulatieresultaten
+- [ ] Meerdere modellen ondersteunen (niet alleen sportdeelname)
