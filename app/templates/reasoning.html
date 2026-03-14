@@ -29,16 +29,35 @@
         </div>
 
         <div class="card">
-            <div class="card-header">Focusfactoren (optioneel)</div>
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>Focusfactoren</span>
+                <label style="font-size: 0.75rem; font-weight: 400; display: flex; align-items: center; gap: 0.3rem; cursor: pointer;">
+                    <input type="checkbox" id="auto-select" checked>
+                    Auto-selectie
+                </label>
+            </div>
             <div id="factor-checkboxes">
                 <p style="color: var(--text-muted);">Laden...</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>Gesprekken</span>
+                <button class="btn btn-outline" style="padding: 0.2rem 0.6rem; font-size: 0.75rem;" onclick="newConversation()">Nieuw</button>
+            </div>
+            <div id="conversation-list">
+                <p style="color: var(--text-muted); font-size: 0.85rem;">Laden...</p>
             </div>
         </div>
     </div>
 
     <div>
         <div class="card" style="display: flex; flex-direction: column; min-height: 600px;">
-            <div class="card-header">Gesprek</div>
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <span id="chat-title">Gesprek</span>
+                <span id="validation-badge" class="validation-badge" style="display: none;"></span>
+            </div>
             <div class="reasoning-chat" id="chat-messages">
                 <div class="message message-assistant">
                     Welkom! Stel een vraag over sportdeelname en ik redeneer op basis
@@ -81,12 +100,20 @@
 </div>
 
 <script>
-// Load factors for checkboxes
+let currentConversationId = null;
+let allFactors = [];
+
+// Load factors and conversations on page load
 document.addEventListener('DOMContentLoaded', async () => {
+    await Promise.all([loadFactors(), loadConversations()]);
+});
+
+async function loadFactors() {
     try {
         const res = await fetch('/api/graph/factors');
         if (res.ok) {
             const data = await res.json();
+            allFactors = data.factors;
             const html = data.factors.map(f => `
                 <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.3rem 0; cursor: pointer;">
                     <input type="checkbox" class="factor-checkbox" value="${f.id}">
@@ -94,16 +121,105 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </label>
             `).join('');
             document.getElementById('factor-checkboxes').innerHTML = html;
+        } else {
+            document.getElementById('factor-checkboxes').innerHTML =
+                '<p class="alert alert-error">Kon factoren niet laden. Ververs de pagina.</p>';
+        }
+    } catch (e) {
+        document.getElementById('factor-checkboxes').innerHTML =
+            '<p class="alert alert-error">Verbindingsfout bij laden factoren.</p>';
+    }
+}
+
+async function loadConversations() {
+    try {
+        const res = await fetch('/api/conversations');
+        if (res.ok) {
+            const data = await res.json();
+            if (data.conversations.length === 0) {
+                document.getElementById('conversation-list').innerHTML =
+                    '<p style="color: var(--text-muted); font-size: 0.85rem;">Nog geen gesprekken.</p>';
+                return;
+            }
+            const html = data.conversations.map(c => `
+                <div class="factor-item" onclick="loadConversation(${c.id})" style="font-size: 0.85rem;">
+                    <span class="factor-name">${escapeHtml(c.title)}</span>
+                    <span class="factor-category">${new Date(c.updated_at).toLocaleDateString('nl-NL')}</span>
+                </div>
+            `).join('');
+            document.getElementById('conversation-list').innerHTML = html;
+        }
+    } catch (e) {
+        document.getElementById('conversation-list').innerHTML =
+            '<p style="color: var(--text-muted); font-size: 0.85rem;">Kon gesprekken niet laden.</p>';
+    }
+}
+
+async function newConversation() {
+    currentConversationId = null;
+    document.getElementById('chat-title').textContent = 'Nieuw gesprek';
+    document.getElementById('chat-messages').innerHTML = `
+        <div class="message message-assistant">
+            Welkom! Stel een vraag over sportdeelname.
+        </div>
+    `;
+    const examples = document.getElementById('example-questions');
+    if (examples) examples.style.display = '';
+}
+
+async function loadConversation(id) {
+    try {
+        const res = await fetch(`/api/conversations/${id}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        currentConversationId = id;
+        document.getElementById('chat-title').textContent = data.title;
+
+        const chat = document.getElementById('chat-messages');
+        chat.innerHTML = data.messages.map(m =>
+            `<div class="message message-${m.role}">${escapeHtml(m.content)}</div>`
+        ).join('');
+        chat.scrollTop = chat.scrollHeight;
+
+        hideExamples();
+    } catch (e) { /* ignore */ }
+}
+
+async function ensureConversation(firstQuery) {
+    if (currentConversationId) return currentConversationId;
+    try {
+        const title = firstQuery.length > 50 ? firstQuery.substring(0, 47) + '...' : firstQuery;
+        const res = await fetch('/api/conversations', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ title }),
+        });
+        if (res.ok) {
+            const data = await res.json();
+            currentConversationId = data.id;
+            document.getElementById('chat-title').textContent = data.title;
+            loadConversations();
+            return data.id;
         }
     } catch (e) { /* ignore */ }
-});
+    return null;
+}
+
+async function saveMessage(role, content) {
+    if (!currentConversationId) return;
+    try {
+        await fetch(`/api/conversations/${currentConversationId}/messages`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ role, content }),
+        });
+    } catch (e) { /* ignore */ }
+}
 
 function useExample(btn) {
     const input = document.getElementById('chat-input');
     input.value = btn.textContent.trim();
-    // Hide example questions after selection
-    const examples = document.getElementById('example-questions');
-    if (examples) examples.style.display = 'none';
+    hideExamples();
     input.focus();
 }
 
@@ -113,33 +229,23 @@ function hideExamples() {
 }
 
 function formatErrorMessage(status, detail) {
-    if (status === 401) {
-        return 'Je sessie is verlopen. Log opnieuw in om door te gaan.';
-    }
+    if (status === 401) return 'Je sessie is verlopen. Log opnieuw in om door te gaan.';
     if (status === 403) {
-        if (detail && detail.includes('querylimiet')) {
+        if (detail && detail.includes('querylimiet'))
             return 'Je maandelijkse limiet is bereikt. Upgrade je account of wacht tot volgende maand.';
-        }
-        if (detail && detail.includes('licentie')) {
+        if (detail && detail.includes('licentie'))
             return 'Er is een probleem met je licentie. Controleer je licentiestatus op de licentiepagina.';
-        }
         return 'Toegang geweigerd: ' + (detail || 'Onvoldoende rechten.');
     }
-    if (status === 429) {
-        return 'Te veel verzoeken. Wacht enkele minuten en probeer het opnieuw.';
-    }
+    if (status === 429) return 'Te veel verzoeken. Wacht enkele minuten en probeer het opnieuw.';
     if (status === 502) {
-        if (detail && (detail.includes('401') || detail.includes('Invalid') || detail.includes('invalid'))) {
-            return 'Je API key is ongeldig. Controleer de key in de LLM configuratie hierboven.';
-        }
-        if (detail && detail.includes('429')) {
+        if (detail && (detail.includes('401') || detail.includes('Invalid') || detail.includes('invalid') || detail.includes('ongeldig')))
+            return 'Je API key is ongeldig. Controleer de key in de LLM configuratie.';
+        if (detail && (detail.includes('429') || detail.includes('rate')))
             return 'De AI-service heeft een rate limit bereikt. Wacht enkele minuten en probeer het opnieuw.';
-        }
         return 'De AI-service is tijdelijk niet bereikbaar. Probeer het later opnieuw.';
     }
-    if (status >= 500) {
-        return 'Er is een serverfout opgetreden. Probeer het later opnieuw.';
-    }
+    if (status >= 500) return 'Er is een serverfout opgetreden. Probeer het later opnieuw.';
     return detail || 'Er is een onbekende fout opgetreden.';
 }
 
@@ -155,25 +261,38 @@ async function sendQuery(e) {
         return;
     }
 
-    // Hide examples on first interaction
     hideExamples();
+
+    // Create or reuse conversation
+    await ensureConversation(query);
 
     // Show user message
     addMessage(query, 'user');
+    saveMessage('user', query);
     document.getElementById('chat-input').value = '';
-    document.getElementById('send-btn').disabled = true;
-    document.getElementById('send-btn').textContent = 'Denken...';
 
-    // Get selected factors
-    const selectedFactors = Array.from(
+    const sendBtn = document.getElementById('send-btn');
+    sendBtn.disabled = true;
+    sendBtn.innerHTML = '<span class="spinner"></span> Denken...';
+
+    // Show typing indicator
+    const typingId = showTypingIndicator();
+
+    // Determine factors
+    const autoSelect = document.getElementById('auto-select').checked;
+    const manualFactors = Array.from(
         document.querySelectorAll('.factor-checkbox:checked')
     ).map(cb => cb.value);
 
+    // Use validated endpoint (auto factor selection + validation)
+    const useValidated = autoSelect && manualFactors.length === 0;
+    const endpoint = useValidated ? '/api/reasoning/query/validated' : '/api/reasoning/query';
+
     try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 60000);
+        const timeoutId = setTimeout(() => controller.abort(), 90000);
 
-        const res = await fetch('/api/reasoning/query', {
+        const res = await fetch(endpoint, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
@@ -181,34 +300,104 @@ async function sendQuery(e) {
                 provider: document.getElementById('llm-provider').value,
                 api_key: apiKey,
                 model: document.getElementById('llm-model').value || null,
-                factor_ids: selectedFactors.length > 0 ? selectedFactors : null,
+                factor_ids: manualFactors.length > 0 ? manualFactors : null,
             }),
             signal: controller.signal,
         });
 
         clearTimeout(timeoutId);
+        removeTypingIndicator(typingId);
 
         if (res.ok) {
             const data = await res.json();
             addMessage(data.response, 'assistant');
+            saveMessage('assistant', data.response);
+
+            // Show validation info if available
+            if (data.validation) {
+                const v = data.validation;
+                const badge = document.getElementById('validation-badge');
+                badge.textContent = `${v.recognized_count} modelfactoren herkend`;
+                badge.style.display = 'inline-block';
+                badge.className = v.recognized_count > 0
+                    ? 'validation-badge badge-success'
+                    : 'validation-badge badge-warning';
+            }
+
+            // Show auto-selected factors
+            if (data.auto_selected && data.factors_used) {
+                const factorLabels = data.factors_used
+                    .map(id => allFactors.find(f => f.id === id))
+                    .filter(Boolean)
+                    .map(f => f.label);
+                if (factorLabels.length > 0) {
+                    addMessage(
+                        `Automatisch geselecteerde factoren: ${factorLabels.join(', ')}`,
+                        'info'
+                    );
+                }
+            }
         } else {
             let detail = '';
             try {
                 const error = await res.json();
                 detail = error.detail || '';
             } catch (_) {}
-            addMessage(formatErrorMessage(res.status, detail), 'error');
+            const errorMsg = formatErrorMessage(res.status, detail);
+            addMessage(errorMsg, 'error');
+            saveMessage('error', errorMsg);
+
+            // Show retry button for retryable errors
+            if (res.status >= 500 || res.status === 429) {
+                addRetryButton(query);
+            }
         }
     } catch (err) {
+        removeTypingIndicator(typingId);
+        let errorMsg;
         if (err.name === 'AbortError') {
-            addMessage('Het antwoord duurt te lang. De AI-service reageert niet binnen de tijdslimiet. Probeer het later opnieuw.', 'error');
+            errorMsg = 'Het antwoord duurt te lang. De AI-service reageert niet binnen de tijdslimiet. Probeer het later opnieuw.';
         } else {
-            addMessage('Verbindingsfout. Controleer je internetverbinding en probeer het opnieuw.', 'error');
+            errorMsg = 'Verbindingsfout. Controleer je internetverbinding en probeer het opnieuw.';
         }
+        addMessage(errorMsg, 'error');
+        saveMessage('error', errorMsg);
+        addRetryButton(query);
     }
 
-    document.getElementById('send-btn').disabled = false;
-    document.getElementById('send-btn').textContent = 'Verstuur';
+    sendBtn.disabled = false;
+    sendBtn.innerHTML = 'Verstuur';
+}
+
+function showTypingIndicator() {
+    const chat = document.getElementById('chat-messages');
+    const div = document.createElement('div');
+    div.className = 'message message-assistant typing-indicator';
+    div.id = 'typing-' + Date.now();
+    div.innerHTML = '<span class="typing-dots"><span>.</span><span>.</span><span>.</span></span> Even nadenken...';
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+    return div.id;
+}
+
+function removeTypingIndicator(id) {
+    const el = document.getElementById(id);
+    if (el) el.remove();
+}
+
+function addRetryButton(query) {
+    const chat = document.getElementById('chat-messages');
+    const div = document.createElement('div');
+    div.style.cssText = 'text-align: center; margin-bottom: 1rem;';
+    div.innerHTML = `<button class="btn btn-outline" style="font-size: 0.8rem;" onclick="retryQuery(this, '${escapeAttr(query)}')">Opnieuw proberen</button>`;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+}
+
+function retryQuery(btn, query) {
+    btn.parentElement.remove();
+    document.getElementById('chat-input').value = query;
+    document.getElementById('chat-form').dispatchEvent(new Event('submit'));
 }
 
 function addMessage(text, role) {
@@ -218,6 +407,16 @@ function addMessage(text, role) {
     div.textContent = text;
     chat.appendChild(div);
     chat.scrollTop = chat.scrollHeight;
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function escapeAttr(text) {
+    return text.replace(/'/g, "\\'").replace(/"/g, '&quot;');
 }
 </script>
 {% endblock %}

@@ -118,6 +118,61 @@ async def reason_intervention(
     }
 
 
+@router.post("/query/validated")
+async def reason_query_validated(
+    request: ReasoningRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+    dag: CausalDAG = Depends(get_dag),
+):
+    """Ask a reasoning question with automatic factor selection and response validation.
+
+    1. Auto-selects relevant factors from the query if none provided
+    2. Generates LLM response
+    3. Validates the response against the model
+    """
+    await _check_license(user, db)
+
+    # Auto-select factors if not provided
+    factor_ids = request.factor_ids
+    auto_selected = False
+    if not factor_ids:
+        relevant = dag.find_relevant_factors(request.query, max_results=8)
+        if relevant:
+            factor_ids = [f["id"] for f in relevant]
+            auto_selected = True
+
+    builder = PromptBuilder(dag)
+    messages = builder.build_full_prompt(request.query, factor_ids)
+
+    connector = LLMConnector(request.provider, request.api_key, request.model)
+    try:
+        response = await connector.generate(messages)
+    except LLMProviderError as e:
+        raise HTTPException(status_code=502, detail=_format_llm_error(str(e)))
+    except Exception:
+        raise HTTPException(
+            status_code=502,
+            detail="De AI-service is tijdelijk niet bereikbaar. Probeer het later opnieuw.",
+        )
+
+    # Validate response
+    validation = dag.validate_response_factors(response)
+
+    # Record usage
+    lm = LicenseManager(db)
+    await lm.record_query(user.license_key)
+
+    return {
+        "query": request.query,
+        "response": response,
+        "model_version": dag.version,
+        "factors_used": factor_ids,
+        "auto_selected": auto_selected,
+        "validation": validation,
+    }
+
+
 def _format_llm_error(error_msg: str) -> str:
     """Translate LLM provider errors to user-friendly Dutch messages."""
     msg = error_msg.lower()

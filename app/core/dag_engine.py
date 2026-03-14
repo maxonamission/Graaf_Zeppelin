@@ -369,6 +369,66 @@ class CausalDAG:
         affected.sort(key=lambda x: abs(x["estimated_impact"]), reverse=True)
         return affected
 
+    # ── Factor search ─────────────────────────────────────────────────────
+
+    def find_relevant_factors(
+        self, query: str, max_results: int = 10
+    ) -> list[dict[str, Any]]:
+        """Find factors relevant to a natural-language query.
+
+        Uses keyword matching against factor labels, definitions, and domains.
+        Returns factors sorted by relevance (number of keyword matches).
+        """
+        # Normalize and split query into searchable terms (>= 3 chars)
+        query_lower = query.lower()
+        terms = [t for t in query_lower.split() if len(t) >= 3]
+        if not terms:
+            return []
+
+        scored: list[tuple[int, str, dict[str, Any]]] = []
+        for node_id in self.graph.nodes:
+            attrs = self.graph.nodes[node_id]
+            searchable = " ".join([
+                attrs.get("label", ""),
+                attrs.get("definition", ""),
+                attrs.get("description", ""),
+                attrs.get("domain", ""),
+            ]).lower()
+
+            score = sum(1 for t in terms if t in searchable)
+            if score > 0:
+                scored.append((score, node_id, attrs))
+
+        scored.sort(key=lambda x: x[0], reverse=True)
+        return [
+            {"id": node_id, **attrs}
+            for _, node_id, attrs in scored[:max_results]
+        ]
+
+    # ── Response validation ───────────────────────────────────────────────
+
+    def validate_response_factors(self, response_text: str) -> dict[str, Any]:
+        """Check which factor labels from the model appear in an LLM response.
+
+        Returns a dict with recognized and unrecognized factor references,
+        helping detect potential hallucinations.
+        """
+        text_lower = response_text.lower()
+        recognized = []
+        for node_id in self.graph.nodes:
+            label = self.graph.nodes[node_id].get("label", "")
+            if label and label.lower() in text_lower:
+                recognized.append({
+                    "id": node_id,
+                    "label": label,
+                    "domain": self.graph.nodes[node_id].get("domain", ""),
+                })
+        return {
+            "recognized_factors": recognized,
+            "recognized_count": len(recognized),
+            "model_factor_count": self.graph.number_of_nodes(),
+        }
+
     # ── Summary ──────────────────────────────────────────────────────────
 
     def get_graph_summary(self) -> dict[str, Any]:

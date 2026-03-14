@@ -81,16 +81,16 @@ naar een onderbouwd advies via kwalificatievragen en simulatie.
 
 ---
 
-### EPIC-06: AI-assistent bruikbaar maken 🔲
+### EPIC-06: AI-assistent bruikbaar maken ✅
 
 De LLM-integratie naadloos laten werken voor niet-technische gebruikers.
 
 | Story | Status | Beschrijving |
 |-------|--------|-------------|
 | [S06-01](done/S06-01-voorbeeldvragen.md) | ✅ Done | Voorbeeldvragen aanbieden |
-| [S06-02](backlog/S06-02-auto-factor-selectie.md) | 🔲 Backlog | Automatische factor-selectie |
-| [S06-03](backlog/S06-03-antwoord-validatie.md) | 🔲 Backlog | Antwoord-kwaliteit borgen |
-| [S06-04](backlog/S06-04-sessie-geschiedenis.md) | 🔲 Backlog | Sessie-geschiedenis |
+| [S06-02](done/S06-02-auto-factor-selectie.md) | ✅ Done | Automatische factor-selectie |
+| [S06-03](done/S06-03-antwoord-validatie.md) | ✅ Done | Antwoord-kwaliteit borgen |
+| [S06-04](done/S06-04-sessie-geschiedenis.md) | ✅ Done | Sessie-geschiedenis |
 | [S06-05](done/S06-05-foutafhandeling-llm.md) | ✅ Done | Foutafhandeling LLM |
 
 ---
@@ -132,7 +132,7 @@ Testdekking, error handling en documentatie op productieniveau brengen.
 | [S09-01](done/S09-01-api-tests-fixen.md) | ✅ Done | API-tests fixen en uitbreiden (22 API tests) |
 | [S09-02](done/S09-02-core-module-tests.md) | ✅ Done | Tests voor core modules (auth, license, llm, release) |
 | [S09-03](done/S09-03-integratietests.md) | ✅ Done | Integratietests (register → login → explore → simulate → AI) |
-| [S09-04](backlog/S09-04-error-handling.md) | 🔲 Backlog | Error handling & feedback |
+| [S09-04](done/S09-04-error-handling.md) | ✅ Done | Error handling & feedback |
 | [S09-05](done/S09-05-readme-update.md) | ✅ Done | README.md bijwerken naar productfocus |
 | [S09-06](backlog/S09-06-onboarding.md) | 🔲 Backlog | Onboarding flow |
 
@@ -144,8 +144,8 @@ Deployment, monitoring en uitbreidingen voor productiegebruik.
 
 | Story | Status | Beschrijving |
 |-------|--------|-------------|
-| [S10-01](backlog/S10-01-docker.md) | 🔲 Backlog | Docker deployment |
+| [S10-01](done/S10-01-docker.md) | ✅ Done | Docker deployment |
 | [S10-02](backlog/S10-02-postgresql.md) | 🔲 Backlog | PostgreSQL migratie |
 | [S10-03](backlog/S10-03-monitoring.md) | 🔲 Backlog | Monitoring & logging |
-| [S10-04](backlog/S10-04-export.md) | 🔲 Backlog | Interventie-rapportage export |
+| [S10-04](done/S10-04-export.md) | ✅ Done | Interventie-rapportage export |
 | [S10-05](backlog/S10-05-multi-model.md) | 🔲 Backlog | Meerdere modellen ondersteunen |
