@@ -22,6 +22,11 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
+> **Opmerking over dependencies / Note on dependencies:**
+> `requirements.txt` bevat naast de core dependencies (zoals `networkx`) ook packages voor web/API-uitbreidingen (zoals `fastapi`, `uvicorn`, `sqlalchemy`). Als je alleen de knowledge graph conversie-functies wilt gebruiken, volstaat `pip install -e .` — de core-functionaliteit heeft alleen de standaard Python-library nodig.
+>
+> `requirements.txt` includes web/API extension packages (such as `fastapi`, `uvicorn`, `sqlalchemy`) in addition to core dependencies (like `networkx`). If you only need the knowledge graph conversion functions, `pip install -e .` is sufficient — the core functionality only requires the Python standard library.
+
 ## Gebruik / Usage
 
 ### 1. Command Line Interface (CLI)
@@ -149,6 +154,11 @@ The JSON format is simple and powerful:
 - `label` (optioneel/optional): Type relatie of beschrijving
 - `properties` (optioneel/optional): Dictionary met extra eigenschappen
 
+> **Validatie / Validation:**
+> `KnowledgeGraph.from_dict()` en `KnowledgeGraph.from_json()` voeren basisvalidatie uit: ze controleren dat de invoer een dictionary is, dat `nodes` en `edges` lijsten zijn, dat elke node een `id` veld heeft, en dat elke edge `source` en `target` velden heeft. Bij ongeldige data wordt een `ValueError` gegenereerd. Er worden geen verdere type- of waarde-controles gedaan op optionele velden.
+>
+> `KnowledgeGraph.from_dict()` and `KnowledgeGraph.from_json()` perform basic schema validation: they check that the input is a dictionary, that `nodes` and `edges` are lists, that each node has an `id` field, and that each edge has `source` and `target` fields. A `ValueError` is raised for invalid data. No further type or value checks are performed on optional fields.
+
 ## UTF-8 Ondersteuning / UTF-8 Support
 
 **Nederlands:**
@@ -227,11 +237,48 @@ graaf-zeppelin convert external.gexf internal.json
 - **UTF-8**: ✓
 - **Gebruik/Use**: Visualisatie in Gephi, Cytoscape en andere graph tools
 
+> **Compatibiliteitsnota / Compatibility note:**
+> Node- en edge-properties worden opgeslagen als `<attvalue for="key" value="value" />` elementen in het GEXF-bestand. Er worden geen `<attributes>`-definities op grafiekniveau gegenereerd. Bij het importeren van externe GEXF-bestanden worden alleen inline `attvalue`-elementen herkend.
+>
+> Node and edge properties are stored as `<attvalue for="key" value="value" />` elements in the GEXF file. No graph-level `<attributes>` definitions are generated. When importing external GEXF files, only inline `attvalue` elements are recognized.
+
 ### Markdown
 - **Lezen/Read**: ✓ (beperkt/limited)
 - **Schrijven/Write**: ✓
 - **UTF-8**: ✓
 - **Gebruik/Use**: Menselijk leesbare documentatie en rapportage
+
+#### Verwacht Markdown-formaat / Expected Markdown Format
+
+**Nederlands:**
+De `markdown_to_json()` parser verwacht een specifiek Markdown-formaat. Nodes worden gedefinieerd als level-3 headers (`###`) met een `- **ID**: ...` regel en optioneel een `- **Properties**:` blok met geneste `- key: value` regels. Edges worden gedefinieerd als lijstitems in de vorm `- **BronLabel** relatie **DoelLabel**` met optionele geneste properties.
+
+**English:**
+The `markdown_to_json()` parser expects a specific Markdown format. Nodes are defined as level-3 headers (`###`) with a `- **ID**: ...` line and optionally a `- **Properties**:` block with nested `- key: value` lines. Edges are defined as list items in the form `- **SourceLabel** relation **TargetLabel**` with optional nested properties.
+
+**Voorbeeld / Example:**
+
+```markdown
+# Knowledge Graph
+
+## Nodes
+
+### Python
+
+- **ID**: python
+- **Properties**:
+  - type: language
+  - paradigm: multi-paradigm
+
+### Data Science
+
+- **ID**: data_science
+
+## Edges
+
+- **Python** used in **Data Science**
+  - strength: strong
+```
 
 ## Testen / Testing
 
