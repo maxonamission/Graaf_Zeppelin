@@ -176,24 +176,24 @@ Graaf_Zeppelin/
 
 ## Fasering
 
-### Fase 1 — Fundament (nu)
+### Fase 1 — Fundament
 - [x] Projectstructuur opzetten
-- [ ] DAG engine met NetworkX
-- [ ] Voorbeeld sportdeelname model
-- [ ] FastAPI met basisroutes
-- [ ] Jinja2 templates met HTMX
-- [ ] Licentie-check (basis)
-- [ ] SQLite database setup
+- [x] DAG engine met NetworkX (v1+v2, 562 regels, 33 tests)
+- [x] Voorbeeld sportdeelname model (v1: 15 factoren + v2.3.0: 69 factoren)
+- [x] FastAPI met basisroutes (12+ endpoints)
+- [x] Jinja2 templates met HTMX
+- [x] Licentie-check (basis)
+- [x] SQLite database setup (async SQLAlchemy)
 
 ### Fase 2 — LLM Integratie
-- [ ] Prompt builder (DAG → prompt)
-- [ ] LLM connector (OpenAI / Anthropic)
-- [ ] Query interface in frontend
+- [x] Prompt builder (DAG → prompt, 4 templates, 6 constraints)
+- [x] LLM connector (OpenAI / Anthropic, BYOK)
+- [x] Query interface in frontend
 - [ ] Response caching
 
 ### Fase 3 — Productie-ready
-- [ ] Robuuste licentie-manager met tiers
-- [ ] Release notes systeem
+- [x] Robuuste licentie-manager met tiers (basis/professional/enterprise)
+- [x] Release notes systeem (semantic versioning, migratieguides)
 - [ ] Trendbreuk-detectie & migratie tooling
 - [ ] PostgreSQL migratie
 - [ ] Docker deployment
