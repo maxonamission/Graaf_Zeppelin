@@ -4,9 +4,19 @@
 {% block content %}
 <h1 style="margin-bottom: 1.5rem;">Dashboard</h1>
 
-<div class="grid grid-3" id="stats"
-     hx-get="/api/graph/summary" hx-trigger="load" hx-swap="innerHTML"
-     hx-target="#model-stats">
+<!-- Free tier banner (shown when applicable) -->
+<div id="free-tier-banner" class="free-tier-banner" style="display: none;">
+    <div>
+        <strong>Gratis vragen vandaag</strong>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
+            Je hebt nog <span id="free-remaining">0</span> gratis vragen over vandaag.
+        </p>
+    </div>
+    <div class="free-tier-counter" id="free-counter">0/2</div>
+</div>
+
+<!-- Stats row -->
+<div class="grid grid-3" id="stats">
     <div class="card stat" id="model-stats">
         <div class="stat-value">...</div>
         <div class="stat-label">Model laden...</div>
@@ -18,66 +28,166 @@
     <div class="card stat">
         <div class="stat-value" id="queries-used">...</div>
         <div class="stat-label">Queries deze maand</div>
+        <div class="quota-bar" id="quota-bar" style="display: none;">
+            <div class="quota-fill ok" id="quota-fill" style="width: 0%;"></div>
+        </div>
     </div>
 </div>
 
 <div class="grid grid-2" style="margin-top: 1rem;">
+    <!-- Quick actions -->
     <div class="card">
         <div class="card-header">Snel aan de slag</div>
-        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-            <a href="/graph" class="btn btn-outline">Bekijk het causale model</a>
-            <a href="/reasoning" class="btn btn-primary">Stel een vraag</a>
-            <a href="/releases" class="btn btn-outline">Bekijk release notes</a>
+        <div class="quick-actions">
+            <a href="/verkenner" class="quick-action">
+                <div class="quick-action-icon explore">&#9881;</div>
+                <div>
+                    <div class="quick-action-text">Verken beleid</div>
+                    <div class="quick-action-desc">Begeleide flow: vraag &rarr; kwalificatie &rarr; simulatie &rarr; advies</div>
+                </div>
+            </a>
+            <a href="/reasoning" class="quick-action">
+                <div class="quick-action-icon ask">&#9993;</div>
+                <div>
+                    <div class="quick-action-text">Stel een vraag</div>
+                    <div class="quick-action-desc">Vrije vraag aan de AI-assistent over het causale model</div>
+                </div>
+            </a>
+            <a href="/graph" class="quick-action">
+                <div class="quick-action-icon simulate">&#9670;</div>
+                <div>
+                    <div class="quick-action-text">Bekijk het model</div>
+                    <div class="quick-action-desc">Verken factoren, domeinen en causale verbanden</div>
+                </div>
+            </a>
         </div>
     </div>
-    <div class="card">
-        <div class="card-header">Recente factoren</div>
-        <div id="factor-list" hx-get="/api/graph/factors" hx-trigger="load" hx-swap="innerHTML">
-            <p style="color: var(--text-muted);">Laden...</p>
+
+    <!-- Recent conversations + model info -->
+    <div>
+        <div class="card">
+            <div class="card-header">Recente gesprekken</div>
+            <div id="recent-conversations">
+                <p style="color: var(--text-muted); font-size: 0.85rem;">Laden...</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">Model informatie</div>
+            <div id="model-info">
+                <p style="color: var(--text-muted); font-size: 0.85rem;">Laden...</p>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-// Load dashboard data
 document.addEventListener('DOMContentLoaded', async () => {
-    // Model summary
-    try {
-        const summaryRes = await fetch('/api/graph/summary');
-        if (summaryRes.ok) {
-            const summary = await summaryRes.json();
-            document.getElementById('model-stats').innerHTML = `
-                <div class="stat-value">${summary.num_factors}</div>
-                <div class="stat-label">Factoren in model v${summary.version}</div>
-            `;
-        }
-    } catch (e) { /* ignore */ }
-
-    // License info
-    try {
-        const licRes = await fetch('/api/license/info');
-        if (licRes.ok) {
-            const lic = await licRes.json();
-            document.getElementById('license-tier').textContent = lic.tier;
-            document.getElementById('queries-used').textContent =
-                `${lic.queries_used} / ${lic.queries_limit}`;
-        }
-    } catch (e) { /* ignore */ }
-
-    // Factor list
-    try {
-        const factorRes = await fetch('/api/graph/factors');
-        if (factorRes.ok) {
-            const data = await factorRes.json();
-            const html = data.factors.slice(0, 6).map(f => `
-                <div class="factor-item" onclick="window.location='/graph#${f.id}'">
-                    <span class="factor-name">${f.label}</span>
-                    <span class="factor-category">${f.category}</span>
-                </div>
-            `).join('');
-            document.getElementById('factor-list').innerHTML = html;
-        }
-    } catch (e) { /* ignore */ }
+    await Promise.all([
+        loadModelSummary(),
+        loadLicenseInfo(),
+        loadRecentConversations(),
+        loadFreeQuota(),
+    ]);
 });
+
+async function loadModelSummary() {
+    try {
+        const res = await fetch('/api/graph/summary');
+        if (!res.ok) return;
+        const summary = await res.json();
+        document.getElementById('model-stats').innerHTML = `
+            <div class="stat-value">${summary.num_factors}</div>
+            <div class="stat-label">Factoren in model v${summary.version}</div>
+        `;
+        document.getElementById('model-info').innerHTML = `
+            <div style="font-size: 0.85rem;">
+                <div class="session-item">
+                    <span>Versie</span>
+                    <strong>${summary.version}</strong>
+                </div>
+                <div class="session-item">
+                    <span>Factoren</span>
+                    <strong>${summary.num_factors}</strong>
+                </div>
+                <div class="session-item">
+                    <span>Relaties</span>
+                    <strong>${summary.num_relations}</strong>
+                </div>
+                <div class="session-item">
+                    <span>Sliders</span>
+                    <strong>${summary.num_sliders || 0}</strong>
+                </div>
+                <div class="session-item">
+                    <span>Domeinen</span>
+                    <strong>${Object.keys(summary.domains || {}).length}</strong>
+                </div>
+            </div>
+        `;
+    } catch (e) { /* ignore */ }
+}
+
+async function loadLicenseInfo() {
+    try {
+        const res = await fetch('/api/license/info');
+        if (!res.ok) return;
+        const lic = await res.json();
+        document.getElementById('license-tier').textContent = lic.tier;
+        document.getElementById('queries-used').textContent =
+            `${lic.queries_used} / ${lic.queries_limit}`;
+
+        // Show quota bar
+        const pct = Math.min(100, (lic.queries_used / lic.queries_limit) * 100);
+        const bar = document.getElementById('quota-bar');
+        const fill = document.getElementById('quota-fill');
+        bar.style.display = '';
+        fill.style.width = pct + '%';
+        fill.className = 'quota-fill ' + (pct >= 90 ? 'danger' : pct >= 70 ? 'warning' : 'ok');
+    } catch (e) { /* ignore */ }
+}
+
+async function loadRecentConversations() {
+    try {
+        const res = await fetch('/api/conversations');
+        if (!res.ok) return;
+        const data = await res.json();
+        const container = document.getElementById('recent-conversations');
+
+        if (!data.conversations || data.conversations.length === 0) {
+            container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">Nog geen gesprekken. Begin een <a href="/verkenner">beleidsverkenning</a> of <a href="/reasoning">stel een vraag</a>.</p>';
+            return;
+        }
+
+        const recent = data.conversations.slice(0, 5);
+        container.innerHTML = recent.map(c => `
+            <div class="session-item" style="cursor: pointer;" onclick="window.location='/reasoning'">
+                <span class="session-title">${escapeHtml(c.title)}</span>
+                <span class="session-date">${new Date(c.updated_at).toLocaleDateString('nl-NL')}</span>
+            </div>
+        `).join('');
+    } catch (e) {
+        document.getElementById('recent-conversations').innerHTML =
+            '<p style="color: var(--text-muted); font-size: 0.85rem;">Kon gesprekken niet laden.</p>';
+    }
+}
+
+async function loadFreeQuota() {
+    try {
+        const res = await fetch('/api/license/free-quota');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.is_free_tier) {
+            document.getElementById('free-tier-banner').style.display = '';
+            document.getElementById('free-remaining').textContent = data.remaining;
+            document.getElementById('free-counter').textContent =
+                `${data.used}/${data.daily_limit}`;
+        }
+    } catch (e) { /* ignore */ }
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
 </script>
 {% endblock %}

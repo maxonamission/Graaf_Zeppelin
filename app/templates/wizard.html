@@ -1,0 +1,483 @@
+{% extends "base.html" %}
+{% block title %}Beleidsverkenner — Graaf Zeppelin{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 1.5rem;">Beleidsverkenner</h1>
+
+<!-- Progress stepper -->
+<div class="wizard-stepper" id="stepper">
+    <div class="wizard-step active" data-step="1">
+        <span class="step-number">1</span>
+        <span class="step-label">Beleidsvraag</span>
+    </div>
+    <div class="wizard-step" data-step="2">
+        <span class="step-number">2</span>
+        <span class="step-label">Kwalificatie</span>
+    </div>
+    <div class="wizard-step" data-step="3">
+        <span class="step-number">3</span>
+        <span class="step-label">Simulatie</span>
+    </div>
+    <div class="wizard-step" data-step="4">
+        <span class="step-number">4</span>
+        <span class="step-label">Advies</span>
+    </div>
+</div>
+
+<!-- Step 1: Policy question -->
+<div class="wizard-panel" id="step-1">
+    <div class="card">
+        <div class="card-header">Stap 1: Wat is je beleidsvraag?</div>
+        <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">
+            Beschrijf de beleidsvraag die je wilt verkennen. Het systeem zoekt automatisch
+            welke beleidsinstrumenten (sliders) relevant zijn.
+        </p>
+        <div class="form-group">
+            <textarea id="policy-question" rows="3" placeholder="Bijv. Hoe kunnen we de sportdeelname onder jongeren verhogen?"></textarea>
+        </div>
+        <div id="example-questions-wizard" style="margin-bottom: 1rem;">
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">Of kies een voorbeeldvraag:</p>
+            <button class="example-question" onclick="useWizardExample(this)">
+                Hoe kunnen we de sportdeelname onder jongeren verhogen?
+            </button>
+            <button class="example-question" onclick="useWizardExample(this)">
+                Wat is het effect van investeren in betere sportaccommodaties?
+            </button>
+            <button class="example-question" onclick="useWizardExample(this)">
+                Hoe verbeteren we het vrijwilligersbeleid bij sportverenigingen?
+            </button>
+        </div>
+        <button class="btn btn-primary" id="btn-analyse" onclick="analyseQuestion()">
+            Analyseer mijn vraag
+        </button>
+    </div>
+</div>
+
+<!-- Step 2: Qualification cards -->
+<div class="wizard-panel" id="step-2" style="display: none;">
+    <div class="card" style="margin-bottom: 1rem;">
+        <div class="card-header">Stap 2: Kwalificatievragen</div>
+        <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">
+            Beantwoord de vragen hieronder om de beleidsinstrumenten af te stemmen
+            op jouw situatie. Gebruik de schuifjes om aan te geven wat van toepassing is.
+        </p>
+    </div>
+    <div id="qualifier-cards">
+        <!-- Dynamically generated slider qualification cards -->
+    </div>
+    <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+        <button class="btn btn-outline" onclick="goToStep(1)">Terug</button>
+        <button class="btn btn-primary" id="btn-simulate" onclick="runSimulation()">
+            Simuleer resultaten
+        </button>
+    </div>
+</div>
+
+<!-- Step 3: Simulation results -->
+<div class="wizard-panel" id="step-3" style="display: none;">
+    <div class="card">
+        <div class="card-header">Stap 3: Simulatieresultaten</div>
+        <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">
+            Op basis van jouw antwoorden zijn de beleidsinstrumenten ingesteld. Hieronder
+            zie je welke verbanden het sterkst beïnvloed worden.
+        </p>
+        <div id="simulation-results">
+            <!-- Dynamically filled -->
+        </div>
+    </div>
+    <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+        <button class="btn btn-outline" onclick="goToStep(2)">Terug naar kwalificatie</button>
+        <button class="btn btn-primary" id="btn-advice" onclick="requestAdvice()">
+            Genereer advies
+        </button>
+    </div>
+    <div class="card" style="margin-top: 1rem;">
+        <div class="card-header">LLM configuratie (voor advies)</div>
+        <div class="grid grid-2">
+            <div class="form-group">
+                <label for="wiz-provider">Provider</label>
+                <select id="wiz-provider">
+                    <option value="openai">OpenAI</option>
+                    <option value="anthropic">Anthropic</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="wiz-api-key">API key</label>
+                <input type="password" id="wiz-api-key" placeholder="sk-...">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Step 4: Advice / results page -->
+<div class="wizard-panel" id="step-4" style="display: none;">
+    <div class="card">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Stap 4: Beleidsadvies</span>
+            <span id="advice-validation" class="validation-badge" style="display: none;"></span>
+        </div>
+        <div id="advice-content">
+            <!-- Dynamically filled with LLM advice -->
+        </div>
+    </div>
+    <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+        <button class="btn btn-outline" onclick="goToStep(3)">Terug naar resultaten</button>
+        <button class="btn btn-outline" onclick="goToStep(1)">Nieuwe verkenning</button>
+        <button class="btn btn-secondary" onclick="exportResults()">Exporteer als Markdown</button>
+    </div>
+</div>
+
+<script>
+let wizardState = {
+    question: '',
+    suggestedSliders: [],
+    sliderValues: {},
+    effects: [],
+    advice: '',
+};
+
+function useWizardExample(btn) {
+    document.getElementById('policy-question').value = btn.textContent.trim();
+    document.getElementById('example-questions-wizard').style.display = 'none';
+}
+
+function goToStep(step) {
+    // Hide all panels
+    document.querySelectorAll('.wizard-panel').forEach(p => p.style.display = 'none');
+    document.getElementById(`step-${step}`).style.display = '';
+
+    // Update stepper
+    document.querySelectorAll('.wizard-step').forEach(s => {
+        const sStep = parseInt(s.dataset.step);
+        s.classList.remove('active', 'completed');
+        if (sStep < step) s.classList.add('completed');
+        if (sStep === step) s.classList.add('active');
+    });
+}
+
+async function analyseQuestion() {
+    const question = document.getElementById('policy-question').value.trim();
+    if (!question) return;
+
+    wizardState.question = question;
+    const btn = document.getElementById('btn-analyse');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Analyseren...';
+
+    try {
+        const res = await fetch('/api/wizard/analyse', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ question }),
+        });
+
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            alert(err.detail || 'Er ging iets mis bij de analyse.');
+            return;
+        }
+
+        const data = await res.json();
+        wizardState.suggestedSliders = data.suggested_sliders;
+
+        // Build qualifier cards
+        renderQualifierCards(data.suggested_sliders);
+        goToStep(2);
+    } catch (e) {
+        alert('Verbindingsfout. Probeer het opnieuw.');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Analyseer mijn vraag';
+    }
+}
+
+function renderQualifierCards(sliders) {
+    const container = document.getElementById('qualifier-cards');
+
+    if (sliders.length === 0) {
+        container.innerHTML = '<div class="alert alert-info">Geen relevante beleidsinstrumenten gevonden. Probeer een andere vraag.</div>';
+        return;
+    }
+
+    container.innerHTML = sliders.map(slider => {
+        const qualifiers = slider.qualifiers || [];
+        if (qualifiers.length === 0) {
+            return `
+                <div class="card qualifier-card">
+                    <div class="card-header">${escapeHtml(slider.label)}</div>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">${escapeHtml(slider.description || '')}</p>
+                    <div class="form-group" style="margin-top: 0.75rem;">
+                        <label>Instelwaarde</label>
+                        <input type="range" min="0" max="100" value="50"
+                               class="slider-range" data-slider="${slider.id}"
+                               oninput="this.nextElementSibling.textContent = (this.value / 100).toFixed(2)">
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">0.50</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        const questionsHtml = qualifiers.map((q, i) => `
+            <div class="qualifier-question">
+                <label style="font-size: 0.85rem; font-weight: 500; margin-bottom: 0.25rem; display: block;">
+                    ${escapeHtml(q.question || q.label || 'Vraag ' + (i + 1))}
+                </label>
+                ${q.options ? renderOptions(slider.id, i, q.options) : renderSlider(slider.id, i)}
+            </div>
+        `).join('');
+
+        return `
+            <div class="card qualifier-card" data-slider-id="${slider.id}">
+                <div class="card-header">${escapeHtml(slider.label)}</div>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.75rem;">
+                    ${escapeHtml(slider.description || '')}
+                </p>
+                ${questionsHtml}
+                <div class="qualifier-result" style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border);">
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">Resulterende waarde: </span>
+                    <strong class="result-value" id="result-${slider.id}">0.50</strong>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function renderOptions(sliderId, qIndex, options) {
+    return `<div class="qualifier-options">` +
+        options.map((opt, oi) => `
+            <label class="qualifier-option">
+                <input type="radio" name="q-${sliderId}-${qIndex}"
+                       value="${opt.value !== undefined ? opt.value : (oi / Math.max(1, options.length - 1)).toFixed(2)}"
+                       onchange="updateSliderResult('${sliderId}')"
+                       ${oi === Math.floor(options.length / 2) ? 'checked' : ''}>
+                <span>${escapeHtml(opt.label || opt)}</span>
+            </label>
+        `).join('') +
+    `</div>`;
+}
+
+function renderSlider(sliderId, qIndex) {
+    return `
+        <input type="range" min="0" max="100" value="50"
+               class="qualifier-input" data-slider="${sliderId}" data-q="${qIndex}"
+               oninput="updateSliderResult('${sliderId}')">
+    `;
+}
+
+function updateSliderResult(sliderId) {
+    const card = document.querySelector(`[data-slider-id="${sliderId}"]`);
+    if (!card) return;
+
+    // Collect all answers for this slider
+    const radios = card.querySelectorAll('input[type="radio"]:checked');
+    const ranges = card.querySelectorAll('input[type="range"].qualifier-input');
+
+    const values = [];
+    radios.forEach(r => values.push(parseFloat(r.value)));
+    ranges.forEach(r => values.push(r.value / 100));
+
+    if (values.length === 0) return;
+    const avg = values.reduce((a, b) => a + b, 0) / values.length;
+
+    const resultEl = document.getElementById(`result-${sliderId}`);
+    if (resultEl) resultEl.textContent = avg.toFixed(2);
+}
+
+async function runSimulation() {
+    // Collect slider values from cards
+    const sliderValues = {};
+
+    wizardState.suggestedSliders.forEach(slider => {
+        const card = document.querySelector(`[data-slider-id="${slider.id}"]`);
+        if (card) {
+            const resultEl = document.getElementById(`result-${slider.id}`);
+            sliderValues[slider.id] = parseFloat(resultEl?.textContent || '0.5');
+        } else {
+            // Fallback: check for direct range inputs
+            const range = document.querySelector(`input.slider-range[data-slider="${slider.id}"]`);
+            if (range) {
+                sliderValues[slider.id] = range.value / 100;
+            }
+        }
+    });
+
+    wizardState.sliderValues = sliderValues;
+
+    const btn = document.getElementById('btn-simulate');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Simuleren...';
+
+    try {
+        const res = await fetch('/api/wizard/simulate', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                question: wizardState.question,
+                slider_values: sliderValues,
+            }),
+        });
+
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            alert(err.detail || 'Simulatie mislukt.');
+            return;
+        }
+
+        const data = await res.json();
+        wizardState.effects = data.effects;
+        renderSimulationResults(data);
+        goToStep(3);
+    } catch (e) {
+        alert('Verbindingsfout bij simulatie.');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Simuleer resultaten';
+    }
+}
+
+function renderSimulationResults(data) {
+    const container = document.getElementById('simulation-results');
+
+    if (!data.effects || data.effects.length === 0) {
+        container.innerHTML = '<div class="alert alert-info">Geen significante effecten gevonden met deze instellingen. Pas de kwalificatievragen aan of kies andere beleidsinstrumenten.</div>';
+        return;
+    }
+
+    const rows = data.effects.map(e => {
+        const changeClass = e.change > 0 ? 'effect-positive' : e.change < 0 ? 'effect-negative' : '';
+        const arrow = e.change > 0 ? '&#9650;' : e.change < 0 ? '&#9660;' : '&#9654;';
+        return `
+            <div class="effect-row ${changeClass}">
+                <div class="effect-relation">
+                    <strong>${escapeHtml(e.source)}</strong>
+                    <span style="color: var(--text-muted);"> beïnvloedt </span>
+                    <strong>${escapeHtml(e.target)}</strong>
+                </div>
+                <div class="effect-change">
+                    <span class="effect-arrow">${arrow}</span>
+                    <span>${e.direction_nl} (${e.change >= 0 ? '+' : ''}${e.change.toFixed(3)})</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    container.innerHTML = `
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+            ${data.total_affected} relaties beïnvloed. Top ${data.effects.length} hieronder:
+        </p>
+        ${rows}
+    `;
+}
+
+async function requestAdvice() {
+    const apiKey = document.getElementById('wiz-api-key').value;
+    if (!apiKey) {
+        alert('Voer eerst je LLM API key in bij de configuratie onderaan.');
+        return;
+    }
+
+    const btn = document.getElementById('btn-advice');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Advies genereren...';
+
+    try {
+        const res = await fetch('/api/wizard/advice', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                question: wizardState.question,
+                slider_values: wizardState.sliderValues,
+                effects: wizardState.effects,
+                provider: document.getElementById('wiz-provider').value,
+                api_key: apiKey,
+            }),
+        });
+
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            alert(err.detail || 'Advies genereren mislukt.');
+            return;
+        }
+
+        const data = await res.json();
+        wizardState.advice = data.advice;
+        renderAdvice(data);
+        goToStep(4);
+    } catch (e) {
+        alert('Verbindingsfout bij advies genereren.');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Genereer advies';
+    }
+}
+
+function renderAdvice(data) {
+    const container = document.getElementById('advice-content');
+
+    // Format the advice text with paragraphs
+    const paragraphs = data.advice.split('\n').filter(p => p.trim()).map(p => {
+        if (p.startsWith('#')) {
+            const level = p.match(/^#+/)[0].length;
+            const text = p.replace(/^#+\s*/, '');
+            return `<h${Math.min(level + 1, 4)}>${escapeHtml(text)}</h${Math.min(level + 1, 4)}>`;
+        }
+        if (p.startsWith('- ') || p.startsWith('* ')) {
+            return `<li style="margin-left: 1.5rem; margin-bottom: 0.3rem;">${escapeHtml(p.substring(2))}</li>`;
+        }
+        if (p.match(/^\d+\.\s/)) {
+            return `<li style="margin-left: 1.5rem; margin-bottom: 0.3rem;">${escapeHtml(p.replace(/^\d+\.\s/, ''))}</li>`;
+        }
+        return `<p style="margin-bottom: 0.75rem;">${escapeHtml(p)}</p>`;
+    }).join('');
+
+    container.innerHTML = `
+        <div class="advice-text" style="line-height: 1.7; font-size: 0.95rem;">
+            ${paragraphs}
+        </div>
+        <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-muted);">
+            Model: v${data.model_version}
+        </div>
+    `;
+
+    // Show validation badge
+    if (data.validation) {
+        const badge = document.getElementById('advice-validation');
+        badge.textContent = `${data.validation.recognized_count} modelfactoren herkend`;
+        badge.style.display = 'inline-block';
+        badge.className = data.validation.recognized_count > 0
+            ? 'validation-badge badge-success'
+            : 'validation-badge badge-warning';
+    }
+}
+
+function exportResults() {
+    // Build markdown from current state
+    const lines = [
+        `# Beleidsverkenning — Graaf Zeppelin`,
+        ``,
+        `## Beleidsvraag`,
+        wizardState.question,
+        ``,
+        `## Sliderinstellingen`,
+        ...Object.entries(wizardState.sliderValues).map(([k, v]) => `- ${k}: ${v.toFixed(2)}`),
+        ``,
+        `## Advies`,
+        wizardState.advice || 'Geen advies gegenereerd.',
+    ];
+
+    const blob = new Blob([lines.join('\n')], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'beleidsverkenning.md';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+</script>
+{% endblock %}

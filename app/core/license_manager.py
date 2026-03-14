@@ -18,15 +18,22 @@ from app.models.user import User
 
 
 class LicenseTier(str, Enum):
+    FREE = "free"
     BASIS = "basis"
     PROFESSIONAL = "professional"
     ENTERPRISE = "enterprise"
+    BYOK = "byok"  # Bring Your Own Key — fixed license fee, unlimited queries
 
+
+# Daily free question limit for users without a license
+FREE_DAILY_LIMIT = 2
 
 TIER_LIMITS = {
+    LicenseTier.FREE: {"queries_per_month": 60, "users": 1, "daily_limit": FREE_DAILY_LIMIT},
     LicenseTier.BASIS: {"queries_per_month": 100, "users": 3},
     LicenseTier.PROFESSIONAL: {"queries_per_month": 1000, "users": 15},
     LicenseTier.ENTERPRISE: {"queries_per_month": 10000, "users": 100},
+    LicenseTier.BYOK: {"queries_per_month": 999999, "users": 10},  # unlimited (user pays LLM)
 }
 
 
@@ -128,6 +135,68 @@ class LicenseManager:
         )
         current_users = len(result.scalars().all())
         return current_users < limits["users"]
+
+    async def get_daily_usage(self, user_id: int) -> dict:
+        """Get daily free-question usage for a user (S07-01).
+
+        Returns usage info including remaining free questions for today.
+        """
+        from app.models.daily_usage import DailyUsage
+
+        today = datetime.now(timezone.utc).date()
+        result = await self.db.execute(
+            select(DailyUsage).where(
+                DailyUsage.user_id == user_id,
+                DailyUsage.usage_date == today,
+            )
+        )
+        usage = result.scalar_one_or_none()
+        used = usage.queries_used if usage else 0
+        remaining = max(0, FREE_DAILY_LIMIT - used)
+
+        return {
+            "is_free_tier": True,
+            "daily_limit": FREE_DAILY_LIMIT,
+            "used": used,
+            "remaining": remaining,
+            "date": today.isoformat(),
+        }
+
+    async def record_free_query(self, user_id: int) -> bool:
+        """Record a free query and return True if allowed, False if limit reached."""
+        from app.models.daily_usage import DailyUsage
+
+        today = datetime.now(timezone.utc).date()
+        result = await self.db.execute(
+            select(DailyUsage).where(
+                DailyUsage.user_id == user_id,
+                DailyUsage.usage_date == today,
+            )
+        )
+        usage = result.scalar_one_or_none()
+
+        if usage:
+            if usage.queries_used >= FREE_DAILY_LIMIT:
+                return False
+            usage.queries_used += 1
+        else:
+            usage = DailyUsage(
+                user_id=user_id,
+                usage_date=today,
+                queries_used=1,
+            )
+            self.db.add(usage)
+
+        await self.db.commit()
+        return True
+
+    async def is_byok_tier(self, license_key: str) -> bool:
+        """Check if a license uses the BYOK (Bring Your Own Key) tier."""
+        result = await self.db.execute(
+            select(License).where(License.key == license_key)
+        )
+        license_obj = result.scalar_one_or_none()
+        return license_obj is not None and license_obj.tier == LicenseTier.BYOK.value
 
     @staticmethod
     def _generate_key() -> str:
