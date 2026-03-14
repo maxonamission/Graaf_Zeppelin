@@ -98,9 +98,10 @@ Beleidsmedewerkers bij sportbonden, gemeenten en clubs die:
 |-----------|------------|-------------|
 | Begeleide beleidsverkenning | Hoog | Workflow: vraag → relevante sliders → kwalificatie → simulatie → advies |
 | Slider-kwalificatievragen UX | Hoog | Vertaling van abstracte sliderwaarden naar begrijpelijke vragen |
+| API-tests fixen | Hoog | 7 tests falen door async fixture-probleem; API-laag heeft geen werkende testdekking |
+| Tests voor core modules | Hoog | LLM Connector, License Manager, Auth en Release Manager missen dedicated tests |
 | Interventie-rapportage | Midden | Export of samenvatting van simulatieresultaten |
 | Onboarding flow | Midden | Eerste-gebruik uitleg voor niet-technische gebruikers |
-| API-tests fixen | Midden | Async fixture-incompatibiliteit oplossen |
 | Error handling & feedback | Midden | Duidelijke meldingen bij fouten, limieten, model-beperkingen |
 | Docker deployment | Laag | Containerisatie voor productie |
 | Monitoring & logging | Laag | Observability voor productie |
@@ -131,7 +132,8 @@ De LLM-integratie moet naadloos werken voor niet-technische gebruikers.
 
 ### Fase 3 — Stabiliteit & kwaliteit
 
-- [ ] API-tests fixen (async fixture-probleem in `test_api.py`)
+- [ ] API-tests fixen (async fixture-probleem in `test_api.py`) — **hoge prioriteit**, API-laag is ongetest
+- [ ] Tests toevoegen voor core modules zonder dedicated tests (LLM Connector, License Manager, Auth, Release Manager)
 - [ ] Integratietests toevoegen (volledige flow: login → verken → simuleer → AI-vraag)
 - [ ] Error handling en gebruikersfeedback verbeteren
 - [ ] README.md bijwerken naar productfocus (beleidsverkenner, niet platform-beschrijving)
