@@ -15,6 +15,11 @@ from app.core.dag_engine import CausalDAG
 from app.core.key_vault import KeyVault
 from app.core.license_manager import LicenseManager
 from app.core.llm_connector import LLMConnector, LLMProviderError
+from app.core.llm_guard import (
+    check_prompt_injection,
+    check_prompt_leakage_attempt,
+    sanitize_llm_output,
+)
 from app.core.prompt_builder import PromptBuilder
 from app.db import get_db
 from app.models.user import User
@@ -52,6 +57,9 @@ async def reason_query(
     """Ask a causal reasoning question. Uses the DAG to constrain LLM reasoning."""
     await _check_license_and_quota(user, db)
 
+    # LLM01/LLM07: Guard against prompt injection and system prompt extraction
+    _guard_user_input(request.query, user.id)
+
     # S07-04: Resolve stored key if sentinel
     api_key = await _resolve_api_key(request.stored_key_id, request.provider, user.id, db)
 
@@ -70,6 +78,9 @@ async def reason_query(
             status_code=502,
             detail="De AI-service is tijdelijk niet bereikbaar. Probeer het later opnieuw.",
         )
+
+    # LLM05: Sanitize LLM output before returning to client
+    response = sanitize_llm_output(response)
 
     # Record usage
     await _record_usage(user, db)
@@ -93,6 +104,10 @@ async def reason_intervention(
 ):
     """Analyse an intervention using DAG + LLM reasoning."""
     await _check_license_and_quota(user, db)
+
+    # LLM01/LLM07: Guard against prompt injection
+    if request.description:
+        _guard_user_input(request.description, user.id)
 
     # S07-04: Resolve stored key if sentinel
     api_key = await _resolve_api_key(request.stored_key_id, request.provider, user.id, db)
@@ -121,6 +136,9 @@ async def reason_intervention(
             status_code=502,
             detail="De AI-service is tijdelijk niet bereikbaar. Probeer het later opnieuw.",
         )
+
+    # LLM05: Sanitize LLM output
+    response = sanitize_llm_output(response)
 
     # Also include raw simulation data
     effects = dag.simulate_intervention(request.factor_id, request.change)
@@ -158,6 +176,9 @@ async def reason_query_validated(
     """
     await _check_license_and_quota(user, db)
 
+    # LLM01/LLM07: Guard against prompt injection
+    _guard_user_input(request.query, user.id)
+
     # S07-04: Resolve stored key if sentinel
     api_key = await _resolve_api_key(request.stored_key_id, request.provider, user.id, db)
 
@@ -185,6 +206,9 @@ async def reason_query_validated(
             status_code=502,
             detail="De AI-service is tijdelijk niet bereikbaar. Probeer het later opnieuw.",
         )
+
+    # LLM05: Sanitize LLM output
+    response = sanitize_llm_output(response)
 
     # Validate response
     validation = dag.validate_response_factors(response)
@@ -263,6 +287,24 @@ async def _record_usage(user: User, db: AsyncSession) -> None:
             pass
     else:
         await lm.record_free_query(user.id)
+
+
+def _guard_user_input(user_input: str, user_id: int) -> None:
+    """Check user input for prompt injection and leakage attempts (LLM01/LLM07)."""
+    injection = check_prompt_injection(user_input)
+    if injection:
+        audit_log("prompt_injection_blocked", user_id=user_id, matched=injection)
+        raise HTTPException(
+            status_code=400,
+            detail="Je vraag bevat patronen die niet zijn toegestaan. Herformuleer je vraag.",
+        )
+    leakage = check_prompt_leakage_attempt(user_input)
+    if leakage:
+        audit_log("prompt_leakage_blocked", user_id=user_id, matched=leakage)
+        raise HTTPException(
+            status_code=400,
+            detail="Je vraag bevat patronen die niet zijn toegestaan. Herformuleer je vraag.",
+        )
 
 
 async def _resolve_api_key(

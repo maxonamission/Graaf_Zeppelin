@@ -2,7 +2,7 @@
 
 > **Datum**: 15 maart 2026
 > **Scope**: Volledige codebase (backend, frontend, infra, configuratie)
-> **Beoordelingskaders**: OWASP Top 10 (2021), CWE/SANS Top 25, OWASP ASVS v4.0
+> **Beoordelingskaders**: OWASP Top 10 (2021), CWE/SANS Top 25, OWASP ASVS v4.0, OWASP Top 10 for LLM Applications
 > **Doel**: Identificeer kwetsbaarheden en misbruikmogelijkheden vóór productie-deployment
 
 ---
@@ -22,6 +22,7 @@ De applicatie heeft een solide functionele basis maar bevat **4 kritieke**, **7 
 | **OWASP Top 10** | 2021 | Alle bevindingen — primaire classificatie |
 | **CWE (Common Weakness Enumeration)** | v4.14 | Technische classificatie per bevinding |
 | **OWASP ASVS** | v4.0.3 | Verificatiecriteria voor authenticatie, sessies, cryptografie |
+| **OWASP Top 10 for LLM Applications** | 2025 | LLM-specifieke risico's (prompt injection, output handling, leakage) |
 | **NIST SP 800-63B** | Rev. 3 | Wachtwoordbeleid en authenticatie-eisen |
 
 ### Ernstclassificatie
@@ -460,6 +461,38 @@ Content-Security-Policy: default-src 'self'; script-src 'self' https://unpkg.com
 | L2 | Onvolledige escapeAttr() | LAAG | A03 | 79 | S11-02 |
 | L3 | Account-enumeratie | LAAG | A07 | 204 | S11-01 |
 | L4 | Geen SRI op CDN-scripts | LAAG | A06 | 829 | S11-02 |
+
+---
+
+## OWASP Top 10 for LLM Applications — Beoordeling
+
+> **Datum**: 15 maart 2026
+> **Aanleiding**: De applicatie integreert externe LLM-providers (OpenAI, Anthropic) via BYOK. Dit vereist specifieke beveiliging conform de OWASP Top 10 for LLM Applications.
+> **Bestand**: `app/core/llm_guard.py` — centrale guard-module
+
+### Overzicht
+
+| # | Risico | Status | Toelichting |
+|---|--------|--------|-------------|
+| **LLM01** | Prompt Injection | ✅ Gemitigeerd | `check_prompt_injection()` blokkeert patronen (NL+EN) vóór de LLM-aanroep. Patronen configureerbaar via `data/llm_guard_patterns.json` (S11-06). Post-hoc analyse via `guard_analyst.py` ontdekt nieuwe patronen (S11-07). Audit logging van geblokkeerde pogingen. |
+| **LLM02** | Sensitive Information Disclosure | ✅ OK | API-keys versleuteld (Fernet+PBKDF2, 480k iteraties). BYOK-model: keys nooit in requests of logs. Foutmeldingen gemaskeerd. |
+| **LLM03** | Supply Chain | ✅ OK | `pip-audit` en `semgrep` in CI (GitHub Actions). Dependency CVE-scan per kwartaal. |
+| **LLM04** | Data and Model Poisoning | ✅ Laag risico | Causaal model is server-side JSON, geen gebruikers-upload. Modelselectie vereist admin-rol. |
+| **LLM05** | Improper Output Handling | ✅ Gemitigeerd | `sanitize_llm_output()` neutraliseert HTML/script-tags in LLM-responses vóór teruggave aan client. Voorkomt XSS bij browser-rendering. |
+| **LLM06** | Excessive Agency | ✅ OK | LLM heeft geen tools, geen function calling, geen code execution. Uitsluitend tekstgeneratie. |
+| **LLM07** | System Prompt Leakage | ✅ Gemitigeerd | `check_prompt_leakage_attempt()` detecteert extractiepogingen (NL+EN). Patronen configureerbaar via JSON (S11-06). Systeemprompt bevat expliciete "nooit onthullen"-regel. Audit logging. |
+| **LLM08** | Vector and Embedding Weaknesses | N.v.t. | Geen RAG of embeddings. Factor-selectie via keyword matching (`find_relevant_factors()`). |
+| **LLM09** | Misinformation | ✅ Gemitigeerd | `validate_response_factors()` controleert of genoemde factoren in het causale model voorkomen. Temperature=0.1. Systeemprompt dwingt causale constraints af. |
+| **LLM10** | Unbounded Consumption | ✅ OK | Rate limiting (slowapi), quota per tier (2/dag gratis, 1000/maand professioneel), max_tokens=2000, httpx timeout=60s. |
+
+### Testdekking
+
+41 tests in `tests/test_llm_guard.py`:
+- 17 tests: prompt injection detectie (bekende patronen)
+- 6 tests: valse positieven (normale vragen niet geblokkeerd)
+- 6 tests: output sanitisatie (XSS-vectoren, markdown-behoud)
+- 8 tests: system prompt leakage detectie
+- 4 tests: valse positieven bij leakage-detectie
 
 ---
 

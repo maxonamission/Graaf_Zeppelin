@@ -17,10 +17,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from app.api.deps import get_current_user, get_dag
+from app.core.audit import audit_log
 from app.core.dag_engine import CausalDAG
 from app.core.key_vault import KeyVault
 from app.core.license_manager import LicenseManager
 from app.core.llm_connector import LLMConnector, LLMProviderError
+from app.core.llm_guard import (
+    check_prompt_injection,
+    check_prompt_leakage_attempt,
+    sanitize_llm_output,
+)
 from app.core.slider_engine import simulate_sliders
 from app.db import get_db
 from app.models.user import User
@@ -71,6 +77,9 @@ async def analyse_question(
     can answer them in step 2.
     """
     await _check_license(user, db)
+
+    # LLM01/LLM07: Guard against prompt injection
+    _guard_user_input(request.question, user.id)
 
     # Find relevant factors from the question
     relevant_factors = dag.find_relevant_factors(request.question, max_results=12)
@@ -221,6 +230,9 @@ async def generate_advice(
     """
     await _check_license(user, db)
 
+    # LLM01/LLM07: Guard against prompt injection
+    _guard_user_input(request.question, user.id)
+
     # S11-02: Resolve stored API key by ID (no raw keys in requests)
     api_key = await _resolve_stored_key(request.stored_key_id, user.id, request.provider, db)
 
@@ -287,6 +299,9 @@ Schrijf in het Nederlands."""
     lm = LicenseManager(db)
     await lm.record_query(user.license_key)
 
+    # LLM05: Sanitize LLM output
+    response = sanitize_llm_output(response)
+
     # Validate response against model
     validation = dag.validate_response_factors(response)
 
@@ -299,6 +314,24 @@ Schrijf in het Nederlands."""
 
 
 # ── Helpers ────────────────────────────────────────────────────────────
+
+
+def _guard_user_input(user_input: str, user_id: int) -> None:
+    """Check user input for prompt injection and leakage attempts (LLM01/LLM07)."""
+    injection = check_prompt_injection(user_input)
+    if injection:
+        audit_log("prompt_injection_blocked", user_id=user_id, matched=injection)
+        raise HTTPException(
+            status_code=400,
+            detail="Je vraag bevat patronen die niet zijn toegestaan. Herformuleer je vraag.",
+        )
+    leakage = check_prompt_leakage_attempt(user_input)
+    if leakage:
+        audit_log("prompt_leakage_blocked", user_id=user_id, matched=leakage)
+        raise HTTPException(
+            status_code=400,
+            detail="Je vraag bevat patronen die niet zijn toegestaan. Herformuleer je vraag.",
+        )
 
 
 async def _check_license(user: User, db: AsyncSession) -> None:

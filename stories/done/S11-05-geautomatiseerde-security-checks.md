@@ -21,13 +21,24 @@ Security checks automatiseren zodat nieuwe kwetsbaarheden vroeg ontdekt worden, 
 
 ```bash
 # Installatie (eenmalig)
-pip install bandit pip-audit semgrep
+pip install bandit pip-audit
 
 # Draaien
 bandit -r app/ -f json -o reports/bandit.json
 pip-audit --format json --output reports/pip-audit.json
-semgrep --config "p/owasp-top-ten" app/
 ```
+
+> **Opmerking**: `semgrep` draait in CI via de officiële `returntocorp/semgrep-action@v1` GitHub Action (niet via pip install, vanwege ontbrekende `semgrep-core` binary).
+
+### LLM Guard (`app/core/llm_guard.py`)
+
+Runtime-beveiliging conform OWASP Top 10 for LLM Applications:
+- **LLM01 Prompt Injection**: 18 regex-patronen (NL+EN) blokkeren bekende injectiepogingen
+- **LLM05 Output Handling**: HTML/script-sanitisatie op LLM-responses
+- **LLM07 System Prompt Leakage**: Detectie van extractiepogingen
+
+Patronen worden geladen uit `data/llm_guard_patterns.json` (S11-06). Nieuwe patronen
+kunnen worden ontdekt via post-hoc analyse met de Guard Analyst CLI (S11-07).
 
 ## Checklist bij nieuwe feature (template)
 
@@ -41,6 +52,8 @@ semgrep --config "p/owasp-top-ten" app/
 - [ ] Rate limiting op resource-intensieve endpoints
 - [ ] CSRF-bescherming op state-changing routes
 - [ ] Tests voor ongeautoriseerde toegang (403/401)
+- [ ] LLM-guard actief op endpoints die gebruikersinvoer naar LLM sturen
+- [ ] LLM-output gesaniteerd via `sanitize_llm_output()` vóór teruggave
 ```
 
 ## Herhaalbaar

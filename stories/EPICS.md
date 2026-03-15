@@ -155,7 +155,7 @@ Deployment, monitoring en uitbreidingen voor productiegebruik.
 ### EPIC-11: Beveiliging ✅
 
 Beveiligingsaudit en hardening vóór productie-deployment.
-Beoordeeld conform OWASP Top 10 (2021), CWE/SANS Top 25, OWASP ASVS v4.0.
+Beoordeeld conform OWASP Top 10 (2021), CWE/SANS Top 25, OWASP ASVS v4.0, en OWASP Top 10 for LLM Applications.
 Zie: `docs/beveiligingsaudit-v2.md` voor het volledige auditrapport.
 
 | Story | Status | Prioriteit | Beschrijving |
@@ -165,6 +165,8 @@ Zie: `docs/beveiligingsaudit-v2.md` voor het volledige auditrapport.
 | [S11-03](done/S11-03-autorisatie-verbeteren.md) | ✅ Done | HOOG | Autorisatie & toegangscontrole (RBAC enum, per-user model, UUIDs) |
 | [S11-04](done/S11-04-logging-monitoring.md) | ✅ Done | GEMIDDELD | Beveiligingslogging & monitoring (structured audit logger, generieke errors) |
 | [S11-05](done/S11-05-geautomatiseerde-security-checks.md) | ✅ Done | LAAG | Geautomatiseerde security checks (bandit, pip-audit, CI workflow) |
+| [S11-06](done/S11-06-llm-guard-patronen-externaliseren.md) | ✅ Done | GEMIDDELD | LLM Guard patronen externaliseren naar configureerbaar JSON |
+| [S11-07](done/S11-07-guard-analyst-post-hoc-analyse.md) | ✅ Done | GEMIDDELD | Guard Analyst: post-hoc analyse van geblokkeerde queries via LLM |
 
 ---
 

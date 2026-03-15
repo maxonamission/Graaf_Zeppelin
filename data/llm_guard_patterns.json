@@ -1,0 +1,184 @@
+{
+  "_comment": "LLM Guard patronenlijst — wordt geladen door app/core/llm_guard.py. Voeg nieuwe patronen toe zonder code-deploy. Herlaad de app na wijzigingen.",
+  "version": "1.0.0",
+  "updated": "2026-03-15",
+  "injection_patterns": [
+    {
+      "pattern": "ignore\\s+(all\\s+)?previous\\s+instructions",
+      "category": "instruction_override",
+      "lang": "en",
+      "severity": "high",
+      "description": "Attempts to override system instructions"
+    },
+    {
+      "pattern": "negeer\\s+(alle\\s+)?vorige\\s+instructies",
+      "category": "instruction_override",
+      "lang": "nl",
+      "severity": "high",
+      "description": "Probeert systeeminstructies te overschrijven"
+    },
+    {
+      "pattern": "vergeet\\s+(alle\\s+)?eerdere\\s+instructies",
+      "category": "instruction_override",
+      "lang": "nl",
+      "severity": "high",
+      "description": "Probeert eerdere instructies te wissen"
+    },
+    {
+      "pattern": "disregard\\s+(all\\s+)?(above|prior|previous)",
+      "category": "instruction_override",
+      "lang": "en",
+      "severity": "high",
+      "description": "Disregard previous context"
+    },
+    {
+      "pattern": "you\\s+are\\s+now\\s+(a|an)\\b",
+      "category": "persona_hijack",
+      "lang": "en",
+      "severity": "high",
+      "description": "Attempts to change LLM persona"
+    },
+    {
+      "pattern": "je\\s+bent\\s+nu\\s+(een|het)\\b",
+      "category": "persona_hijack",
+      "lang": "nl",
+      "severity": "high",
+      "description": "Probeert LLM-persona te wijzigen"
+    },
+    {
+      "pattern": "new\\s+instructions?\\s*:",
+      "category": "instruction_override",
+      "lang": "en",
+      "severity": "high",
+      "description": "Introduces new instructions"
+    },
+    {
+      "pattern": "nieuwe\\s+instructies?\\s*:",
+      "category": "instruction_override",
+      "lang": "nl",
+      "severity": "high",
+      "description": "Introduceert nieuwe instructies"
+    },
+    {
+      "pattern": "system\\s*prompt\\s*:",
+      "category": "prompt_manipulation",
+      "lang": "en",
+      "severity": "high",
+      "description": "Direct system prompt manipulation"
+    },
+    {
+      "pattern": "<\\s*/?\\s*system\\s*>",
+      "category": "prompt_manipulation",
+      "lang": "en",
+      "severity": "high",
+      "description": "XML-style system tag injection"
+    },
+    {
+      "pattern": "\\[INST\\]",
+      "category": "prompt_manipulation",
+      "lang": "en",
+      "severity": "high",
+      "description": "Llama-style instruction tag"
+    },
+    {
+      "pattern": "\\[/INST\\]",
+      "category": "prompt_manipulation",
+      "lang": "en",
+      "severity": "high",
+      "description": "Llama-style instruction close tag"
+    },
+    {
+      "pattern": "<<\\s*SYS\\s*>>",
+      "category": "prompt_manipulation",
+      "lang": "en",
+      "severity": "high",
+      "description": "Llama-style system tag"
+    },
+    {
+      "pattern": "```\\s*system",
+      "category": "prompt_manipulation",
+      "lang": "en",
+      "severity": "medium",
+      "description": "Markdown code block system injection"
+    },
+    {
+      "pattern": "ADMIN\\s*MODE",
+      "category": "privilege_escalation",
+      "lang": "en",
+      "severity": "high",
+      "description": "Admin mode activation attempt"
+    },
+    {
+      "pattern": "DAN\\s*MODE",
+      "category": "jailbreak",
+      "lang": "en",
+      "severity": "high",
+      "description": "Do Anything Now jailbreak"
+    },
+    {
+      "pattern": "jailbreak",
+      "category": "jailbreak",
+      "lang": "en",
+      "severity": "high",
+      "description": "Explicit jailbreak mention"
+    },
+    {
+      "pattern": "do\\s+anything\\s+now",
+      "category": "jailbreak",
+      "lang": "en",
+      "severity": "high",
+      "description": "DAN prompt pattern"
+    }
+  ],
+  "leakage_patterns": [
+    {
+      "pattern": "(what|show|reveal|repeat|print).{0,30}system\\s*prompt",
+      "category": "prompt_extraction",
+      "lang": "en",
+      "severity": "high",
+      "description": "Asks to reveal system prompt"
+    },
+    {
+      "pattern": "(wat|toon|laat).{0,30}systeem\\s*prompt",
+      "category": "prompt_extraction",
+      "lang": "nl",
+      "severity": "high",
+      "description": "Vraagt om systeemprompt te tonen"
+    },
+    {
+      "pattern": "(what|show|reveal).{0,30}(your|initial)\\s*instructions",
+      "category": "prompt_extraction",
+      "lang": "en",
+      "severity": "high",
+      "description": "Asks to reveal instructions"
+    },
+    {
+      "pattern": "(wat|toon).{0,30}(je|jouw)\\s*instructies",
+      "category": "prompt_extraction",
+      "lang": "nl",
+      "severity": "high",
+      "description": "Vraagt om instructies te tonen"
+    },
+    {
+      "pattern": "herhaal\\s+(je|jouw|de)\\s+(instructies|prompt)",
+      "category": "prompt_extraction",
+      "lang": "nl",
+      "severity": "high",
+      "description": "Vraagt om instructies te herhalen"
+    },
+    {
+      "pattern": "repeat\\s+(your|the)\\s+(instructions|prompt)",
+      "category": "prompt_extraction",
+      "lang": "en",
+      "severity": "high",
+      "description": "Asks to repeat instructions"
+    },
+    {
+      "pattern": "(what|how)\\s+were\\s+you\\s+(instructed|prompted|configured)",
+      "category": "prompt_extraction",
+      "lang": "en",
+      "severity": "high",
+      "description": "Asks how the LLM was configured"
+    }
+  ]
+}

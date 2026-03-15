@@ -56,7 +56,7 @@ Dit document beschrijft hoe het team reageert op beveiligingsincidenten. Het doe
 | 2 | **Revoke**: Alle refresh tokens invalideren (`DELETE FROM refresh_tokens`) | Developer |
 | 3 | **Rotate SECRET_KEY**: Genereer nieuwe sleutel, herstart applicatie | Developer + Infra |
 | 4 | **Re-encrypt**: Alle BYOK-keys zijn onleesbaar na sleutelwissel — informeer gebruikers om keys opnieuw in te voeren | Developer |
-| 5 | **Forensisch**: Bepaal scope (welke tabellen, welke periode, hoeveel gebruikers) | Security Champion |
+| 5 | **Forensisch**: Bepaal scope (welke tabellen, welke periode, hoeveel gebruikers). Gebruik `python -m app.core.guard_analyst summary` op auditlogs om aanvalspatronen te identificeren | Security Champion |
 | 6 | **Notificeer**: Informeer getroffen gebruikers (zie sectie 5) | Product Owner |
 | 7 | **Post-mortem**: Schrijf incident report binnen 5 werkdagen | Security Champion |
 
@@ -70,7 +70,7 @@ Dit document beschrijft hoe het team reageert op beveiligingsincidenten. Het doe
 | 2 | **Revoke tokens**: Verwijder alle refresh tokens van het account | Developer |
 | 3 | **Analyseer**: Controleer auditlogs op acties uitgevoerd door het gecompromitteerde account | Security Champion |
 | 4 | **Reset wachtwoord**: Stuur reset-instructies naar gebruiker via geverifieerd kanaal | Developer |
-| 5 | **Controleer schaal**: Zijn er meer accounts getroffen? Zoek patronen in auditlogs (zelfde IP, tijdsvenster) | Security Champion |
+| 5 | **Controleer schaal**: Zijn er meer accounts getroffen? Gebruik `python -m app.core.guard_analyst summary` om patronen te identificeren (zelfde IP, tijdsvenster) | Security Champion |
 | 6 | **Informeer gebruiker**: Bevestig welke data mogelijk is ingezien | Product Owner |
 
 ### 4.3 Denial of Service (overbelasting)
@@ -176,7 +176,19 @@ Test het incident response plan zonder daadwerkelijk een incident te veroorzaken
 
 ---
 
-## 8. Herziening
+## 8. Beschikbare tooling
+
+| Tool | Commando | Doel |
+|------|----------|------|
+| **Guard Analyst** | `python -m app.core.guard_analyst summary <log>` | Samenvatting van geblokkeerde LLM Guard-pogingen per patroon en gebruiker |
+| **Guard Analyst** | `python -m app.core.guard_analyst prompt <log>` | Genereer LLM-prompt om geblokkeerde invoer te analyseren op nieuwe patronen |
+| **Guard Analyst** | `python -m app.core.guard_analyst apply <response.json>` | Pas LLM-analyse toe: voeg nieuwe patronen toe aan `data/llm_guard_patterns.json` |
+| **Bandit** | `bandit -r app/` | Statische analyse op Python-code voor beveiligingsfouten |
+| **pip-audit** | `pip-audit` | Controleer dependencies op bekende CVE's |
+
+---
+
+## 9. Herziening
 
 Dit plan wordt herzien:
 - Na elk P1- of P2-incident (verplicht)

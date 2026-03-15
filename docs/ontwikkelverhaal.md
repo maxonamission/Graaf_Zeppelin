@@ -90,6 +90,8 @@ Beveiliging is geen optie, het is een vereiste. Het hele platform werd doorgelic
 
 **Automatische controles.** Bij elke wijziging aan de software worden automatisch drie beveiligingsscanners uitgevoerd die bekende kwetsbaarheden opsporen. Zo wordt voorkomen dat er per ongeluk een beveiligingslek wordt geïntroduceerd.
 
+**Zelflerend patroonbeheer.** De patronen waarmee het systeem kwaadaardige invoer herkent, staan niet vast in de broncode maar in een extern configuratiebestand. Nieuwe patronen kunnen worden toegevoegd zonder dat er een software-update nodig is. Daarnaast is er een analysewerkstroom gebouwd die periodiek de geblokkeerde invoer doorloopt, met behulp van AI nieuwe aanvalspatronen identificeert, en deze voorstelt als aanvulling op de patronenlijst. Zo wordt de beveiliging steeds slimmer, zonder dat het extra rekentijd kost tijdens normaal gebruik.
+
 ---
 
 ## Hoofdstuk 7: Klaar voor elk domein
@@ -109,8 +111,8 @@ Het resultaat: om Graaf Zeppelin in te zetten voor een compleet ander domein, ho
 | Wat | Aantal |
 |-----|--------|
 | Afgeronde epics | 10 van 12 |
-| Afgeronde stories | 48 |
-| Geautomatiseerde tests | 214 |
+| Afgeronde stories | 56 |
+| Geautomatiseerde tests | 269 |
 | Beveiligingsstandaarden | OWASP Top 10, CWE/SANS Top 25 |
 | Ondersteunde AI-diensten | OpenAI, Anthropic (+ eigen sleutel) |
 | Ondersteunde talen in modellen | Nederlands en Engels |

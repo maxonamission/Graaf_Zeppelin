@@ -66,12 +66,21 @@ Gebruik deze checklist bij elke pull request die code wijzigt. Niet elk punt is 
 - [ ] Is er een limiet op payload-grootte?
 - [ ] Kan een kwaadwillende gebruiker via dit endpoint kosten genereren? (LLM-aanroepen)
 
-### 3.6 Dependencies
+### 3.6 LLM-integratie (OWASP LLM Top 10)
+
+- [ ] Gaat gebruikersinvoer naar een LLM-prompt? Zo ja, wordt `_guard_user_input()` aangeroepen? (LLM01)
+- [ ] Wordt LLM-output gesaniteerd via `sanitize_llm_output()` voordat het naar de client gaat? (LLM05)
+- [ ] Bevat de systeemprompt de "nooit onthullen"-regel? (LLM07)
+- [ ] Wordt de LLM-response gevalideerd tegen het causale model via `validate_response_factors()`? (LLM09)
+- [ ] Zijn nieuwe LLM-interacties begrensd? (max_tokens, timeout, rate limiting) (LLM10)
+- [ ] Worden geblokkeerde injection/leakage pogingen geauditlogd?
+
+### 3.7 Dependencies
 
 - [ ] Worden nieuwe dependencies toegevoegd? Zo ja: is de library actief onderhouden? Heeft het bekende CVE's?
 - [ ] Is de dependency toegevoegd aan `requirements.txt` met minimumversie?
 
-### 3.7 Configuratie
+### 3.8 Configuratie
 
 - [ ] Worden er nieuwe omgevingsvariabelen geïntroduceerd? Zo ja, staan ze in `.env.example`?
 - [ ] Bevatten configuratiebestanden geen hardcoded secrets?
@@ -85,6 +94,7 @@ Gebruik deze checklist bij elke pull request die code wijzigt. Niet elk punt is 
 | **Bij elke PR** | Security checklist (sectie 3) | Reviewer + Security Champion | Goedgekeurde PR |
 | **Wekelijks** | Dependabot/pip-audit meldingen controleren | Security Champion | Patches of triage |
 | **Kwartaal** | Geautomatiseerde security scan (bandit + semgrep + pip-audit) | CI/CD (automatisch) | Scan-rapport |
+| **Kwartaal** | LLM Guard audit log analyse (`python -m app.core.guard_analyst`) | Security Champion | Nieuwe patronen in `data/llm_guard_patterns.json` |
 | **Halfjaar** | Handmatige security review van nieuwe code sinds vorige review | Security Champion + extern | Review-rapport |
 | **Jaar** | Penetratietest door externe partij | Security Champion (coördinatie) | Pentest-rapport |
 | **Jaar** | Tabletop exercise (incident response oefening) | Security Champion | Evaluatieverslag |
