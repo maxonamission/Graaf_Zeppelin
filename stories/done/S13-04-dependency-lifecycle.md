@@ -3,7 +3,7 @@
 **Epic**: EPIC-13 Beveiligingsvervolg
 **Prioriteit**: GEMIDDELD
 **Geschatte omvang**: S
-**Status:** 🔲 Backlog
+**Status:** ✅ Done (handleiding opgeleverd — Dependabot activeren bij GitHub-setup)
 
 ## Doel
 

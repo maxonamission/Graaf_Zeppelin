@@ -3,7 +3,7 @@
 **Epic**: EPIC-13 Beveiligingsvervolg
 **Prioriteit**: HOOG
 **Geschatte omvang**: M
-**Status:** 🔲 Backlog
+**Status:** ✅ Done
 
 ## Doel
 

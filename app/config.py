@@ -57,8 +57,26 @@ class Settings(BaseSettings):
                 stacklevel=2,
             )
 
+    def validate_database_ssl(self) -> None:
+        """Warn when a PostgreSQL production database has no SSL configured.
+
+        S13-05 / G7: database traffic should be encrypted in production.
+        """
+        if self.environment != "production":
+            return
+        if self.is_sqlite:
+            return  # SQLite is local; SSL not applicable
+        if "sslmode" not in self.database_url:
+            warnings.warn(
+                "DATABASE_URL bevat geen sslmode-parameter. "
+                "Voeg ?sslmode=require (of verify-full) toe aan de DATABASE_URL "
+                "voor versleuteld databaseverkeer in productie. (S13-05 / G7)",
+                stacklevel=2,
+            )
+
     model_config = {"env_file": ".env", "extra": "ignore"}
 
 
 settings = Settings()
 settings.validate_secret_key()
+settings.validate_database_ssl()

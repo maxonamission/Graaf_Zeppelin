@@ -3,7 +3,7 @@
 **Epic**: EPIC-13 Beveiligingsvervolg
 **Prioriteit**: HOOG
 **Geschatte omvang**: L
-**Status:** 🔲 Backlog
+**Status:** ✅ Done (handleiding opgeleverd — uitvoering bij productie-deployment)
 
 ## Doel
 

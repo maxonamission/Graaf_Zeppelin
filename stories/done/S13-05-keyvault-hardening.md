@@ -3,7 +3,7 @@
 **Epic**: EPIC-13 Beveiligingsvervolg
 **Prioriteit**: GEMIDDELD
 **Geschatte omvang**: S
-**Status:** 🔲 Backlog
+**Status:** ✅ Done
 
 ## Doel
 
@@ -22,11 +22,11 @@ De twee resterende cryptografische bevindingen uit de audit (G6, G7) oplossen: d
 
 ## Acceptatiecriteria
 
-- [ ] KeyVault key-derivatie vervangen door PBKDF2 (≥100.000 iteraties) of aparte `ENCRYPTION_MASTER_KEY` omgevingsvariabele
-- [ ] Migratiestrategie voor bestaande versleutelde keys (her-encryptie of backward-compatible)
-- [ ] Database-verbinding valideert `sslmode` in productie (waarschuwing of fout als ontbreekt)
-- [ ] Bestaande tests slagen
-- [ ] Wijzigingen gedocumenteerd in `.env.example`
+- [x] KeyVault key-derivatie vervangen door PBKDF2 (480.000 iteraties, OWASP 2023)
+- [x] Migratiestrategie: MultiFernet (PBKDF2 primary, SHA-256 legacy fallback) — backward compatible zonder her-encryptie
+- [x] Database-verbinding valideert `sslmode` in productie (waarschuwing als ontbreekt)
+- [x] Alle 214 bestaande tests slagen
+- [x] Wijzigingen gedocumenteerd in `.env.example`
 
 ## Afhankelijkheden
 
