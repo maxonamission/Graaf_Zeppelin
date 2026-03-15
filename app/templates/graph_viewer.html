@@ -2,8 +2,9 @@
 {% block title %}Causaal Model — Graaf Zeppelin{% endblock %}
 
 {% block head %}
-<!-- SRI hash: regenerate with: curl -sL URL | openssl dgst -sha384 -binary | openssl base64 -A -->
-<script src="https://d3js.org/d3.v7.min.js"
+<!-- Pinned D3 version for SRI compatibility. Regenerate hash with:
+     curl -sL URL | openssl dgst -sha384 -binary | openssl base64 -A -->
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"
         crossorigin="anonymous"></script>
 {% endblock %}
 
