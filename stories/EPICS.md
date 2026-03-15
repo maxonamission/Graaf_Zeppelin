@@ -165,3 +165,20 @@ Zie: `docs/beveiligingsaudit-v2.md` voor het volledige auditrapport.
 | [S11-03](done/S11-03-autorisatie-verbeteren.md) | ✅ Done | HOOG | Autorisatie & toegangscontrole (admin-only topup/switch) |
 | [S11-04](done/S11-04-logging-monitoring.md) | ✅ Done | GEMIDDELD | Beveiligingslogging & monitoring (structured audit logger) |
 | [S11-05](done/S11-05-geautomatiseerde-security-checks.md) | ✅ Done | LAAG | Geautomatiseerde security checks (bandit, pip-audit script) |
+
+---
+
+### EPIC-12: Multi-domein ondersteuning 🔲
+
+De app domein-agnostisch maken zodat dezelfde codebase kan worden ingezet voor
+elk causaal model (sportdeelname, vitale vereniging, gezondheidszorg, etc.)
+zonder codewijzigingen — alleen een ander model-JSON.
+
+| Story | Status | Prioriteit | Beschrijving |
+|-------|--------|------------|-------------|
+| [S12-01](backlog/S12-01-dag-engine-domein-agnostisch.md) | 🔲 Backlog | HOOG | DAG Engine domein-agnostisch (dynamische veldnamen in parser) |
+| [S12-02](backlog/S12-02-systeemprompts-parametriseren.md) | 🔲 Backlog | HOOG | Systeemprompts parametriseren (domeinnaam uit model-metadata) |
+| [S12-03](backlog/S12-03-voorbeeldvragen-uit-model.md) | 🔲 Backlog | HOOG | Voorbeeldvragen uit model-metadata laden (templates dynamisch) |
+| [S12-04](backlog/S12-04-app-metadata-configureerbaar.md) | 🔲 Backlog | GEMIDDELD | App-metadata configureerbaar (titel, beschrijving, intro) |
+| [S12-05](backlog/S12-05-meertalige-mappings.md) | 🔲 Backlog | GEMIDDELD | Polarity/strength mappings meertalig (NL + EN) |
+| [S12-06](backlog/S12-06-model-metadata-schema.md) | 🔲 Backlog | HOOG | Model-metadata schema uitbreiden (persona, voorbeeldvragen, taal) |
