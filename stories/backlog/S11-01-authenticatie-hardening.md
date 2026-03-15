@@ -28,10 +28,10 @@ Alle authenticatie- en sessiebeheer-kwetsbaarheden oplossen conform OWASP ASVS v
 - [ ] Bestaande wachtwoorden automatisch ge-rehashed bij eerstvolgende login
 - [ ] `SECRET_KEY` heeft geen default — app weigert te starten zonder env var ⚠️ default bestaat nog, alleen warning
 - [x] `.env` staat in `.gitignore`
-- [ ] Rate limiting: max 5 login-pogingen/minuut, max 3 registraties/uur per IP ❌ slowapi geïmporteerd maar incorrect gebruikt
-- [x] Wachtwoordbeleid: minimaal 12 tekens, mix van hoofdletters/kleine letters/cijfers
-- [ ] Cookie-flags: `HttpOnly=true`, `Secure=true`, `SameSite=lax` ⚠️ Secure=false
-- [ ] Token-levensduur teruggebracht naar 30 minuten + refresh-token (7 dagen) ❌ nog 24 uur
+- [ ] Rate limiting: max 5 login-pogingen/minuut, max 3 registraties/uur per IP ⚠️ 5/min register + 10/min login, maar niet conform spec
+- [ ] Wachtwoordbeleid: minimaal 12 tekens, mix van hoofdletters/kleine letters/cijfers ⚠️ min 12 tekens OK, complexiteitsvalidatie ontbreekt
+- [x] Cookie-flags: `HttpOnly=true`, `Secure=true`, `SameSite=lax` (Secure=True in productie)
+- [ ] Token-levensduur teruggebracht naar 30 minuten + refresh-token (7 dagen) ⚠️ 30 min OK, refresh-token ontbreekt
 - [x] JWT-decode valideert `alg=HS256` header
 - [x] Registratiefoutmelding is generiek ("Registratie kon niet worden voltooid")
 - [ ] Alle bestaande auth-tests blijven slagen ❌ test_hash_contains_salt faalt (verwacht HMAC-formaat)

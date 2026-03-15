@@ -26,7 +26,7 @@ Privilege escalation en ongeautoriseerde acties voorkomen door rolgebaseerde toe
 - [ ] Model-selectie per sessie (niet globaal `app.state`), of per-user override ❌ nog globaal
 - [ ] Conversatie-ID's zijn UUIDs in plaats van sequentiële integers ❌ nog Integer PK
 - [x] API-key beheer: gebruiker kan alleen eigen keys zien/verwijderen
-- [ ] Alle autorisatiecontroles ook in tests gedekt ❌ geen autorisatietests
+- [ ] Alle autorisatiecontroles ook in tests gedekt ⚠️ basistests aanwezig, maar niet dekkend
 
 ## Technische notities
 

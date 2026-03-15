@@ -27,10 +27,10 @@ API-endpoints en frontend beschermen tegen injection, CSRF, XSS, en transport-aa
 ### Backend
 - [ ] Reasoning/wizard endpoints accepteren alleen `stored_key_id` (int), niet raw API keys ❌ raw api_key nog geaccepteerd
 - [x] Bestaande BYOK-flow werkt via opgeslagen keys
-- [x] Input-validatie op alle user-facing strings:
-  - `query`/`question`: max 2.000 tekens
-  - `factor_id`: max 100 tekens, alfanumeriek + underscore
-  - `model_id`: max 100 tekens, alfanumeriek + underscore/hyphen
+- [ ] Input-validatie op alle user-facing strings: ⚠️ geïmplementeerd maar limieten wijken af van spec
+  - `query`/`question`: max 5.000 tekens (spec: 2.000)
+  - `factor_id`: max 200 tekens (spec: 100), alfanumeriek + underscore
+  - `model_id`: max 100 tekens, alfanumeriek + underscore/hyphen ✅
 - [x] CSRF-token op alle state-changing endpoints (POST, PUT, DELETE)
 - [x] Security headers middleware:
   - `X-Content-Type-Options: nosniff`
@@ -41,14 +41,14 @@ API-endpoints en frontend beschermen tegen injection, CSRF, XSS, en transport-aa
 ### Frontend (XSS/CSP)
 - [x] `login.html`: `data.detail` via `textContent` i.p.v. `innerHTML`
 - [x] `register.html`: idem
-- [ ] `graph_viewer.html`: domein-namen en factor-ID's in onclick via `data-*` attributen + event delegation i.p.v. string-interpolatie ❌ nog inline onclick
+- [x] `graph_viewer.html`: domein-namen en factor-ID's in onclick via `data-*` attributen + event delegation i.p.v. string-interpolatie
 - [ ] `reasoning.html`: `escapeAttr()` vervangen door `JSON.stringify()` voor attribuutwaarden ❌ nog escapeAttr()
 - [ ] Alle `innerHTML` paden consistent via `escapeHtml()` of `textContent` ⚠️ deels
 - [x] Content Security Policy header:
   ```
   Content-Security-Policy: default-src 'self'; script-src 'self' https://unpkg.com https://d3js.org; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'
   ```
-- [ ] SRI-hashes op externe scripts (htmx, D3): ❌ niet geïmplementeerd
+- [ ] SRI-hashes op externe scripts (htmx, D3): ⚠️ htmx heeft SRI, D3 niet
   ```html
   <script src="https://d3js.org/d3.v7.min.js"
           integrity="sha384-..." crossorigin="anonymous"></script>

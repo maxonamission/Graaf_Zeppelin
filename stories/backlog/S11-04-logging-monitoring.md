@@ -19,14 +19,14 @@ Beveiligingsrelevante events loggen zodat aanvallen detecteerbaar en traceerbaar
 ## Acceptatiecriteria
 
 - [x] Audit-logger apart van application-logger (`logging.getLogger("audit")`)
-- [ ] Gelogde events (minimaal): ⚠️ alleen login/registratie gelogd, rest ontbreekt
-  - Succesvolle en mislukte logins (e-mail, IP, tijdstip)
-  - Registraties
-  - Licentie-validatiefouten
-  - API-key aanmaken/verwijderen
-  - Credit-mutaties (topup)
-  - Model-switches
-  - Reasoning-queries (zonder inhoud, wel user + tijdstip + model)
+- [ ] Gelogde events (minimaal): ⚠️ meeste gelogd, reasoning-queries en licentie-fouten ontbreken
+  - ✅ Succesvolle en mislukte logins (e-mail, IP, tijdstip)
+  - ✅ Registraties
+  - ❌ Licentie-validatiefouten
+  - ✅ API-key aanmaken/verwijderen
+  - ✅ Credit-mutaties (topup)
+  - ✅ Model-switches
+  - ❌ Reasoning-queries (zonder inhoud, wel user + tijdstip + model)
 - [ ] Alle `str(e)` in HTTPException-responses vervangen door generieke berichten ⚠️ deels
 - [ ] Gedetailleerde errors alleen in server-logs (niet naar client) ⚠️ deels
 - [x] Log-format: JSON met timestamp, event_type, user_id, IP, details
