@@ -240,7 +240,8 @@ async def generate_advice(
         f"- {sid}: {val:.2f}" for sid, val in request.slider_values.items()
     )
 
-    prompt = f"""Je bent een beleidsadviseur voor sportdeelname. Een beleidsmedewerker heeft
+    domain = dag.domain_name
+    prompt = f"""Je bent een {dag.persona} voor {domain}. Een beleidsmedewerker heeft
 de volgende vraag gesteld:
 
 "{request.question}"
@@ -264,7 +265,7 @@ Geef concreet en praktisch advies. Gebruik de volgende regels:
 Schrijf in het Nederlands."""
 
     messages = [
-        {"role": "system", "content": "Je bent een vriendelijke maar professionele beleidsadviseur. Je geeft helder advies op basis van wetenschappelijk onderbouwde causale modellen."},
+        {"role": "system", "content": f"Je bent een vriendelijke maar professionele {dag.persona}. Je geeft helder advies op basis van wetenschappelijk onderbouwde causale modellen."},
         {"role": "user", "content": prompt},
     ]
 

@@ -77,7 +77,7 @@
             </div>
             <div class="reasoning-chat" id="chat-messages">
                 <div class="message message-assistant">
-                    Welkom! Stel een vraag over sportdeelname en ik redeneer op basis
+                    Welkom! Stel een vraag over {{ domain_name }} en ik redeneer op basis
                     van het causale model. Klik op een voorbeeldvraag om te beginnen,
                     of stel je eigen vraag.
                 </div>
@@ -85,24 +85,6 @@
                     <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">
                         Probeer een van deze vragen:
                     </p>
-                    <button class="example-question" onclick="useExample(this)">
-                        Wat gebeurt er als we investeren in betere coaching?
-                    </button>
-                    <button class="example-question" onclick="useExample(this)">
-                        Welke factoren hebben de meeste invloed op sportdeelname?
-                    </button>
-                    <button class="example-question" onclick="useExample(this)">
-                        Hoe hangt de kwaliteit van accommodaties samen met ledenbehoud?
-                    </button>
-                    <button class="example-question" onclick="useExample(this)">
-                        Wat is het effect van vrijwilligersbeleid op de clubcultuur?
-                    </button>
-                    <button class="example-question" onclick="useExample(this)">
-                        Welke interventies verbeteren de instroom van jeugdleden?
-                    </button>
-                    <button class="example-question" onclick="useExample(this)">
-                        Hoe beinvloedt de bereikbaarheid van sportfaciliteiten de deelname?
-                    </button>
                 </div>
             </div>
             <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border);">
@@ -128,6 +110,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadConversations(),
         loadReasoningStoredKeys(),
         loadReasoningFreeQuota(),
+        loadExampleQuestions(),
     ]);
 });
 
@@ -230,7 +213,7 @@ async function newConversation() {
     document.getElementById('chat-title').textContent = 'Nieuw gesprek';
     document.getElementById('chat-messages').innerHTML = `
         <div class="message message-assistant">
-            Welkom! Stel een vraag over sportdeelname.
+            Welkom! Stel een vraag over {{ domain_name }}.
         </div>
     `;
     const examples = document.getElementById('example-questions');
@@ -291,6 +274,24 @@ function useExample(btn) {
     input.value = btn.textContent.trim();
     hideExamples();
     input.focus();
+}
+
+async function loadExampleQuestions() {
+    try {
+        const res = await fetch('/api/graph/examples');
+        if (!res.ok) return;
+        const data = await res.json();
+        const container = document.getElementById('example-questions');
+        if (!container) return;
+        const questions = data.reasoning || [];
+        questions.forEach(q => {
+            const btn = document.createElement('button');
+            btn.className = 'example-question';
+            btn.textContent = q;
+            btn.addEventListener('click', () => useExample(btn));
+            container.appendChild(btn);
+        });
+    } catch (e) { /* ignore */ }
 }
 
 function hideExamples() {

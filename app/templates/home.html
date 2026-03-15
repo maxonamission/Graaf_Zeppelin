@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Graaf Zeppelin — Causaal redeneren voor sportdeelname{% endblock %}
+{% block title %}Graaf Zeppelin — Causaal redeneren voor {{ domain_name }}{% endblock %}
 
 {% block content %}
 <nav>
@@ -13,7 +13,7 @@
 </nav>
 
 <div class="hero">
-    <h1>Causaal redeneren over <span>sportdeelname</span></h1>
+    <h1>Causaal redeneren over <span>{{ domain_name }}</span></h1>
     <p>
         Gebruik een wetenschappelijk onderbouwd causaal model om met je eigen AI
         betrouwbaar en herhaalbaar te redeneren over sportbeleid en -deelname.
@@ -27,7 +27,7 @@
 <div id="hoe-het-werkt" class="grid grid-3" style="margin-top: 2rem;">
     <div class="card">
         <div class="card-header">1. Causaal model</div>
-        <p>Een DAG (Directed Acyclic Graph) beschrijft welke factoren sportdeelname
+        <p>Een DAG (Directed Acyclic Graph) beschrijft welke factoren {{ domain_name }}
         beïnvloeden en hoe ze met elkaar samenhangen.</p>
     </div>
     <div class="card">

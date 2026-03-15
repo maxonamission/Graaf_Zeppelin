@@ -3,7 +3,7 @@
 **Epic**: EPIC-12 Multi-domein ondersteuning
 **Prioriteit**: GEMIDDELD
 **Geschatte omvang**: XS
-**Status:** 🔲 Backlog
+**Status:** ✅ Done
 
 ## Doel
 

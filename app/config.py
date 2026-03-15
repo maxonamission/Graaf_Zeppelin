@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 30  # 30 minutes (was 24h — reduced per S11-01)
     dag_models_path: str = "data/models"
     graph_model_path: str = "data/models/sportdeelname_graph.json"
+    domain_display_name: str = ""  # leeg = uit model-metadata
 
     @property
     def is_sqlite(self) -> bool:

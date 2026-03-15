@@ -57,6 +57,23 @@ async def graph_summary(
     return dag.get_graph_summary()
 
 
+# ── Example questions (S12-03) ────────────────────────────────────────
+
+
+@router.get("/examples")
+async def example_questions(
+    user: User = Depends(get_current_user),
+    dag: CausalDAG = Depends(get_dag),
+):
+    """Get example questions from model metadata (S12-03)."""
+    examples = dag.example_questions
+    return {
+        "reasoning": examples["reasoning"],
+        "wizard": examples["wizard"],
+        "domain": dag.domain_name,
+    }
+
+
 # ── Domains ──────────────────────────────────────────────────────────────
 
 

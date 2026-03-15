@@ -55,15 +55,6 @@
         </div>
         <div id="example-questions-wizard" style="margin-bottom: 1rem;">
             <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">Of kies een voorbeeldvraag:</p>
-            <button class="example-question" onclick="useWizardExample(this)">
-                Hoe kunnen we de sportdeelname onder jongeren verhogen?
-            </button>
-            <button class="example-question" onclick="useWizardExample(this)">
-                Wat is het effect van investeren in betere sportaccommodaties?
-            </button>
-            <button class="example-question" onclick="useWizardExample(this)">
-                Hoe verbeteren we het vrijwilligersbeleid bij sportverenigingen?
-            </button>
         </div>
         <button class="btn btn-primary" id="btn-analyse" onclick="analyseQuestion()">
             Analyseer mijn vraag
@@ -209,7 +200,7 @@ let allEffects = []; // for filtering (S05-03)
 // ── Init ──────────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', async () => {
-    await Promise.all([loadSavedExplorations(), loadStoredKeys()]);
+    await Promise.all([loadSavedExplorations(), loadStoredKeys(), loadWizardExamples()]);
 });
 
 // ── S07-04: Load stored API keys ──────────────────────────────────────
@@ -360,6 +351,24 @@ async function deleteExploration(id) {
 function useWizardExample(btn) {
     document.getElementById('policy-question').value = btn.textContent.trim();
     document.getElementById('example-questions-wizard').style.display = 'none';
+}
+
+async function loadWizardExamples() {
+    try {
+        const res = await fetch('/api/graph/examples');
+        if (!res.ok) return;
+        const data = await res.json();
+        const container = document.getElementById('example-questions-wizard');
+        if (!container) return;
+        const questions = data.wizard || [];
+        questions.forEach(q => {
+            const btn = document.createElement('button');
+            btn.className = 'example-question';
+            btn.textContent = q;
+            btn.addEventListener('click', () => useWizardExample(btn));
+            container.appendChild(btn);
+        });
+    } catch (e) { /* ignore */ }
 }
 
 function goToStep(step) {

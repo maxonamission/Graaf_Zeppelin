@@ -168,7 +168,7 @@ Zie: `docs/beveiligingsaudit-v2.md` voor het volledige auditrapport.
 
 ---
 
-### EPIC-12: Multi-domein ondersteuning 🔲
+### EPIC-12: Multi-domein ondersteuning ✅
 
 De app domein-agnostisch maken zodat dezelfde codebase kan worden ingezet voor
 elk causaal model (sportdeelname, vitale vereniging, gezondheidszorg, etc.)
@@ -176,9 +176,9 @@ zonder codewijzigingen — alleen een ander model-JSON.
 
 | Story | Status | Prioriteit | Beschrijving |
 |-------|--------|------------|-------------|
-| [S12-01](backlog/S12-01-dag-engine-domein-agnostisch.md) | 🔲 Backlog | HOOG | DAG Engine domein-agnostisch (dynamische veldnamen in parser) |
-| [S12-02](backlog/S12-02-systeemprompts-parametriseren.md) | 🔲 Backlog | HOOG | Systeemprompts parametriseren (domeinnaam uit model-metadata) |
-| [S12-03](backlog/S12-03-voorbeeldvragen-uit-model.md) | 🔲 Backlog | HOOG | Voorbeeldvragen uit model-metadata laden (templates dynamisch) |
-| [S12-04](backlog/S12-04-app-metadata-configureerbaar.md) | 🔲 Backlog | GEMIDDELD | App-metadata configureerbaar (titel, beschrijving, intro) |
-| [S12-05](backlog/S12-05-meertalige-mappings.md) | 🔲 Backlog | GEMIDDELD | Polarity/strength mappings meertalig (NL + EN) |
-| [S12-06](backlog/S12-06-model-metadata-schema.md) | 🔲 Backlog | HOOG | Model-metadata schema uitbreiden (persona, voorbeeldvragen, taal) |
+| [S12-01](done/S12-01-dag-engine-domein-agnostisch.md) | ✅ Done | HOOG | DAG Engine domein-agnostisch (dynamische veldnamen in parser) |
+| [S12-02](done/S12-02-systeemprompts-parametriseren.md) | ✅ Done | HOOG | Systeemprompts parametriseren (domeinnaam uit model-metadata) |
+| [S12-03](done/S12-03-voorbeeldvragen-uit-model.md) | ✅ Done | HOOG | Voorbeeldvragen uit model-metadata laden (templates dynamisch) |
+| [S12-04](done/S12-04-app-metadata-configureerbaar.md) | ✅ Done | GEMIDDELD | App-metadata configureerbaar (titel, beschrijving, intro) |
+| [S12-05](done/S12-05-meertalige-mappings.md) | ✅ Done | GEMIDDELD | Polarity/strength mappings meertalig (NL + EN) |
+| [S12-06](done/S12-06-model-metadata-schema.md) | ✅ Done | HOOG | Model-metadata schema uitbreiden (persona, voorbeeldvragen, taal) |

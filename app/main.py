@@ -24,13 +24,16 @@ BASE_DIR = Path(__file__).resolve().parent
 async def lifespan(app: FastAPI):
     await init_db()
     # Load graph model once at startup
-    app.state.dag = CausalDAG.load(settings.graph_model_path)
+    dag = CausalDAG.load(settings.graph_model_path)
+    app.state.dag = dag
+    # S12-04: derive domain display name from config or model metadata
+    app.state.domain_display_name = settings.domain_display_name or dag.domain_name
     yield
 
 
 app = FastAPI(
     title="Graaf Zeppelin",
-    description="Causaal redeneerplatform voor sportdeelname",
+    description="Causaal redeneerplatform",
     version="1.0.0",
     lifespan=lifespan,
 )
@@ -106,6 +109,13 @@ app.add_middleware(CSRFMiddleware)
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
+
+def _tpl_ctx(request: Request, **extra) -> dict:
+    """Build template context with domain_name injected."""
+    ctx = {"request": request, "domain_name": getattr(request.app.state, "domain_display_name", "Graaf Zeppelin")}
+    ctx.update(extra)
+    return ctx
+
 # Register API routers
 app.include_router(auth.router)
 app.include_router(graph.router)
@@ -134,17 +144,17 @@ async def home(request: Request):
     user = _get_user_from_cookie(request)
     if user:
         return RedirectResponse(url="/dashboard")
-    return templates.TemplateResponse("home.html", {"request": request})
+    return templates.TemplateResponse("home.html", _tpl_ctx(request))
 
 
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+    return templates.TemplateResponse("login.html", _tpl_ctx(request))
 
 
 @app.get("/register", response_class=HTMLResponse)
 async def register_page(request: Request):
-    return templates.TemplateResponse("register.html", {"request": request})
+    return templates.TemplateResponse("register.html", _tpl_ctx(request))
 
 
 @app.get("/dashboard", response_class=HTMLResponse)
@@ -153,7 +163,7 @@ async def dashboard(request: Request):
     if not user:
         return RedirectResponse(url="/login")
     return templates.TemplateResponse(
-        "dashboard.html", {"request": request, "user": user}
+        "dashboard.html", _tpl_ctx(request, user=user)
     )
 
 
@@ -163,7 +173,7 @@ async def graph_page(request: Request):
     if not user:
         return RedirectResponse(url="/login")
     return templates.TemplateResponse(
-        "graph_viewer.html", {"request": request, "user": user}
+        "graph_viewer.html", _tpl_ctx(request, user=user)
     )
 
 
@@ -173,7 +183,7 @@ async def reasoning_page(request: Request):
     if not user:
         return RedirectResponse(url="/login")
     return templates.TemplateResponse(
-        "reasoning.html", {"request": request, "user": user}
+        "reasoning.html", _tpl_ctx(request, user=user)
     )
 
 
@@ -183,7 +193,7 @@ async def releases_page(request: Request):
     if not user:
         return RedirectResponse(url="/login")
     return templates.TemplateResponse(
-        "releases.html", {"request": request, "user": user}
+        "releases.html", _tpl_ctx(request, user=user)
     )
 
 
@@ -193,7 +203,7 @@ async def wizard_page(request: Request):
     if not user:
         return RedirectResponse(url="/login")
     return templates.TemplateResponse(
-        "wizard.html", {"request": request, "user": user}
+        "wizard.html", _tpl_ctx(request, user=user)
     )
 
 
@@ -203,5 +213,5 @@ async def license_page(request: Request):
     if not user:
         return RedirectResponse(url="/login")
     return templates.TemplateResponse(
-        "license.html", {"request": request, "user": user}
+        "license.html", _tpl_ctx(request, user=user)
     )

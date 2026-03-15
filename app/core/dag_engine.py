@@ -18,20 +18,24 @@ from typing import Any
 
 import networkx as nx
 
-# Mapping from v2 polarity strings to v1 direction strings
+# Mapping from v2 polarity strings to v1 direction strings (NL + EN — S12-05)
 _POLARITY_MAP = {
     "positief": "positive",
     "negatief": "negative",
     "variabel": "variable",
     "positive": "positive",
     "negative": "negative",
+    "variable": "variable",
 }
 
-# Mapping from v2 strength labels to numeric fallback (used only if base_weight missing)
+# Mapping from v2 strength labels to numeric fallback (NL + EN — S12-05)
 _STRENGTH_MAP = {
     "sterk": 0.8,
     "midden": 0.5,
     "zwak": 0.2,
+    "strong": 0.8,
+    "medium": 0.5,
+    "weak": 0.2,
 }
 
 
@@ -51,6 +55,32 @@ class CausalDAG:
         self.sliders: list[dict[str, Any]] = []
         self.metadata: dict[str, Any] = {}
         self._schema_version: int = 1
+
+    # ── Model metadata properties (S12-06) ─────────────────────────────
+
+    @property
+    def domain_name(self) -> str:
+        """Domain display name from metadata, fallback to project name."""
+        return self.metadata.get("domain_name", self.name)
+
+    @property
+    def example_questions(self) -> dict[str, list[str]]:
+        """Example questions per context (reasoning/wizard), or empty arrays."""
+        eq = self.metadata.get("example_questions", {})
+        return {
+            "reasoning": eq.get("reasoning", []),
+            "wizard": eq.get("wizard", []),
+        }
+
+    @property
+    def persona(self) -> str:
+        """AI persona from metadata, or generic fallback."""
+        return self.metadata.get("persona", "beleidsadviseur")
+
+    @property
+    def language(self) -> str:
+        """Language code from metadata, default 'nl'."""
+        return self.metadata.get("language", "nl")
 
     # ── Node operations ──────────────────────────────────────────────────
 
@@ -388,12 +418,10 @@ class CausalDAG:
         scored: list[tuple[int, str, dict[str, Any]]] = []
         for node_id in self.graph.nodes:
             attrs = self.graph.nodes[node_id]
-            searchable = " ".join([
-                attrs.get("label", ""),
-                attrs.get("definition", ""),
-                attrs.get("description", ""),
-                attrs.get("domain", ""),
-            ]).lower()
+            # S12-01: dynamically search all string-valued attributes
+            searchable = " ".join(
+                str(v) for v in attrs.values() if isinstance(v, str)
+            ).lower()
 
             score = sum(1 for t in terms if t in searchable)
             if score > 0:
@@ -521,27 +549,22 @@ class CausalDAG:
         dag._schema_version = 2
         dag.metadata = meta
 
-        # Load nodes
+        # Load nodes — S12-01: accept all fields dynamically
         for node in data["nodes"]:
-            node_id = node["id"]
-            dag.graph.add_node(
-                node_id,
-                label=node.get("label", ""),
-                description=node.get("definition", ""),
-                definition=node.get("definition", ""),
-                domain=node.get("domain", ""),
-                level=node.get("level", ""),
-                bond_influence=node.get("bond_influence", ""),
-                disciplines=node.get("disciplines", []),
-                status=node.get("status", ""),
-                category=node.get("domain", ""),  # backward compat
-                degree=node.get("degree", 0),
-                in_degree=node.get("in_degree", 0),
-                out_degree=node.get("out_degree", 0),
-            )
+            node = dict(node)  # don't mutate original
+            node_id = node.pop("id")
+            # Ensure common fields exist for backward compat
+            node.setdefault("label", "")
+            node.setdefault("description", node.get("definition", ""))
+            node.setdefault("definition", node.get("description", ""))
+            node.setdefault("domain", "")
+            node.setdefault("category", node.get("domain", ""))
+            # All remaining fields are added as-is (extra_attrs)
+            dag.graph.add_node(node_id, **node)
 
-        # Load edges — separate regular edges from moderator edges
+        # Load edges — S12-01: dynamic field parsing
         for edge in data["edges"]:
+            edge = dict(edge)  # don't mutate original
             target_type = edge.get("target_type", "node")
 
             if target_type == "edge":
@@ -561,45 +584,29 @@ class CausalDAG:
                 })
                 continue
 
-            source = edge["source"]
-            target = edge["target"]
+            source = edge.pop("source")
+            target = edge.pop("target")
+            edge.pop("target_type", None)
 
             if source not in dag.graph or target not in dag.graph:
                 continue
 
-            # Map polarity to direction for backward compat
+            # Map polarity to direction for backward compat (S12-05: NL+EN)
             polarity = edge.get("polarity", "positief")
-            direction = _POLARITY_MAP.get(polarity, polarity)
+            direction = _POLARITY_MAP.get(polarity, "positive")  # graceful fallback
 
-            # Use base_weight as numeric strength
+            # Use base_weight as numeric strength, fall back to label mapping
             strength = edge.get("base_weight", _STRENGTH_MAP.get(
-                edge.get("strength", "midden"), 0.5
+                edge.get("strength", ""), 0.5  # graceful fallback
             ))
 
-            dag.graph.add_edge(
-                source,
-                target,
-                id=edge.get("id", ""),
-                direction=direction,
-                polarity=polarity,
-                strength=strength,
-                description=edge.get("mechanism", ""),
-                mechanism=edge.get("mechanism", ""),
-                label=edge.get("label", ""),
-                source_label=edge.get("source_label", ""),
-                target_label=edge.get("target_label", ""),
-                cluster=edge.get("cluster", ""),
-                edge_type=edge.get("edge_type", ""),
-                curve_type=edge.get("curve_type", ""),
-                curve_params=edge.get("curve_params", {}),
-                literature=edge.get("literature", []),
-                slider_sensitivity=edge.get("slider_sensitivity", {}),
-                disciplines=edge.get("disciplines", []),
-                bond_influence=edge.get("bond_influence", ""),
-                time_lag=edge.get("time_lag", ""),
-                status=edge.get("status", ""),
-                moderators=edge.get("moderators", []),
-            )
+            # Set computed fields, keep all original fields as-is
+            edge["direction"] = direction
+            edge["strength"] = strength
+            edge.setdefault("description", edge.get("mechanism", ""))
+            edge.setdefault("mechanism", edge.get("description", ""))
+
+            dag.graph.add_edge(source, target, **edge)
 
         # Load sliders
         dag.sliders = data.get("sliders", [])

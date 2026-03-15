@@ -12,7 +12,7 @@ from typing import Any
 from app.core.dag_engine import CausalDAG
 
 
-SYSTEM_PROMPT_TEMPLATE = """Je bent een causale redeneerassistent voor het domein sportdeelname.
+SYSTEM_PROMPT_TEMPLATE = """Je bent een {persona} en causale redeneerassistent voor het domein {domain_name}.
 Je redeneert UITSLUITEND op basis van het causale model dat je krijgt aangeleverd.
 Je verzint geen nieuwe causale relaties. Je geeft aan als het model onvoldoende
 informatie bevat om een vraag te beantwoorden.
@@ -98,6 +98,8 @@ class PromptBuilder:
         slider_overview = self._build_slider_overview()
 
         return SYSTEM_PROMPT_TEMPLATE.format(
+            persona=self.dag.persona,
+            domain_name=self.dag.domain_name,
             model_name=self.dag.name,
             model_version=self.dag.version,
             model_description=self.dag.description,
