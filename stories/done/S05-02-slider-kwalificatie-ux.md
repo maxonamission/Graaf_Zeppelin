@@ -1,7 +1,7 @@
 # S05-02: Slider-kwalificatie UX
 
 **Epic:** EPIC-05 Begeleide beleidsverkenning
-**Status:** Done
+**Status:** ✅ Done
 **Prioriteit:** Midden
 
 ## User Story

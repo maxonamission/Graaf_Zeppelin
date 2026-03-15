@@ -1,7 +1,7 @@
 # S07-01: Gratis vragen
 
 **Epic:** EPIC-07 Businessmodel & toegang
-**Status:** Done
+**Status:** ✅ Done
 **Prioriteit:** Hoog
 
 ## User Story

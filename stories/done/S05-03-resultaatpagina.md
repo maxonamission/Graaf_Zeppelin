@@ -1,7 +1,7 @@
 # S05-03: Resultaatpagina
 
 **Epic:** EPIC-05 Begeleide beleidsverkenning
-**Status:** Done
+**Status:** ✅ Done
 **Prioriteit:** Hoog
 
 ## User Story

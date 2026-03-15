@@ -3,6 +3,7 @@
 **Epic**: EPIC-11 Beveiliging
 **Prioriteit**: GEMIDDELD — binnen 30 dagen na launch
 **Geschatte omvang**: S
+**Status:** 🔶 Deels geïmplementeerd
 
 ## Doel
 
@@ -17,8 +18,8 @@ Beveiligingsrelevante events loggen zodat aanvallen detecteerbaar en traceerbaar
 
 ## Acceptatiecriteria
 
-- [ ] Audit-logger apart van application-logger (`logging.getLogger("audit")`)
-- [ ] Gelogde events (minimaal):
+- [x] Audit-logger apart van application-logger (`logging.getLogger("audit")`)
+- [ ] Gelogde events (minimaal): ⚠️ alleen login/registratie gelogd, rest ontbreekt
   - Succesvolle en mislukte logins (e-mail, IP, tijdstip)
   - Registraties
   - Licentie-validatiefouten
@@ -26,10 +27,10 @@ Beveiligingsrelevante events loggen zodat aanvallen detecteerbaar en traceerbaar
   - Credit-mutaties (topup)
   - Model-switches
   - Reasoning-queries (zonder inhoud, wel user + tijdstip + model)
-- [ ] Alle `str(e)` in HTTPException-responses vervangen door generieke berichten
-- [ ] Gedetailleerde errors alleen in server-logs (niet naar client)
-- [ ] Log-format: JSON met timestamp, event_type, user_id, IP, details
-- [ ] Logbestanden niet wereldleesbaar (`chmod 640`)
+- [ ] Alle `str(e)` in HTTPException-responses vervangen door generieke berichten ⚠️ deels
+- [ ] Gedetailleerde errors alleen in server-logs (niet naar client) ⚠️ deels
+- [x] Log-format: JSON met timestamp, event_type, user_id, IP, details
+- [ ] Logbestanden niet wereldleesbaar (`chmod 640`) — N/A (deployment-afhankelijk)
 
 ## Technische notities
 

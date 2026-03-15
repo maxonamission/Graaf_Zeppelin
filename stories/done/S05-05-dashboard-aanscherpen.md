@@ -1,7 +1,7 @@
 # S05-05: Dashboard aanscherpen
 
 **Epic:** EPIC-05 Begeleide beleidsverkenning
-**Status:** Done
+**Status:** ✅ Done
 **Prioriteit:** Midden
 
 ## User Story

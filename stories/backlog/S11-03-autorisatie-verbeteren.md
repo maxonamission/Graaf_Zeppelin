@@ -3,6 +3,7 @@
 **Epic**: EPIC-11 Beveiliging
 **Prioriteit**: HOOG — vóór productie
 **Geschatte omvang**: M
+**Status:** 🔶 Deels geïmplementeerd
 
 ## Doel
 
@@ -18,14 +19,14 @@ Privilege escalation en ongeautoriseerde acties voorkomen door rolgebaseerde toe
 
 ## Acceptatiecriteria
 
-- [ ] Rolmodel geïmplementeerd: `user`, `analyst`, `admin`
-- [ ] `/api/models/switch` alleen toegankelijk voor `admin`
-- [ ] `/api/license/credits/topup` vereist admin-goedkeuring of betaalintegratie
+- [ ] Rolmodel geïmplementeerd: `user`, `analyst`, `admin` ⚠️ User.role bestaat maar geen enum, geen analyst-rol
+- [x] `/api/models/switch` alleen toegankelijk voor `admin`
+- [x] `/api/license/credits/topup` vereist admin-goedkeuring of betaalintegratie
   - Tijdelijke oplossing: admin-only endpoint + maximale top-up van 100 per transactie
-- [ ] Model-selectie per sessie (niet globaal `app.state`), of per-user override
-- [ ] Conversatie-ID's zijn UUIDs in plaats van sequentiële integers
-- [ ] API-key beheer: gebruiker kan alleen eigen keys zien/verwijderen
-- [ ] Alle autorisatiecontroles ook in tests gedekt
+- [ ] Model-selectie per sessie (niet globaal `app.state`), of per-user override ❌ nog globaal
+- [ ] Conversatie-ID's zijn UUIDs in plaats van sequentiële integers ❌ nog Integer PK
+- [x] API-key beheer: gebruiker kan alleen eigen keys zien/verwijderen
+- [ ] Alle autorisatiecontroles ook in tests gedekt ❌ geen autorisatietests
 
 ## Technische notities
 

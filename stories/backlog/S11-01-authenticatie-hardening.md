@@ -3,6 +3,7 @@
 **Epic**: EPIC-11 Beveiliging
 **Prioriteit**: KRITIEK — vóór productie
 **Geschatte omvang**: M
+**Status:** 🔶 Deels geïmplementeerd
 
 ## Doel
 
@@ -23,17 +24,17 @@ Alle authenticatie- en sessiebeheer-kwetsbaarheden oplossen conform OWASP ASVS v
 
 ## Acceptatiecriteria
 
-- [ ] Wachtwoorden gehasht met bcrypt (cost factor ≥ 12) of argon2id
+- [x] Wachtwoorden gehasht met bcrypt (cost factor ≥ 12) of argon2id
 - [ ] Bestaande wachtwoorden automatisch ge-rehashed bij eerstvolgende login
-- [ ] `SECRET_KEY` heeft geen default — app weigert te starten zonder env var
-- [ ] `.env` staat in `.gitignore`
-- [ ] Rate limiting: max 5 login-pogingen/minuut, max 3 registraties/uur per IP
-- [ ] Wachtwoordbeleid: minimaal 12 tekens, mix van hoofdletters/kleine letters/cijfers
-- [ ] Cookie-flags: `HttpOnly=true`, `Secure=true`, `SameSite=lax`
-- [ ] Token-levensduur teruggebracht naar 30 minuten + refresh-token (7 dagen)
-- [ ] JWT-decode valideert `alg=HS256` header
-- [ ] Registratiefoutmelding is generiek ("Registratie kon niet worden voltooid")
-- [ ] Alle bestaande auth-tests blijven slagen
+- [ ] `SECRET_KEY` heeft geen default — app weigert te starten zonder env var ⚠️ default bestaat nog, alleen warning
+- [x] `.env` staat in `.gitignore`
+- [ ] Rate limiting: max 5 login-pogingen/minuut, max 3 registraties/uur per IP ❌ slowapi geïmporteerd maar incorrect gebruikt
+- [x] Wachtwoordbeleid: minimaal 12 tekens, mix van hoofdletters/kleine letters/cijfers
+- [ ] Cookie-flags: `HttpOnly=true`, `Secure=true`, `SameSite=lax` ⚠️ Secure=false
+- [ ] Token-levensduur teruggebracht naar 30 minuten + refresh-token (7 dagen) ❌ nog 24 uur
+- [x] JWT-decode valideert `alg=HS256` header
+- [x] Registratiefoutmelding is generiek ("Registratie kon niet worden voltooid")
+- [ ] Alle bestaande auth-tests blijven slagen ❌ test_hash_contains_salt faalt (verwacht HMAC-formaat)
 
 ## Technische notities
 

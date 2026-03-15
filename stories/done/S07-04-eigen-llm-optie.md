@@ -1,7 +1,7 @@
 # S07-04: Eigen LLM-optie (BYOK)
 
 **Epic:** EPIC-07 Businessmodel & toegang
-**Status:** Done
+**Status:** ✅ Done
 **Prioriteit:** Midden
 
 ## User Story

@@ -11,6 +11,6 @@ Authenticatie met JWT tokens en wachtwoordhashing (stdlib-only).
 ## Wat is gebouwd
 
 - JWT (HS256) token generatie en validatie
-- HMAC-SHA256 wachtwoordhashing
+- Bcrypt wachtwoordhashing (cost factor 12)
 - Login en registratie endpoints
 - Cookie-based sessies
