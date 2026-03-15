@@ -182,3 +182,21 @@ zonder codewijzigingen — alleen een ander model-JSON.
 | [S12-04](done/S12-04-app-metadata-configureerbaar.md) | ✅ Done | GEMIDDELD | App-metadata configureerbaar (titel, beschrijving, intro) |
 | [S12-05](done/S12-05-meertalige-mappings.md) | ✅ Done | GEMIDDELD | Polarity/strength mappings meertalig (NL + EN) |
 | [S12-06](done/S12-06-model-metadata-schema.md) | ✅ Done | HOOG | Model-metadata schema uitbreiden (persona, voorbeeldvragen, taal) |
+
+---
+
+### EPIC-13: Beveiligingsvervolg — van audit naar doorlopend proces 🔲
+
+De beveiligingsaudit (EPIC-11) heeft alle technische kwetsbaarheden aangepakt op basis van
+OWASP Top 10 en CWE/SANS Top 25. EPIC-13 adresseert de strategische vervolgstappen die
+nodig zijn voor een volledige beveiligingsstrategie: threat modeling, incident response,
+penetratietests, en een doorlopend review-proces.
+
+| Story | Status | Prioriteit | Beschrijving |
+|-------|--------|------------|-------------|
+| [S13-01](backlog/S13-01-threat-model.md) | 🔲 Backlog | HOOG | Threat model opstellen (STRIDE, actoren, vertrouwensgrenzen) |
+| [S13-02](backlog/S13-02-incident-response-plan.md) | 🔲 Backlog | HOOG | Incident response plan (classificatie, escalatie, communicatie) |
+| [S13-03](backlog/S13-03-penetratietest.md) | 🔲 Backlog | HOOG | Penetratietest plannen en uitvoeren (onafhankelijke validatie) |
+| [S13-04](backlog/S13-04-dependency-lifecycle.md) | 🔲 Backlog | GEMIDDELD | Dependency lifecycle management (Dependabot, SLA, lock-file) |
+| [S13-05](backlog/S13-05-keyvault-hardening.md) | 🔲 Backlog | GEMIDDELD | KeyVault en cryptografie hardening (PBKDF2, database-SSL) |
+| [S13-06](backlog/S13-06-security-review-proces.md) | 🔲 Backlog | GEMIDDELD | Structureel security review proces (checklist, jaarplanning, champion) |
