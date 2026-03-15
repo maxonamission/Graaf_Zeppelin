@@ -84,6 +84,7 @@ Beleidsmedewerkers bij sportbonden, gemeenten en clubs die:
 | Slider Engine | `core/slider_engine.py` | ✅ Volledig (3 curvemodellen, multi-slider) | 12 |
 | Prompt Builder | `core/prompt_builder.py` | ✅ Volledig (4 templates, 6 constraints, NL) | 7 |
 | LLM Connector | `core/llm_connector.py` | ✅ Volledig (OpenAI, Anthropic, BYOK) | — |
+| LLM Guard | `core/llm_guard.py` | ✅ Volledig (OWASP LLM Top 10: prompt injection, output sanitisatie, leakage-detectie) | 41 |
 | License Manager | `core/license_manager.py` | ✅ Volledig (3 tiers, quota, key-generatie) | — |
 | Auth | `core/auth.py` | ✅ Volledig (JWT, wachtwoordhashing) | — |
 | Release Manager | `core/release_manager.py` | ✅ Volledig (versioning, migratieguides) | — |

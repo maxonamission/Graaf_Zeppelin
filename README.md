@@ -82,6 +82,7 @@ Open `http://localhost:8000` in je browser. API-documentatie: `http://localhost:
 3. **Licentie = toegang** — geen geldige licentie = geen API-toegang
 4. **Herhaalbare output** — de DAG constraineert het LLM, niet andersom
 5. **Eenvoud voor de gebruiker** — geen technische kennis nodig
+6. **LLM-beveiliging** — OWASP LLM Top 10 mitigaties (prompt injection guard, output sanitisatie, leakage-detectie)
 
 ## Projectstructuur
 
@@ -99,6 +100,7 @@ app/
     slider_engine.py      # Curve-functies en slider-simulatie
     prompt_builder.py     # DAG → gestructureerde LLM-prompts
     llm_connector.py      # Multi-provider LLM client
+    llm_guard.py          # OWASP LLM Top 10 mitigaties (prompt injection, output sanitisatie)
     license_manager.py    # Licentie-validatie en quota
     auth.py               # JWT tokens en wachtwoordhashing
   models/                 # SQLAlchemy ORM (User, License, Release)

@@ -103,8 +103,9 @@ Graaf Zeppelin is een webapplicatie waarmee beleidsmedewerkers causale modellen 
 - Rate limiting op auth-endpoints
 
 **Risico's:**
-- Prompt injection via gebruikersinvoer → LLM geeft misleidende antwoorden
-- XSS als CSP omzeild wordt (inline scripts zijn toegestaan met `unsafe-inline`)
+- Prompt injection via gebruikersinvoer → LLM geeft misleidende antwoorden (gemitigeerd door `llm_guard.py` patroondetectie)
+- Systeemprompt leakage → aanvaller achterhaalt interne instructies (gemitigeerd door leakage-detectie en expliciete "nooit onthullen"-regel)
+- XSS als CSP omzeild wordt (inline scripts zijn toegestaan met `unsafe-inline`; LLM-output wordt gesaniteerd via `sanitize_llm_output()`)
 
 ### Grens 2: Server ↔ Database
 
@@ -140,7 +141,7 @@ Graaf Zeppelin is een webapplicatie waarmee beleidsmedewerkers causale modellen 
 **Risico's:**
 - De LLM-provider ziet alle gebruikersvragen en de volledige modelcontext
 - Bij een lek aan de kant van de provider zijn gebruikersvragen zichtbaar
-- Prompt injection: een gebruiker kan proberen de systeemprompt te omzeilen
+- Prompt injection: een gebruiker kan proberen de systeemprompt te omzeilen (gemitigeerd door `llm_guard.py`; zie LLM01/LLM07)
 
 ---
 
@@ -185,7 +186,7 @@ Dit is een **single point of failure**. Als de SECRET_KEY lekt, zijn beide bevei
 |---|-----------|-------|-------------------|-----------|
 | TA-1 | Aanvaller wijzigt request-body om credits te manipuleren | 1 | Credits topup vereist ADMIN-rol, limiet 1-100 per keer | **Laag** |
 | TA-2 | Aanvaller wijzigt model-switch request | 1 | Model switch vereist ADMIN-rol, pad-traversal preventie | **Laag** |
-| TA-3 | Prompt injection via gebruikersvraag | 1→3 | Systeemprompt bevat constraints, antwoord-validatie, max 2000 tekens | **Gemiddeld** — LLM kan altijd verrast worden door creatieve prompts |
+| TA-3 | Prompt injection via gebruikersvraag | 1→3 | Systeemprompt bevat constraints, antwoord-validatie, max 2000 tekens, **LLM Guard** (`llm_guard.py`) blokkeert 18 bekende injectiepatronen (NL+EN) vóór de LLM, audit logging van geblokkeerde pogingen | **Laag–Gemiddeld** — bekende patronen worden geblokkeerd; creatieve varianten blijven een risico |
 | TA-4 | SQL-injectie via invoervelden | 1→2 | SQLAlchemy ORM (geparametriseerde queries), Pydantic validatie | **Laag** — ORM voorkomt directe SQL-injectie |
 | TA-5 | Aanvaller wijzigt het causale model (JSON) | Server | Modelbestanden worden geladen van het bestandssysteem; geen upload-endpoint | **Laag** — vereist servertoegang |
 
@@ -255,7 +256,7 @@ Dit is een **single point of failure**. Als de SECRET_KEY lekt, zijn beide bevei
 
 ---
 
-### Scenario 2: Prompt injection leidt tot misleidend beleidsadvies (Hoog)
+### Scenario 2: Prompt injection leidt tot misleidend beleidsadvies (Gemiddeld)
 
 **Aanvaller**: Kwaadwillende gebruiker of geautomatiseerde aanval
 **Pad**: Stuurt een zorgvuldig geformuleerde vraag die de systeemprompt omzeilt
@@ -264,15 +265,22 @@ Dit is een **single point of failure**. Als de SECRET_KEY lekt, zijn beide bevei
 - Beleidsmedewerker neemt beslissingen op basis van onbetrouwbare output
 - Reputatieschade voor het platform
 
-**Waarschijnlijkheid**: Gemiddeld (prompt injection is een actief onderzoeksgebied; geen 100% oplossing)
+**Waarschijnlijkheid**: Laag–Gemiddeld (bekende patronen worden geblokkeerd; creatieve varianten blijven mogelijk)
 **Impact**: Hoog
-**Risicoscore**: Hoog
+**Risicoscore**: Gemiddeld (verlaagd van Hoog door meervoudige mitigatie)
 
-**Aanbevolen mitigatie**:
-- Antwoord-validatie versterken (controle of genoemde factoren daadwerkelijk in de DAG voorkomen)
+**Geïmplementeerde mitigaties** (OWASP LLM Top 10):
+- ✅ **LLM01 — Prompt Injection**: `llm_guard.py` blokkeert 18 bekende injectiepatronen (NL+EN) vóór de LLM-aanroep, met audit logging
+- ✅ **LLM05 — Output Handling**: `sanitize_llm_output()` neutraliseert HTML/XSS in LLM-responses
+- ✅ **LLM07 — System Prompt Leakage**: Leakage-detectie + expliciete "nooit onthullen"-regel in systeemprompt
+- ✅ **LLM09 — Misinformation**: `validate_response_factors()` controleert of genoemde factoren in het model voorkomen
+- ✅ Antwoord-validatie actief op reasoning en wizard endpoints
+- ✅ Audit logging van geblokkeerde injection- en leakage-pogingen
+
+**Resterende aanbevelingen**:
 - Disclaimer in de UI dat AI-antwoorden altijd menselijke beoordeling vereisen
-- Logging van queries die validatie falen → patroonherkenning
 - Overweeg een tweede LLM-aanroep als "validator" voor verdachte antwoorden
+- Periodiek de injectiepatronen bijwerken op basis van nieuwe technieken
 
 ---
 
@@ -362,8 +370,8 @@ Dit is een **single point of failure**. Als de SECRET_KEY lekt, zijn beide bevei
 2. **Rate limiting uitbreiden** naar alle endpoints
    Nu hebben slechts 3 van 39 endpoints rate limiting. Een globale limiet per gebruiker is essentieel.
 
-3. **Prompt injection monitoring**
-   Log queries die validatie falen en analyseer patronen.
+3. **Prompt injection monitoring** ✅ (deels geïmplementeerd)
+   LLM Guard blokkeert en logt bekende patronen. Restpunt: analyseer audit logs periodiek op nieuwe varianten.
 
 4. **Data Processing Agreement** met LLM-providers
    Juridische bescherming voor de gegevens die naar externe diensten worden gestuurd.

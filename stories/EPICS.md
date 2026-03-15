@@ -155,7 +155,7 @@ Deployment, monitoring en uitbreidingen voor productiegebruik.
 ### EPIC-11: Beveiliging ✅
 
 Beveiligingsaudit en hardening vóór productie-deployment.
-Beoordeeld conform OWASP Top 10 (2021), CWE/SANS Top 25, OWASP ASVS v4.0.
+Beoordeeld conform OWASP Top 10 (2021), CWE/SANS Top 25, OWASP ASVS v4.0, en OWASP Top 10 for LLM Applications.
 Zie: `docs/beveiligingsaudit-v2.md` voor het volledige auditrapport.
 
 | Story | Status | Prioriteit | Beschrijving |
