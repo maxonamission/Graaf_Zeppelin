@@ -194,7 +194,7 @@ penetratietests, en een doorlopend review-proces.
 
 | Story | Status | Prioriteit | Beschrijving |
 |-------|--------|------------|-------------|
-| [S13-01](backlog/S13-01-threat-model.md) | 🔲 Backlog | HOOG | Threat model opstellen (STRIDE, actoren, vertrouwensgrenzen) |
+| [S13-01](done/S13-01-threat-model.md) | ✅ Done | HOOG | Threat model opstellen (STRIDE, actoren, vertrouwensgrenzen) |
 | [S13-02](backlog/S13-02-incident-response-plan.md) | 🔲 Backlog | HOOG | Incident response plan (classificatie, escalatie, communicatie) |
 | [S13-03](backlog/S13-03-penetratietest.md) | 🔲 Backlog | HOOG | Penetratietest plannen en uitvoeren (onafhankelijke validatie) |
 | [S13-04](backlog/S13-04-dependency-lifecycle.md) | 🔲 Backlog | GEMIDDELD | Dependency lifecycle management (Dependabot, SLA, lock-file) |
