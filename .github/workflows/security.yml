@@ -24,7 +24,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip setuptools wheel
           pip install -r requirements.txt
-          pip install bandit pip-audit semgrep
+          pip install bandit pip-audit
 
       - name: Run bandit (Python SAST)
         run: |
@@ -38,9 +38,9 @@ jobs:
           pip-audit
 
       - name: Run semgrep (OWASP patterns)
-        run: |
-          semgrep --config "p/owasp-top-ten" app/ --json -o reports/semgrep.json || true
-          semgrep --config "p/owasp-top-ten" app/
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: p/owasp-top-ten
 
       - name: Upload security reports
         if: always()
