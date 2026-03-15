@@ -51,7 +51,7 @@ class GenerateAdviceRequest(BaseModel):
     slider_values: dict[str, float]
     effects: list[dict] | None = None
     provider: str = Field("openai", pattern=r"^(openai|anthropic)$")
-    api_key: str = Field(..., min_length=1, max_length=256)
+    stored_key_id: int = Field(..., description="ID van opgeslagen API key")
     model: str | None = Field(None, max_length=100)
 
 
@@ -221,15 +221,8 @@ async def generate_advice(
     """
     await _check_license(user, db)
 
-    # S07-04: Resolve stored API key if sentinel is used
-    api_key = request.api_key
-    if api_key == "__stored__":
-        api_key = await _resolve_stored_key(user.id, request.provider, db)
-        if not api_key:
-            raise HTTPException(
-                status_code=422,
-                detail="Geen opgeslagen API key gevonden voor deze provider. Voer een key in.",
-            )
+    # S11-02: Resolve stored API key by ID (no raw keys in requests)
+    api_key = await _resolve_stored_key(request.stored_key_id, user.id, request.provider, db)
 
     # Build context from simulation
     effects_text = ""
@@ -336,10 +329,13 @@ async def _check_license(user: User, db: AsyncSession) -> None:
         raise HTTPException(status_code=403, detail="Licentie is ongeldig of verlopen")
 
 
-async def _resolve_stored_key(user_id: int, provider: str, db: AsyncSession) -> str | None:
-    """Retrieve and decrypt a stored API key for the given provider (S07-04)."""
+async def _resolve_stored_key(
+    stored_key_id: int, user_id: int, provider: str, db: AsyncSession
+) -> str:
+    """Resolve a stored API key by ID (S11-02: no raw keys in requests)."""
     result = await db.execute(
         select(UserApiKey).where(
+            UserApiKey.id == stored_key_id,
             UserApiKey.user_id == user_id,
             UserApiKey.provider == provider,
             UserApiKey.is_active == True,  # noqa: E712
@@ -347,6 +343,9 @@ async def _resolve_stored_key(user_id: int, provider: str, db: AsyncSession) -> 
     )
     key_obj = result.scalar_one_or_none()
     if not key_obj:
-        return None
+        raise HTTPException(
+            status_code=422,
+            detail="Geen opgeslagen API key gevonden. Sla eerst een key op via de LLM-configuratie.",
+        )
     vault = KeyVault()
     return vault.decrypt(key_obj.encrypted_key)

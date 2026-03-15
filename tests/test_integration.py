@@ -10,11 +10,13 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 
 from app.core.auth import hash_password
+from app.core.key_vault import KeyVault
 from app.db import async_session, engine
 from app.main import app
 from app.models.base import Base
 from app.models.license import License
 from app.models.user import User
+from app.models.user_api_key import UserApiKey
 
 
 @pytest.fixture(autouse=True)
@@ -299,7 +301,19 @@ class TestReasoningFlow:
                 license_key="GZ-INTEG-TEST",
             )
             session.add(user)
+            await session.flush()
+
+            vault = KeyVault()
+            stored_key = UserApiKey(
+                user_id=user.id,
+                provider="openai",
+                encrypted_key=vault.encrypt("sk-test-key"),
+                key_hint="...key",
+                is_active=True,
+            )
+            session.add(stored_key)
             await session.commit()
+            self._stored_key_id = stored_key.id
 
         from app.core.auth import create_access_token
 
@@ -327,7 +341,7 @@ class TestReasoningFlow:
                     json={
                         "query": "Wat is het effect van coaching op sportdeelname?",
                         "provider": "openai",
-                        "api_key": "sk-test-key",
+                        "stored_key_id": self._stored_key_id,
                     },
                 )
                 assert response.status_code == 200
@@ -358,7 +372,7 @@ class TestReasoningFlow:
                         "change": 0.3,
                         "description": "Meer investering in coaching",
                         "provider": "openai",
-                        "api_key": "sk-test-key",
+                        "stored_key_id": self._stored_key_id,
                     },
                 )
                 assert response.status_code == 200

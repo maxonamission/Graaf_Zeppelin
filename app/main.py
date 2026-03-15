@@ -7,19 +7,17 @@ from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
-from slowapi.util import get_remote_address
 
 from app.api import auth, conversations, explorations, graph, license, models, reasoning, releases, wizard
 from app.config import settings
 from app.core.auth import decode_access_token
 from app.core.dag_engine import CausalDAG
+from app.core.rate_limit import limiter
 from app.db import init_db
 
 BASE_DIR = Path(__file__).resolve().parent
-
-limiter = Limiter(key_func=get_remote_address)
 
 
 @asynccontextmanager

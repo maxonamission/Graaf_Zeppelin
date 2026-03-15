@@ -119,7 +119,7 @@
 <script>
 let currentConversationId = null;
 let allFactors = [];
-let reasoningStoredKeys = {};
+let reasoningStoredKeys = {};  // provider -> {id, hint}
 
 // Load factors, conversations, keys, and free quota on page load
 document.addEventListener('DOMContentLoaded', async () => {
@@ -131,14 +131,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     ]);
 });
 
-// S07-04: Load stored keys
+// S07-04 + S11-02: Load stored keys (with IDs, no raw keys in requests)
 async function loadReasoningStoredKeys() {
     try {
         const res = await fetch('/api/license/api-keys');
         if (!res.ok) return;
         const data = await res.json();
         reasoningStoredKeys = {};
-        (data.keys || []).forEach(k => { reasoningStoredKeys[k.provider] = k.hint; });
+        (data.keys || []).forEach(k => { reasoningStoredKeys[k.provider] = { id: k.id, hint: k.hint }; });
         checkReasoningStoredKeys();
     } catch (e) { /* ignore */ }
 }
@@ -151,13 +151,15 @@ function checkReasoningStoredKeys() {
 
     if (reasoningStoredKeys[provider]) {
         indicator.style.display = '';
-        document.getElementById('reasoning-stored-key-hint').textContent = reasoningStoredKeys[provider];
-        keyInput.placeholder = 'Opgeslagen key wordt gebruikt';
-        keyNote.textContent = 'Laat leeg om de opgeslagen key te gebruiken, of voer een andere in.';
+        document.getElementById('reasoning-stored-key-hint').textContent = reasoningStoredKeys[provider].hint;
+        keyInput.style.display = 'none';
+        keyNote.textContent = 'Opgeslagen key wordt gebruikt.';
     } else {
         indicator.style.display = 'none';
-        keyInput.placeholder = 'sk-...';
-        keyNote.textContent = 'Je key wordt niet opgeslagen — alleen gebruikt voor deze sessie.';
+        keyInput.style.display = '';
+        keyInput.placeholder = 'Sla eerst een key op via de licentiepagina';
+        keyInput.disabled = true;
+        keyNote.textContent = 'Sla een API key op via de licentiepagina om deze functie te gebruiken.';
     }
 }
 
@@ -326,17 +328,13 @@ async function sendQuery(e) {
     if (!query) return;
 
     const provider = document.getElementById('llm-provider').value;
-    let apiKey = document.getElementById('llm-key').value;
 
-    // S07-04: Use stored key if no key entered and stored key available
-    if (!apiKey && reasoningStoredKeys[provider]) {
-        apiKey = '__stored__';
-    }
-
-    if (!apiKey) {
-        addMessage('Voer eerst je LLM API key in bij de configuratie links.', 'error');
+    // S11-02: Only use stored keys (no raw keys in requests)
+    if (!reasoningStoredKeys[provider]) {
+        addMessage('Sla eerst een API key op via de licentiepagina.', 'error');
         return;
     }
+    const storedKeyId = reasoningStoredKeys[provider].id;
 
     hideExamples();
 
@@ -375,7 +373,7 @@ async function sendQuery(e) {
             body: JSON.stringify({
                 query: query,
                 provider: provider,
-                api_key: apiKey,
+                stored_key_id: storedKeyId,
                 model: document.getElementById('llm-model').value || null,
                 factor_ids: manualFactors.length > 0 ? manualFactors : null,
             }),

@@ -220,7 +220,7 @@ async function loadStoredKeys() {
         if (!res.ok) return;
         const data = await res.json();
         storedKeys = {};
-        (data.keys || []).forEach(k => { storedKeys[k.provider] = k.hint; });
+        (data.keys || []).forEach(k => { storedKeys[k.provider] = { id: k.id, hint: k.hint }; });
         checkStoredKeys();
     } catch (e) { /* ignore for non-BYOK */ }
 }
@@ -233,13 +233,15 @@ function checkStoredKeys() {
 
     if (storedKeys[provider]) {
         indicator.style.display = '';
-        document.getElementById('stored-key-hint').textContent = storedKeys[provider];
-        keyInput.placeholder = 'Opgeslagen key wordt gebruikt';
-        keyNote.textContent = 'Laat leeg om de opgeslagen key te gebruiken, of voer een andere in.';
+        document.getElementById('stored-key-hint').textContent = storedKeys[provider].hint;
+        keyInput.style.display = 'none';
+        keyNote.textContent = 'Opgeslagen key wordt gebruikt.';
     } else {
         indicator.style.display = 'none';
-        keyInput.placeholder = 'sk-...';
-        keyNote.textContent = '';
+        keyInput.style.display = '';
+        keyInput.placeholder = 'Sla eerst een key op via de licentiepagina';
+        keyInput.disabled = true;
+        keyNote.textContent = 'Sla een API key op via de licentiepagina om deze functie te gebruiken.';
     }
 }
 
@@ -680,17 +682,13 @@ function filterEffects(type) {
 
 async function requestAdvice() {
     const provider = document.getElementById('wiz-provider').value;
-    let apiKey = document.getElementById('wiz-api-key').value;
 
-    // S07-04: Use stored key if no key entered and stored key available
-    if (!apiKey && storedKeys[provider]) {
-        apiKey = '__stored__';  // sentinel: backend should use stored key
-    }
-
-    if (!apiKey) {
-        alert('Voer eerst je LLM API key in bij de configuratie onderaan.');
+    // S11-02: Only use stored keys (no raw keys in requests)
+    if (!storedKeys[provider]) {
+        alert('Sla eerst een API key op via de licentiepagina.');
         return;
     }
+    const storedKeyId = storedKeys[provider].id;
 
     const btn = document.getElementById('btn-advice');
     btn.disabled = true;
@@ -705,7 +703,7 @@ async function requestAdvice() {
                 slider_values: wizardState.sliderValues,
                 effects: wizardState.effects,
                 provider: provider,
-                api_key: apiKey,
+                stored_key_id: storedKeyId,
             }),
         });
 

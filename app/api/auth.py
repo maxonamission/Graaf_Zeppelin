@@ -13,6 +13,7 @@ from app.api.deps import get_current_user
 from app.config import settings
 from app.core.audit import audit_log
 from app.core.auth import create_access_token, hash_password, verify_password
+from app.core.rate_limit import limiter
 
 
 def _set_token_cookie(response: Response, token: str) -> None:
@@ -55,8 +56,8 @@ class LoginRequest(BaseModel):
 
 
 @router.post("/register")
+@limiter.limit("3/hour")
 async def register(request: Request, data: RegisterRequest, db: AsyncSession = Depends(get_db)):
-    await request.app.state.limiter.check("5/minute", request)
 
     # Verify license
     lm = LicenseManager(db)
@@ -106,8 +107,8 @@ async def register(request: Request, data: RegisterRequest, db: AsyncSession = D
 
 
 @router.post("/login")
+@limiter.limit("5/minute")
 async def login(request: Request, data: LoginRequest, db: AsyncSession = Depends(get_db)):
-    await request.app.state.limiter.check("10/minute", request)
 
     result = await db.execute(select(User).where(User.email == data.email))
     user = result.scalar_one_or_none()
@@ -126,7 +127,7 @@ async def login(request: Request, data: LoginRequest, db: AsyncSession = Depends
         try:
             await lm.validate_license(user.license_key)
         except Exception:
-            logger.warning("Licentievalidatie mislukt voor gebruiker %s", user.id)
+            audit_log("license_validation_failed", user_id=user.id, ip=client_ip)
             raise HTTPException(status_code=403, detail="Licentieprobleem")
 
     audit_log("login_success", user_id=user.id, ip=client_ip)

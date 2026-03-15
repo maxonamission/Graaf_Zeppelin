@@ -8,6 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user, get_dag
+from app.core.audit import audit_log
 from app.core.dag_engine import CausalDAG
 from app.core.key_vault import KeyVault
 from app.core.license_manager import LicenseManager
@@ -23,7 +24,7 @@ router = APIRouter(prefix="/api/reasoning", tags=["reasoning"])
 class ReasoningRequest(BaseModel):
     query: str = Field(..., min_length=1, max_length=5000)
     provider: str = Field("openai", pattern=r"^(openai|anthropic)$")
-    api_key: str = Field(..., min_length=1, max_length=256)
+    stored_key_id: int = Field(..., description="ID van opgeslagen API key")
     model: str | None = Field(None, max_length=100)
     factor_ids: list[str] | None = None
 
@@ -33,7 +34,7 @@ class InterventionReasoningRequest(BaseModel):
     change: float
     description: str = Field("", max_length=2000)
     provider: str = Field("openai", pattern=r"^(openai|anthropic)$")
-    api_key: str = Field(..., min_length=1, max_length=256)
+    stored_key_id: int = Field(..., description="ID van opgeslagen API key")
     model: str | None = Field(None, max_length=100)
 
 
@@ -48,7 +49,7 @@ async def reason_query(
     await _check_license_and_quota(user, db)
 
     # S07-04: Resolve stored key if sentinel
-    api_key = await _resolve_api_key(request.api_key, request.provider, user.id, db)
+    api_key = await _resolve_api_key(request.stored_key_id, request.provider, user.id, db)
 
     builder = PromptBuilder(dag)
     messages = builder.build_full_prompt(request.query, request.factor_ids)
@@ -66,6 +67,8 @@ async def reason_query(
 
     # Record usage
     await _record_usage(user, db)
+
+    audit_log("reasoning_query", user_id=user.id, provider=request.provider)
 
     return {
         "query": request.query,
@@ -86,7 +89,7 @@ async def reason_intervention(
     await _check_license_and_quota(user, db)
 
     # S07-04: Resolve stored key if sentinel
-    api_key = await _resolve_api_key(request.api_key, request.provider, user.id, db)
+    api_key = await _resolve_api_key(request.stored_key_id, request.provider, user.id, db)
 
     builder = PromptBuilder(dag)
 
@@ -116,6 +119,13 @@ async def reason_intervention(
 
     await _record_usage(user, db)
 
+    audit_log(
+        "reasoning_intervention",
+        user_id=user.id,
+        provider=request.provider,
+        factor_id=request.factor_id,
+    )
+
     return {
         "factor": request.factor_id,
         "change": request.change,
@@ -141,7 +151,7 @@ async def reason_query_validated(
     await _check_license_and_quota(user, db)
 
     # S07-04: Resolve stored key if sentinel
-    api_key = await _resolve_api_key(request.api_key, request.provider, user.id, db)
+    api_key = await _resolve_api_key(request.stored_key_id, request.provider, user.id, db)
 
     # Auto-select factors if not provided
     factor_ids = request.factor_ids
@@ -171,6 +181,8 @@ async def reason_query_validated(
 
     # Record usage
     await _record_usage(user, db)
+
+    audit_log("reasoning_query_validated", user_id=user.id, provider=request.provider)
 
     return {
         "query": request.query,
@@ -244,14 +256,12 @@ async def _record_usage(user: User, db: AsyncSession) -> None:
 
 
 async def _resolve_api_key(
-    api_key: str, provider: str, user_id: int, db: AsyncSession
+    stored_key_id: int, provider: str, user_id: int, db: AsyncSession
 ) -> str:
-    """Resolve the API key — use stored key if sentinel '__stored__' (S07-04)."""
-    if api_key != "__stored__":
-        return api_key
-
+    """Resolve a stored API key by ID (S11-02: no raw keys in requests)."""
     result = await db.execute(
         select(UserApiKey).where(
+            UserApiKey.id == stored_key_id,
             UserApiKey.user_id == user_id,
             UserApiKey.provider == provider,
             UserApiKey.is_active == True,  # noqa: E712
@@ -261,7 +271,7 @@ async def _resolve_api_key(
     if not key_obj:
         raise HTTPException(
             status_code=422,
-            detail="Geen opgeslagen API key gevonden voor deze provider. Voer een key in.",
+            detail="Geen opgeslagen API key gevonden. Sla eerst een key op via de LLM-configuratie.",
         )
     vault = KeyVault()
     return vault.decrypt(key_obj.encrypted_key)

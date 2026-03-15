@@ -152,7 +152,7 @@ Deployment, monitoring en uitbreidingen voor productiegebruik.
 
 ---
 
-### EPIC-11: Beveiliging ✅
+### EPIC-11: Beveiliging 🔶
 
 Beveiligingsaudit en hardening vóór productie-deployment.
 Beoordeeld conform OWASP Top 10 (2021), CWE/SANS Top 25, OWASP ASVS v4.0.
@@ -160,11 +160,11 @@ Zie: `docs/beveiligingsaudit-v2.md` voor het volledige auditrapport.
 
 | Story | Status | Prioriteit | Beschrijving |
 |-------|--------|------------|-------------|
-| [S11-01](done/S11-01-authenticatie-hardening.md) | ✅ Done | KRITIEK | Authenticatie hardening (bcrypt, secure cookies, rate limiting, JWT validatie) |
-| [S11-02](done/S11-02-api-bescherming.md) | ✅ Done | KRITIEK/HOOG | API-bescherming (input validatie, CSRF, security headers, XSS-fix) |
-| [S11-03](done/S11-03-autorisatie-verbeteren.md) | ✅ Done | HOOG | Autorisatie & toegangscontrole (admin-only topup/switch) |
-| [S11-04](done/S11-04-logging-monitoring.md) | ✅ Done | GEMIDDELD | Beveiligingslogging & monitoring (structured audit logger) |
-| [S11-05](done/S11-05-geautomatiseerde-security-checks.md) | ✅ Done | LAAG | Geautomatiseerde security checks (bandit, pip-audit script) |
+| [S11-01](backlog/S11-01-authenticatie-hardening.md) | 🔶 Deels | KRITIEK | Authenticatie hardening (bcrypt, secure cookies, rate limiting, JWT validatie) |
+| [S11-02](backlog/S11-02-api-bescherming.md) | 🔶 Deels | KRITIEK/HOOG | API-bescherming (input validatie, CSRF, security headers, XSS-fix) |
+| [S11-03](backlog/S11-03-autorisatie-verbeteren.md) | 🔶 Deels | HOOG | Autorisatie & toegangscontrole (admin-only topup/switch) |
+| [S11-04](backlog/S11-04-logging-monitoring.md) | 🔶 Deels | GEMIDDELD | Beveiligingslogging & monitoring (structured audit logger) |
+| [S11-05](backlog/S11-05-geautomatiseerde-security-checks.md) | 🔲 Backlog | LAAG | Geautomatiseerde security checks (bandit, pip-audit, CI) |
 
 ---
 

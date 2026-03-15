@@ -308,7 +308,7 @@ class TestReasoningAPI:
                 json={
                     "query": "test",
                     "provider": "openai",
-                    "api_key": "sk-test",
+                    "stored_key_id": 1,
                 },
             )
             assert response.status_code == 401
@@ -323,7 +323,7 @@ class TestReasoningAPI:
                     "factor_id": "N001",
                     "change": 0.2,
                     "provider": "openai",
-                    "api_key": "sk-test",
+                    "stored_key_id": 1,
                 },
             )
             assert response.status_code == 401

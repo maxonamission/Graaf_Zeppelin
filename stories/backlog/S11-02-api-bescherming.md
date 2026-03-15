@@ -25,7 +25,7 @@ API-endpoints en frontend beschermen tegen injection, CSRF, XSS, en transport-aa
 ## Acceptatiecriteria
 
 ### Backend
-- [ ] Reasoning/wizard endpoints accepteren alleen `stored_key_id` (int), niet raw API keys ❌ raw api_key nog geaccepteerd
+- [x] Reasoning/wizard endpoints accepteren alleen `stored_key_id` (int), niet raw API keys
 - [x] Bestaande BYOK-flow werkt via opgeslagen keys
 - [ ] Input-validatie op alle user-facing strings: ⚠️ geïmplementeerd maar limieten wijken af van spec
   - `query`/`question`: max 5.000 tekens (spec: 2.000)

@@ -9,11 +9,13 @@ from httpx import ASGITransport, AsyncClient
 from app.config import settings
 from app.core.auth import create_access_token, hash_password
 from app.core.dag_engine import CausalDAG
+from app.core.key_vault import KeyVault
 from app.db import async_session, engine
 from app.main import app
 from app.models.base import Base
 from app.models.license import License
 from app.models.user import User
+from app.models.user_api_key import UserApiKey
 
 
 @pytest.fixture(autouse=True)
@@ -29,7 +31,8 @@ async def setup_db():
 
 
 async def _create_auth_cookies():
-    """Helper: create license + user, return auth cookies."""
+    """Helper: create license + user + stored key, return auth cookies."""
+    stored_key_id = None
     async with async_session() as session:
         now = datetime.now(timezone.utc)
         lic = License(
@@ -51,10 +54,22 @@ async def _create_auth_cookies():
             license_key="GZ-FEAT-TEST",
         )
         session.add(user)
+        await session.flush()
+
+        vault = KeyVault()
+        stored_key = UserApiKey(
+            user_id=user.id,
+            provider="openai",
+            encrypted_key=vault.encrypt("sk-test"),
+            key_hint="...test",
+            is_active=True,
+        )
+        session.add(stored_key)
         await session.commit()
+        stored_key_id = stored_key.id
 
     token = create_access_token({"sub": "feature@example.com"})
-    return {"access_token": token}
+    return {"access_token": token}, stored_key_id
 
 
 # ── Factor search tests ─────────────────────────────────────────────────
@@ -88,7 +103,7 @@ class TestFactorSearch:
 @pytest.mark.asyncio
 class TestFactorSearchAPI:
     async def test_search_endpoint(self):
-        cookies = await _create_auth_cookies()
+        cookies, _ = await _create_auth_cookies()
         async with AsyncClient(
             transport=ASGITransport(app=app),
             base_url="http://test",
@@ -144,7 +159,7 @@ class TestResponseValidation:
 @pytest.mark.asyncio
 class TestValidatedQuery:
     async def test_validated_query_with_mock_llm(self):
-        cookies = await _create_auth_cookies()
+        cookies, stored_key_id = await _create_auth_cookies()
         mock_generate = AsyncMock(return_value="Deelname wordt beinvloed door vele factoren.")
 
         async with AsyncClient(
@@ -158,7 +173,7 @@ class TestValidatedQuery:
                     json={
                         "query": "Wat beinvloedt deelname aan sport?",
                         "provider": "openai",
-                        "api_key": "sk-test",
+                        "stored_key_id": stored_key_id,
                     },
                 )
                 assert response.status_code == 200
@@ -176,7 +191,7 @@ class TestValidatedQuery:
 @pytest.mark.asyncio
 class TestConversations:
     async def test_create_and_list_conversations(self):
-        cookies = await _create_auth_cookies()
+        cookies, _ = await _create_auth_cookies()
 
         async with AsyncClient(
             transport=ASGITransport(app=app),
@@ -199,7 +214,7 @@ class TestConversations:
             assert data["conversations"][0]["title"] == "Testgesprek"
 
     async def test_add_and_get_messages(self):
-        cookies = await _create_auth_cookies()
+        cookies, _ = await _create_auth_cookies()
 
         async with AsyncClient(
             transport=ASGITransport(app=app),
@@ -232,7 +247,7 @@ class TestConversations:
             assert data["messages"][1]["role"] == "assistant"
 
     async def test_delete_conversation(self):
-        cookies = await _create_auth_cookies()
+        cookies, _ = await _create_auth_cookies()
 
         async with AsyncClient(
             transport=ASGITransport(app=app),
@@ -252,7 +267,7 @@ class TestConversations:
             assert get_res.status_code == 404
 
     async def test_conversation_not_found(self):
-        cookies = await _create_auth_cookies()
+        cookies, _ = await _create_auth_cookies()
         async with AsyncClient(
             transport=ASGITransport(app=app),
             base_url="http://test",
@@ -275,7 +290,7 @@ class TestConversations:
 @pytest.mark.asyncio
 class TestExport:
     async def test_export_markdown(self):
-        cookies = await _create_auth_cookies()
+        cookies, _ = await _create_auth_cookies()
         dag = app.state.dag
         sliders = dag.get_sliders()
         if not sliders:
