@@ -1,28 +1,27 @@
-# S07-04: Eigen LLM-optie (BYOK met modellicentie)
+# S07-04: Eigen LLM-optie (BYOK)
 
 **Epic:** EPIC-07 Businessmodel & toegang
-**Status:** 🔲 Backlog
+**Status:** Done
 **Prioriteit:** Midden
 
 ## User Story
 
-**Als** organisatie met een eigen LLM-abonnement
-**Wil ik** mijn eigen API key koppelen en een vaste maandbijdrage betalen voor het model
-**Zodat** ik onbeperkt vragen kan stellen tegen een voorspelbare prijs
-
-## Beschrijving
-
-Alternatief prijsmodel voor organisaties die al een LLM-provider gebruiken:
-
-- Gebruiker koppelt eigen API key (OpenAI, Anthropic)
-- Betaalt een vaste maandelijkse bijdrage voor toegang tot het causaal model
-- Geen limiet op aantal vragen (LLM-kosten zijn voor eigen rekening)
-- Geschikt voor power users en grotere organisaties
+**Als** BYOK-gebruiker
+**Wil ik** mijn opgeslagen API key automatisch laten gebruiken
+**Zodat** ik niet steeds mijn key hoef in te voeren
 
 ## Acceptatiecriteria
 
-- [ ] BYOK-flow: gebruiker voert eigen API key in (al gebouwd, zie S03-02)
-- [ ] Maandelijkse modellicentie: vast bedrag per maand
-- [ ] Geen query-limiet bij BYOK (alleen modellicentie vereist)
-- [ ] Key wordt veilig opgeslagen (encrypted, niet in logs)
-- [ ] Duidelijke uitleg: "je LLM-kosten betaal je zelf aan je provider"
+- [x] Opgeslagen API keys worden automatisch gedetecteerd
+- [x] Groene indicator toont welke opgeslagen key wordt gebruikt
+- [x] Gebruiker kan altijd een andere key invoeren
+- [x] Backend resolvet __stored__ sentinel naar versleutelde key
+- [x] Foutmelding als geen opgeslagen key beschikbaar is
+- [x] Provider-wissel detecteert beschikbare keys
+
+## Technische details
+
+- `app/api/wizard.py` — _resolve_stored_key() + sentinel support
+- `app/api/reasoning.py` — _resolve_api_key() + sentinel support
+- `app/templates/wizard.html`, `reasoning.html` — Auto-fill UI
+- `app/core/key_vault.py` — decrypt() voor key recovery

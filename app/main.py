@@ -11,7 +11,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
-from app.api import auth, conversations, graph, license, models, reasoning, releases, wizard
+from app.api import auth, conversations, explorations, graph, license, models, reasoning, releases, wizard
 from app.config import settings
 from app.core.auth import decode_access_token
 from app.core.dag_engine import CausalDAG
@@ -53,7 +53,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; "
-            "script-src 'self' https://unpkg.com https://d3js.org 'unsafe-inline'; "
+            "script-src 'self' https://unpkg.com https://d3js.org https://cdn.jsdelivr.net 'unsafe-inline'; "
             "style-src 'self' 'unsafe-inline'; "
             "img-src 'self' data:; "
             "frame-ancestors 'none'"
@@ -114,6 +114,7 @@ app.include_router(license.router)
 app.include_router(conversations.router)
 app.include_router(wizard.router)
 app.include_router(models.router)
+app.include_router(explorations.router)
 
 
 def _get_user_from_cookie(request: Request) -> dict | None:

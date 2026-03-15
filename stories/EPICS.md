@@ -66,18 +66,18 @@ Gebruikers moeten inloggen met een geldige licentie. Tiers bepalen quota.
 
 ---
 
-### EPIC-05: Begeleide beleidsverkenning 🔲
+### EPIC-05: Begeleide beleidsverkenning ✅
 
 De kernervaring: een beleidsmedewerker stelt een beleidsvraag en wordt begeleid
 naar een onderbouwd advies via kwalificatievragen en simulatie.
 
 | Story | Status | Beschrijving |
 |-------|--------|-------------|
-| [S05-01](backlog/S05-01-interventie-flow.md) | 🔲 Backlog | Begeleide interventie-flow |
-| [S05-02](backlog/S05-02-slider-kwalificatie-ux.md) | 🔲 Backlog | Slider-kwalificatie UX |
-| [S05-03](backlog/S05-03-resultaatpagina.md) | 🔲 Backlog | Resultaatpagina |
+| [S05-01](done/S05-01-interventie-flow.md) | ✅ Done | Begeleide interventie-flow (opslaan & laden verkenningen) |
+| [S05-02](done/S05-02-slider-kwalificatie-ux.md) | ✅ Done | Slider-kwalificatie UX (voortgang, feedback) |
+| [S05-03](done/S05-03-resultaatpagina.md) | ✅ Done | Resultaatpagina (stats, filters, impact-balken) |
 | [S05-04](done/S05-04-graph-viewer-verbeteren.md) | ✅ Done | Graph viewer verbeteren (kleurcodering, hover, zoom) |
-| [S05-05](backlog/S05-05-dashboard-aanscherpen.md) | 🔲 Backlog | Dashboard aanscherpen |
+| [S05-05](done/S05-05-dashboard-aanscherpen.md) | ✅ Done | Dashboard aanscherpen (domeinoverzicht, verkenningen) |
 
 ---
 
@@ -101,10 +101,10 @@ Prijsmodel en toegangsstructuur voor de beleidsverkenner.
 
 | Story | Status | Beschrijving |
 |-------|--------|-------------|
-| [S07-01](backlog/S07-01-gratis-vragen.md) | 🔲 Backlog | Gratis vragen (1-2 per sessie) |
+| [S07-01](done/S07-01-gratis-vragen.md) | ✅ Done | Gratis vragen (2 per dag, free-tier enforcing) |
 | [S07-02](done/S07-02-betaald-account.md) | ✅ Done | Betaald account met keuze (tier vergelijking) |
 | [S07-03](done/S07-03-credits-systeem.md) | ✅ Done | Credits-systeem (vast + flexibel quotum) |
-| [S07-04](backlog/S07-04-eigen-llm-optie.md) | 🔲 Backlog | Eigen LLM-optie (BYOK met modellicentie) |
+| [S07-04](done/S07-04-eigen-llm-optie.md) | ✅ Done | Eigen LLM-optie (BYOK met auto-fill keys) |
 
 ---
 

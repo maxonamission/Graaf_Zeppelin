@@ -139,20 +139,44 @@
         </div>
     </div>
 
-    <!-- Recent conversations + model info -->
+    <!-- Recent conversations + explorations -->
     <div>
+        <!-- S05-05: Recent explorations -->
+        <div class="card">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>Recente verkenningen</span>
+                <a href="/verkenner" class="btn btn-outline" style="padding: 0.2rem 0.6rem; font-size: 0.75rem;">Nieuw</a>
+            </div>
+            <div id="recent-explorations">
+                <p style="color: var(--text-muted); font-size: 0.85rem;">Laden...</p>
+            </div>
+        </div>
+
         <div class="card">
             <div class="card-header">Recente gesprekken</div>
             <div id="recent-conversations">
                 <p style="color: var(--text-muted); font-size: 0.85rem;">Laden...</p>
             </div>
         </div>
-        <div class="card">
-            <div class="card-header">Model informatie</div>
-            <div id="model-info">
-                <p style="color: var(--text-muted); font-size: 0.85rem;">Laden...</p>
-            </div>
-        </div>
+    </div>
+</div>
+
+<!-- S05-05: Domain overview -->
+<div class="card" style="margin-top: 1rem;">
+    <div class="card-header">Domeinen in het model</div>
+    <div id="domain-overview">
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Laden...</p>
+    </div>
+</div>
+
+<!-- Model info (collapsible) -->
+<div class="card" style="margin-top: 1rem;">
+    <div class="card-header" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="toggleModelInfo()">
+        <span>Model informatie</span>
+        <span id="model-toggle" style="font-size: 0.75rem; color: var(--text-muted);">&#9660;</span>
+    </div>
+    <div id="model-info" style="display: none;">
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Laden...</p>
     </div>
 </div>
 
@@ -160,11 +184,19 @@
 let onboardCurrentStep = 1;
 const onboardTotalSteps = 3;
 
+// Domain color palette
+const domainColors = [
+    '#1e40af', '#059669', '#d97706', '#dc2626', '#7c3aed',
+    '#0891b2', '#be185d', '#65a30d', '#ea580c'
+];
+
 document.addEventListener('DOMContentLoaded', async () => {
     await Promise.all([
         loadModelSummary(),
         loadLicenseInfo(),
         loadRecentConversations(),
+        loadRecentExplorations(),
+        loadDomainOverview(),
         loadFreeQuota(),
         checkOnboarding(),
     ]);
@@ -192,12 +224,10 @@ function onboardStep(dir) {
 
     document.getElementById(`onboard-step-${onboardCurrentStep}`).style.display = '';
 
-    // Update dots
     document.querySelectorAll('.onboard-dot').forEach(dot => {
         dot.style.background = parseInt(dot.dataset.dot) === onboardCurrentStep ? 'var(--primary)' : 'var(--border)';
     });
 
-    // Update buttons
     document.getElementById('onboard-prev').style.display = onboardCurrentStep > 1 ? '' : 'none';
     document.getElementById('onboard-next').textContent = onboardCurrentStep === onboardTotalSteps ? 'Aan de slag!' : 'Volgende';
 }
@@ -254,7 +284,6 @@ async function loadLicenseInfo() {
         document.getElementById('queries-used').textContent =
             `${lic.queries_used} / ${lic.queries_limit}`;
 
-        // Show quota bar
         const pct = Math.min(100, (lic.queries_used / lic.queries_limit) * 100);
         const bar = document.getElementById('quota-bar');
         const fill = document.getElementById('quota-fill');
@@ -272,7 +301,7 @@ async function loadRecentConversations() {
         const container = document.getElementById('recent-conversations');
 
         if (!data.conversations || data.conversations.length === 0) {
-            container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">Nog geen gesprekken. Begin een <a href="/verkenner">beleidsverkenning</a> of <a href="/reasoning">stel een vraag</a>.</p>';
+            container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">Nog geen gesprekken. <a href="/reasoning">Stel een vraag</a>.</p>';
             return;
         }
 
@@ -289,6 +318,76 @@ async function loadRecentConversations() {
     }
 }
 
+// S05-05: Recent explorations
+async function loadRecentExplorations() {
+    try {
+        const res = await fetch('/api/explorations');
+        if (!res.ok) return;
+        const data = await res.json();
+        const container = document.getElementById('recent-explorations');
+
+        if (!data.explorations || data.explorations.length === 0) {
+            container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">Nog geen verkenningen. <a href="/verkenner">Start een verkenning</a>.</p>';
+            return;
+        }
+
+        const recent = data.explorations.slice(0, 5);
+        container.innerHTML = recent.map(e => `
+            <div class="session-item" style="cursor: pointer;" onclick="window.location='/verkenner'">
+                <div style="flex: 1;">
+                    <span class="session-title">${escapeHtml(e.title)}</span>
+                    ${e.has_advice ? '<span class="validation-badge badge-success" style="margin-left: 0.5rem; font-size: 0.65rem;">Advies</span>' : ''}
+                </div>
+                <span class="session-date">${new Date(e.created_at).toLocaleDateString('nl-NL')}</span>
+            </div>
+        `).join('');
+    } catch (e) {
+        document.getElementById('recent-explorations').innerHTML =
+            '<p style="color: var(--text-muted); font-size: 0.85rem;">Kon verkenningen niet laden.</p>';
+    }
+}
+
+// S05-05: Domain overview
+async function loadDomainOverview() {
+    try {
+        const res = await fetch('/api/graph/domains');
+        if (!res.ok) return;
+        const data = await res.json();
+        const container = document.getElementById('domain-overview');
+
+        if (!data.domains || data.domains.length === 0) {
+            container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">Geen domeinen gevonden.</p>';
+            return;
+        }
+
+        const totalFactors = data.domains.reduce((sum, d) => sum + (d.count || 0), 0);
+
+        container.innerHTML = `
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                ${data.domains.map((d, i) => {
+                    const color = domainColors[i % domainColors.length];
+                    const pct = totalFactors > 0 ? Math.round((d.count || 0) / totalFactors * 100) : 0;
+                    return `
+                        <div style="flex: 1; min-width: 140px; padding: 0.75rem; border-radius: var(--radius); border: 1px solid var(--border); background: var(--bg);">
+                            <div style="display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.35rem;">
+                                <span style="width: 10px; height: 10px; border-radius: 50%; background: ${color}; flex-shrink: 0;"></span>
+                                <span style="font-size: 0.8rem; font-weight: 500;">${escapeHtml(d.domain || d.name || 'Onbekend')}</span>
+                            </div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">${d.count || 0} factoren (${pct}%)</div>
+                            <div class="quota-bar" style="margin-top: 0.3rem; height: 4px;">
+                                <div style="height: 100%; width: ${pct}%; background: ${color}; border-radius: 2px;"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+    } catch (e) {
+        document.getElementById('domain-overview').innerHTML =
+            '<p style="color: var(--text-muted); font-size: 0.85rem;">Kon domeinen niet laden.</p>';
+    }
+}
+
 async function loadFreeQuota() {
     try {
         const res = await fetch('/api/license/free-quota');
@@ -301,6 +400,18 @@ async function loadFreeQuota() {
                 `${data.used}/${data.daily_limit}`;
         }
     } catch (e) { /* ignore */ }
+}
+
+function toggleModelInfo() {
+    const info = document.getElementById('model-info');
+    const toggle = document.getElementById('model-toggle');
+    if (info.style.display === 'none') {
+        info.style.display = '';
+        toggle.innerHTML = '&#9650;';
+    } else {
+        info.style.display = 'none';
+        toggle.innerHTML = '&#9660;';
+    }
 }
 
 function escapeHtml(text) {

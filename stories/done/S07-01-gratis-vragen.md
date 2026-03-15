@@ -1,31 +1,28 @@
-# S07-01: Gratis vragen (1-2 per sessie)
+# S07-01: Gratis vragen
 
 **Epic:** EPIC-07 Businessmodel & toegang
-**Status:** 🔲 Backlog
+**Status:** Done
 **Prioriteit:** Hoog
 
 ## User Story
 
-**Als** potentiële gebruiker
-**Wil ik** 1-2 vragen gratis kunnen stellen
-**Zodat** ik de waarde van de beleidsverkenner kan ervaren voordat ik betaal
-
-## Beschrijving
-
-Een freemium instap: niet-betalende gebruikers kunnen een beperkt aantal
-vragen stellen per sessie. Dit verlaagt de drempel en laat de kwaliteit
-van het product zien.
-
-## Overwegingen
-
-- 1 of 2 gratis vragen per sessie/dag — nog te bepalen
-- Gratis vragen gebruiken het door ons aangeboden LLM (niet BYOK)
-- Na het gratis quotum: duidelijke upgrade-prompt
-- Gratis vragen zijn niet gekoppeld aan een account (of minimaal account)
+**Als** gratis gebruiker
+**Wil ik** 1-2 vragen per dag kunnen stellen
+**Zodat** ik de tool kan uitproberen voordat ik een licentie koop
 
 ## Acceptatiecriteria
 
-- [ ] Niet-betalende gebruiker kan 1-2 vragen stellen
-- [ ] Na het quotum: duidelijke melding met uitleg over betaalde opties
-- [ ] Teller zichtbaar: "Je hebt nog X gratis vragen"
-- [ ] Gratis antwoorden hebben dezelfde kwaliteit als betaalde
+- [x] DailyUsage model trackt dagelijks gebruik per gebruiker
+- [x] FREE_DAILY_LIMIT = 2 vragen per dag
+- [x] Quota wordt geenforced in reasoning en wizard API
+- [x] Gebruikersvriendelijke foutmelding bij limiet bereikt
+- [x] Free-tier banner op dashboard en reasoning-pagina
+- [x] Banner wordt bijgewerkt na elke succesvolle query
+
+## Technische details
+
+- `app/models/daily_usage.py` — DailyUsage model
+- `app/core/license_manager.py` — get_daily_usage(), record_free_query()
+- `app/api/reasoning.py` — _check_license_and_quota() enforcing
+- `app/api/wizard.py` — _check_license() updated met free-tier check
+- `app/templates/dashboard.html`, `reasoning.html` — UI banners

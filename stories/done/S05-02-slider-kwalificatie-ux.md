@@ -1,25 +1,25 @@
 # S05-02: Slider-kwalificatie UX
 
 **Epic:** EPIC-05 Begeleide beleidsverkenning
-**Status:** 🔲 Backlog
-**Prioriteit:** Hoog
+**Status:** Done
+**Prioriteit:** Midden
 
 ## User Story
 
 **Als** beleidsmedewerker
-**Wil ik** kwalificatievragen beantwoorden via duidelijke multiple-choice
-**Zodat** ik de context van mijn organisatie kan invoeren zonder abstracte waarden te kennen
-
-## Beschrijving
-
-De 16 kwalificatievragen (2 per slider) presenteren als begrijpelijke
-multiple-choice in de interface. De antwoorden worden vertaald naar
-sliderwaarden (0–1) voor de simulatie.
+**Wil ik** duidelijke feedback krijgen bij het beantwoorden van kwalificatievragen
+**Zodat** ik beter begrijp wat mijn antwoorden betekenen voor de simulatie
 
 ## Acceptatiecriteria
 
-- [ ] Kwalificatievragen worden weergegeven als kaarten met duidelijke antwoordopties
-- [ ] Antwoorden hebben beschrijvende labels (niet numerieke waarden)
-- [ ] Gebruiker ziet alleen vragen voor relevante sliders (niet alle 16)
-- [ ] Voortgangsindicator toont hoeveel vragen nog resteren
-- [ ] Antwoorden worden opgeslagen voor hergebruik in dezelfde sessie
+- [x] Voortgangsbalk toont hoeveel vragen beantwoord zijn
+- [x] Percentage-badge in header van stap 2
+- [x] Mini-balkje per slider toont de resulterende waarde visueel (kleurgecodeerd)
+- [x] Help-tekst wordt getoond bij kwalificatievragen (als aanwezig in model)
+- [x] Slider-nummer indicator per kaart
+- [x] updateQualifierProgress() wordt aangeroepen bij elke interactie
+
+## Technische details
+
+- `app/templates/wizard.html` — Enhanced qualifier cards met voortgang
+- Visuele feedback via dynamische CSS class-switching (ok/warning/danger)

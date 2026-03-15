@@ -4,15 +4,18 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user, get_dag
 from app.core.dag_engine import CausalDAG
+from app.core.key_vault import KeyVault
 from app.core.license_manager import LicenseManager
 from app.core.llm_connector import LLMConnector, LLMProviderError
 from app.core.prompt_builder import PromptBuilder
 from app.db import get_db
 from app.models.user import User
+from app.models.user_api_key import UserApiKey
 
 router = APIRouter(prefix="/api/reasoning", tags=["reasoning"])
 
@@ -20,7 +23,7 @@ router = APIRouter(prefix="/api/reasoning", tags=["reasoning"])
 class ReasoningRequest(BaseModel):
     query: str = Field(..., min_length=1, max_length=5000)
     provider: str = Field("openai", pattern=r"^(openai|anthropic)$")
-    api_key: str = Field(..., min_length=10, max_length=256)
+    api_key: str = Field(..., min_length=1, max_length=256)
     model: str | None = Field(None, max_length=100)
     factor_ids: list[str] | None = None
 
@@ -30,7 +33,7 @@ class InterventionReasoningRequest(BaseModel):
     change: float
     description: str = Field("", max_length=2000)
     provider: str = Field("openai", pattern=r"^(openai|anthropic)$")
-    api_key: str = Field(..., min_length=10, max_length=256)
+    api_key: str = Field(..., min_length=1, max_length=256)
     model: str | None = Field(None, max_length=100)
 
 
@@ -42,12 +45,15 @@ async def reason_query(
     dag: CausalDAG = Depends(get_dag),
 ):
     """Ask a causal reasoning question. Uses the DAG to constrain LLM reasoning."""
-    await _check_license(user, db)
+    await _check_license_and_quota(user, db)
+
+    # S07-04: Resolve stored key if sentinel
+    api_key = await _resolve_api_key(request.api_key, request.provider, user.id, db)
 
     builder = PromptBuilder(dag)
     messages = builder.build_full_prompt(request.query, request.factor_ids)
 
-    connector = LLMConnector(request.provider, request.api_key, request.model)
+    connector = LLMConnector(request.provider, api_key, request.model)
     try:
         response = await connector.generate(messages)
     except LLMProviderError as e:
@@ -59,8 +65,7 @@ async def reason_query(
         )
 
     # Record usage
-    lm = LicenseManager(db)
-    await lm.record_query(user.license_key)
+    await _record_usage(user, db)
 
     return {
         "query": request.query,
@@ -78,7 +83,10 @@ async def reason_intervention(
     dag: CausalDAG = Depends(get_dag),
 ):
     """Analyse an intervention using DAG + LLM reasoning."""
-    await _check_license(user, db)
+    await _check_license_and_quota(user, db)
+
+    # S07-04: Resolve stored key if sentinel
+    api_key = await _resolve_api_key(request.api_key, request.provider, user.id, db)
 
     builder = PromptBuilder(dag)
 
@@ -92,7 +100,7 @@ async def reason_intervention(
         {"role": "user", "content": intervention_prompt},
     ]
 
-    connector = LLMConnector(request.provider, request.api_key, request.model)
+    connector = LLMConnector(request.provider, api_key, request.model)
     try:
         response = await connector.generate(messages)
     except LLMProviderError as e:
@@ -106,8 +114,7 @@ async def reason_intervention(
     # Also include raw simulation data
     effects = dag.simulate_intervention(request.factor_id, request.change)
 
-    lm = LicenseManager(db)
-    await lm.record_query(user.license_key)
+    await _record_usage(user, db)
 
     return {
         "factor": request.factor_id,
@@ -131,7 +138,10 @@ async def reason_query_validated(
     2. Generates LLM response
     3. Validates the response against the model
     """
-    await _check_license(user, db)
+    await _check_license_and_quota(user, db)
+
+    # S07-04: Resolve stored key if sentinel
+    api_key = await _resolve_api_key(request.api_key, request.provider, user.id, db)
 
     # Auto-select factors if not provided
     factor_ids = request.factor_ids
@@ -145,7 +155,7 @@ async def reason_query_validated(
     builder = PromptBuilder(dag)
     messages = builder.build_full_prompt(request.query, factor_ids)
 
-    connector = LLMConnector(request.provider, request.api_key, request.model)
+    connector = LLMConnector(request.provider, api_key, request.model)
     try:
         response = await connector.generate(messages)
     except LLMProviderError as e:
@@ -160,8 +170,7 @@ async def reason_query_validated(
     validation = dag.validate_response_factors(response)
 
     # Record usage
-    lm = LicenseManager(db)
-    await lm.record_query(user.license_key)
+    await _record_usage(user, db)
 
     return {
         "query": request.query,
@@ -187,11 +196,72 @@ def _format_llm_error(error_msg: str) -> str:
     return "De AI-service kon het verzoek niet verwerken. Probeer het later opnieuw."
 
 
-async def _check_license(user: User, db: AsyncSession) -> None:
-    if not user.license_key:
-        raise HTTPException(status_code=403, detail="Geen licentie gekoppeld")
+async def _check_license_and_quota(user: User, db: AsyncSession) -> None:
+    """Check license validity and free-tier daily quota (S07-01)."""
     lm = LicenseManager(db)
+
+    if not user.license_key:
+        # No license → check free tier quota
+        usage = await lm.get_daily_usage(user.id)
+        if usage["remaining"] <= 0:
+            raise HTTPException(
+                status_code=403,
+                detail="Je dagelijkse gratis vragen zijn op. Upgrade naar een betaald account voor meer vragen.",
+            )
+        return
+
+    # Has license → check license validity
     try:
-        await lm.validate_license(user.license_key)
+        license_obj = await lm.validate_license(user.license_key)
+        # Free tier with license also has daily limits
+        if license_obj.tier == "free":
+            usage = await lm.get_daily_usage(user.id)
+            if usage["remaining"] <= 0:
+                raise HTTPException(
+                    status_code=403,
+                    detail="Je dagelijkse gratis vragen zijn op. Upgrade naar een betaald account voor meer vragen.",
+                )
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(status_code=403, detail="Licentie is ongeldig of verlopen")
+
+
+async def _record_usage(user: User, db: AsyncSession) -> None:
+    """Record query usage for both licensed and free-tier users."""
+    lm = LicenseManager(db)
+    if user.license_key:
+        await lm.record_query(user.license_key)
+        # Also record free tier usage if on free tier
+        try:
+            license_obj = await lm.validate_license(user.license_key)
+            if license_obj.tier == "free":
+                await lm.record_free_query(user.id)
+        except Exception:
+            pass
+    else:
+        await lm.record_free_query(user.id)
+
+
+async def _resolve_api_key(
+    api_key: str, provider: str, user_id: int, db: AsyncSession
+) -> str:
+    """Resolve the API key — use stored key if sentinel '__stored__' (S07-04)."""
+    if api_key != "__stored__":
+        return api_key
+
+    result = await db.execute(
+        select(UserApiKey).where(
+            UserApiKey.user_id == user_id,
+            UserApiKey.provider == provider,
+            UserApiKey.is_active == True,  # noqa: E712
+        )
+    )
+    key_obj = result.scalar_one_or_none()
+    if not key_obj:
+        raise HTTPException(
+            status_code=422,
+            detail="Geen opgeslagen API key gevonden voor deze provider. Voer een key in.",
+        )
+    vault = KeyVault()
+    return vault.decrypt(key_obj.encrypted_key)

@@ -4,13 +4,30 @@
 {% block content %}
 <h1 style="margin-bottom: 1.5rem;">Causaal redeneren</h1>
 
+<!-- S07-01: Free tier banner -->
+<div id="reasoning-free-banner" class="free-tier-banner" style="display: none; margin-bottom: 1rem;">
+    <div>
+        <strong>Gratis vragen vandaag</strong>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
+            Je hebt nog <span id="reasoning-free-remaining">0</span> gratis vragen over vandaag.
+        </p>
+    </div>
+    <div class="free-tier-counter" id="reasoning-free-counter">0/2</div>
+</div>
+
 <div class="grid grid-2">
     <div>
         <div class="card">
             <div class="card-header">LLM configuratie</div>
+            <!-- S07-04: Stored key indicator -->
+            <div id="reasoning-stored-key-indicator" style="display: none; margin-bottom: 0.75rem;">
+                <div class="alert alert-success" style="margin-bottom: 0; font-size: 0.85rem;">
+                    Opgeslagen API key gevonden (<span id="reasoning-stored-key-hint"></span>). Deze wordt automatisch gebruikt.
+                </div>
+            </div>
             <div class="form-group">
                 <label for="llm-provider">Provider</label>
-                <select id="llm-provider">
+                <select id="llm-provider" onchange="checkReasoningStoredKeys()">
                     <option value="openai">OpenAI</option>
                     <option value="anthropic">Anthropic</option>
                 </select>
@@ -18,7 +35,7 @@
             <div class="form-group">
                 <label for="llm-key">API key</label>
                 <input type="password" id="llm-key" placeholder="sk-...">
-                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">
+                <p id="llm-key-note" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">
                     Je key wordt niet opgeslagen — alleen gebruikt voor deze sessie.
                 </p>
             </div>
@@ -102,11 +119,62 @@
 <script>
 let currentConversationId = null;
 let allFactors = [];
+let reasoningStoredKeys = {};
 
-// Load factors and conversations on page load
+// Load factors, conversations, keys, and free quota on page load
 document.addEventListener('DOMContentLoaded', async () => {
-    await Promise.all([loadFactors(), loadConversations()]);
+    await Promise.all([
+        loadFactors(),
+        loadConversations(),
+        loadReasoningStoredKeys(),
+        loadReasoningFreeQuota(),
+    ]);
 });
+
+// S07-04: Load stored keys
+async function loadReasoningStoredKeys() {
+    try {
+        const res = await fetch('/api/license/api-keys');
+        if (!res.ok) return;
+        const data = await res.json();
+        reasoningStoredKeys = {};
+        (data.keys || []).forEach(k => { reasoningStoredKeys[k.provider] = k.hint; });
+        checkReasoningStoredKeys();
+    } catch (e) { /* ignore */ }
+}
+
+function checkReasoningStoredKeys() {
+    const provider = document.getElementById('llm-provider').value;
+    const indicator = document.getElementById('reasoning-stored-key-indicator');
+    const keyInput = document.getElementById('llm-key');
+    const keyNote = document.getElementById('llm-key-note');
+
+    if (reasoningStoredKeys[provider]) {
+        indicator.style.display = '';
+        document.getElementById('reasoning-stored-key-hint').textContent = reasoningStoredKeys[provider];
+        keyInput.placeholder = 'Opgeslagen key wordt gebruikt';
+        keyNote.textContent = 'Laat leeg om de opgeslagen key te gebruiken, of voer een andere in.';
+    } else {
+        indicator.style.display = 'none';
+        keyInput.placeholder = 'sk-...';
+        keyNote.textContent = 'Je key wordt niet opgeslagen — alleen gebruikt voor deze sessie.';
+    }
+}
+
+// S07-01: Load free quota
+async function loadReasoningFreeQuota() {
+    try {
+        const res = await fetch('/api/license/free-quota');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.is_free_tier) {
+            document.getElementById('reasoning-free-banner').style.display = '';
+            document.getElementById('reasoning-free-remaining').textContent = data.remaining;
+            document.getElementById('reasoning-free-counter').textContent =
+                `${data.used}/${data.daily_limit}`;
+        }
+    } catch (e) { /* ignore */ }
+}
 
 async function loadFactors() {
     try {
@@ -231,6 +299,8 @@ function hideExamples() {
 function formatErrorMessage(status, detail) {
     if (status === 401) return 'Je sessie is verlopen. Log opnieuw in om door te gaan.';
     if (status === 403) {
+        if (detail && detail.includes('gratis vragen'))
+            return 'Je dagelijkse gratis vragen zijn op. Upgrade naar een betaald account voor meer vragen.';
         if (detail && detail.includes('querylimiet'))
             return 'Je maandelijkse limiet is bereikt. Upgrade je account of wacht tot volgende maand.';
         if (detail && detail.includes('licentie'))
@@ -255,7 +325,14 @@ async function sendQuery(e) {
     const query = document.getElementById('chat-input').value.trim();
     if (!query) return;
 
-    const apiKey = document.getElementById('llm-key').value;
+    const provider = document.getElementById('llm-provider').value;
+    let apiKey = document.getElementById('llm-key').value;
+
+    // S07-04: Use stored key if no key entered and stored key available
+    if (!apiKey && reasoningStoredKeys[provider]) {
+        apiKey = '__stored__';
+    }
+
     if (!apiKey) {
         addMessage('Voer eerst je LLM API key in bij de configuratie links.', 'error');
         return;
@@ -297,7 +374,7 @@ async function sendQuery(e) {
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
                 query: query,
-                provider: document.getElementById('llm-provider').value,
+                provider: provider,
                 api_key: apiKey,
                 model: document.getElementById('llm-model').value || null,
                 factor_ids: manualFactors.length > 0 ? manualFactors : null,
@@ -337,6 +414,9 @@ async function sendQuery(e) {
                     );
                 }
             }
+
+            // S07-01: Refresh free quota after successful query
+            await loadReasoningFreeQuota();
         } else {
             let detail = '';
             try {

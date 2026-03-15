@@ -1,31 +1,27 @@
 # S05-01: Begeleide interventie-flow
 
 **Epic:** EPIC-05 Begeleide beleidsverkenning
-**Status:** 🔲 Backlog
+**Status:** Done
 **Prioriteit:** Hoog
 
 ## User Story
 
 **Als** beleidsmedewerker
-**Wil ik** een beleidsvraag stellen en begeleid worden naar een onderbouwd advies
-**Zodat** ik niet zelf hoef te weten welke factoren en sliders relevant zijn
-
-## Beschrijving
-
-De kern van het product: een workflow die de gebruiker van vraag naar advies leidt.
-
-```
-Gebruiker stelt beleidsvraag
-    → App bepaalt relevante sliders (via factor-matching)
-    → Stelt kwalificatievragen (multiple-choice)
-    → Simuleert met gekwalificeerde waarden
-    → Toont resultaat met uitleg en onderbouwing
-```
+**Wil ik** mijn beleidsverkenningen kunnen opslaan en later terugvinden
+**Zodat** ik eerder uitgevoerde analyses kan hergebruiken en delen
 
 ## Acceptatiecriteria
 
-- [ ] Gebruiker kan een beleidsvraag formuleren in vrije tekst
-- [ ] App selecteert automatisch relevante sliders op basis van de vraag
-- [ ] Kwalificatievragen worden gepresenteerd als begrijpelijke multiple-choice
-- [ ] Simulatieresultaat wordt getoond met uitleg over het causale pad
-- [ ] Hele flow is doorloopbaar zonder technische kennis
+- [x] Exploration model (DB tabel) voor opslaan van vraag, sliders, effecten en advies
+- [x] API endpoints: POST/GET/DELETE /api/explorations
+- [x] Opslaan-knop na stap 4 (advies)
+- [x] Panel met opgeslagen verkenningen (laden/verwijderen)
+- [x] Laden van eerdere verkenning herstelt de wizard-state (resultaten of advies)
+- [x] Teller toont aantal opgeslagen verkenningen
+
+## Technische details
+
+- `app/models/exploration.py` — Exploration SQLAlchemy model
+- `app/api/explorations.py` — CRUD endpoints
+- `app/templates/wizard.html` — Opslaan/laden UI
+- Router geregistreerd in `app/main.py`

@@ -14,13 +14,17 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from sqlalchemy import select
+
 from app.api.deps import get_current_user, get_dag
 from app.core.dag_engine import CausalDAG
+from app.core.key_vault import KeyVault
 from app.core.license_manager import LicenseManager
 from app.core.llm_connector import LLMConnector, LLMProviderError
 from app.core.slider_engine import simulate_sliders
 from app.db import get_db
 from app.models.user import User
+from app.models.user_api_key import UserApiKey
 
 router = APIRouter(prefix="/api/wizard", tags=["wizard"])
 
@@ -47,7 +51,7 @@ class GenerateAdviceRequest(BaseModel):
     slider_values: dict[str, float]
     effects: list[dict] | None = None
     provider: str = Field("openai", pattern=r"^(openai|anthropic)$")
-    api_key: str = Field(..., min_length=10, max_length=256)
+    api_key: str = Field(..., min_length=1, max_length=256)
     model: str | None = Field(None, max_length=100)
 
 
@@ -217,6 +221,16 @@ async def generate_advice(
     """
     await _check_license(user, db)
 
+    # S07-04: Resolve stored API key if sentinel is used
+    api_key = request.api_key
+    if api_key == "__stored__":
+        api_key = await _resolve_stored_key(user.id, request.provider, db)
+        if not api_key:
+            raise HTTPException(
+                status_code=422,
+                detail="Geen opgeslagen API key gevonden voor deze provider. Voer een key in.",
+            )
+
     # Build context from simulation
     effects_text = ""
     if request.effects:
@@ -261,7 +275,7 @@ Schrijf in het Nederlands."""
         {"role": "user", "content": prompt},
     ]
 
-    connector = LLMConnector(request.provider, request.api_key, request.model)
+    connector = LLMConnector(request.provider, api_key, request.model)
     try:
         response = await connector.generate(messages)
     except LLMProviderError:
@@ -294,10 +308,45 @@ Schrijf in het Nederlands."""
 
 
 async def _check_license(user: User, db: AsyncSession) -> None:
-    if not user.license_key:
-        raise HTTPException(status_code=403, detail="Geen licentie gekoppeld")
+    """Check license validity and free-tier daily quota (S07-01)."""
     lm = LicenseManager(db)
+
+    if not user.license_key:
+        # No license → check free tier quota
+        usage = await lm.get_daily_usage(user.id)
+        if usage["remaining"] <= 0:
+            raise HTTPException(
+                status_code=403,
+                detail="Je dagelijkse gratis vragen zijn op. Upgrade naar een betaald account voor meer vragen.",
+            )
+        return
+
     try:
-        await lm.validate_license(user.license_key)
+        license_obj = await lm.validate_license(user.license_key)
+        if license_obj.tier == "free":
+            usage = await lm.get_daily_usage(user.id)
+            if usage["remaining"] <= 0:
+                raise HTTPException(
+                    status_code=403,
+                    detail="Je dagelijkse gratis vragen zijn op. Upgrade naar een betaald account voor meer vragen.",
+                )
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(status_code=403, detail="Licentie is ongeldig of verlopen")
+
+
+async def _resolve_stored_key(user_id: int, provider: str, db: AsyncSession) -> str | None:
+    """Retrieve and decrypt a stored API key for the given provider (S07-04)."""
+    result = await db.execute(
+        select(UserApiKey).where(
+            UserApiKey.user_id == user_id,
+            UserApiKey.provider == provider,
+            UserApiKey.is_active == True,  # noqa: E712
+        )
+    )
+    key_obj = result.scalar_one_or_none()
+    if not key_obj:
+        return None
+    vault = KeyVault()
+    return vault.decrypt(key_obj.encrypted_key)
