@@ -1,0 +1,11 @@
+# Graaf Zeppelin — Caddy reverse proxy
+#
+# Zonder domeinnaam (HTTP op poort 80):
+:80 {
+    reverse_proxy web:8000
+}
+
+# ─── Met domeinnaam (verwijder bovenstaande, uncomment onderstaande) ───
+# jouwdomein.nl {
+#     reverse_proxy web:8000
+# }
