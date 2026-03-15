@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,6 +14,8 @@ from app.core.license_manager import LicenseManager
 from app.core.slider_engine import apply_slider, simulate_sliders
 from app.db import get_db
 from app.models.user import User
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/graph", tags=["graph"])
 
@@ -53,6 +57,23 @@ async def graph_summary(
     return dag.get_graph_summary()
 
 
+# ── Example questions (S12-03) ────────────────────────────────────────
+
+
+@router.get("/examples")
+async def example_questions(
+    user: User = Depends(get_current_user),
+    dag: CausalDAG = Depends(get_dag),
+):
+    """Get example questions from model metadata (S12-03)."""
+    examples = dag.example_questions
+    return {
+        "reasoning": examples["reasoning"],
+        "wizard": examples["wizard"],
+        "domain": dag.domain_name,
+    }
+
+
 # ── Domains ──────────────────────────────────────────────────────────────
 
 
@@ -65,6 +86,29 @@ async def list_domains(
     """Get all domains with node counts."""
     await _check_license(user, db)
     return {"domains": dag.get_domains()}
+
+
+# ── Factor search ──────────────────────────────────────────────────────
+# NOTE: This route MUST come before /factors/{factor_id} to prevent
+# FastAPI from matching "search" as a factor_id.
+
+
+@router.get("/factors/search")
+async def search_factors(
+    q: str = Query(..., min_length=2, description="Search query"),
+    limit: int = Query(10, ge=1, le=50),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+    dag: CausalDAG = Depends(get_dag),
+):
+    """Find factors relevant to a natural-language query.
+
+    Uses keyword matching against labels, definitions, and domains.
+    Useful for auto-selecting factors in the chat interface.
+    """
+    await _check_license(user, db)
+    results = dag.find_relevant_factors(q, max_results=limit)
+    return {"query": q, "factors": results, "count": len(results)}
 
 
 # ── Factors (nodes) ─────────────────────────────────────────────────────
@@ -355,6 +399,89 @@ async def simulate_slider_changes(
     }
 
 
+# ── Export ─────────────────────────────────────────────────────────────
+
+
+@router.post("/export/markdown")
+async def export_simulation_markdown(
+    request: SimulateRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+    dag: CausalDAG = Depends(get_dag),
+):
+    """Export a simulation result as Markdown report."""
+    await _check_license(user, db)
+
+    slider_values = {}
+    slider_labels = {}
+    for s in request.sliders:
+        slider_def = dag.get_slider(s.id)
+        if not slider_def:
+            raise HTTPException(
+                status_code=404, detail=f"Slider '{s.id}' niet gevonden"
+            )
+        slider_values[s.id] = s.value
+        slider_labels[s.id] = slider_def.get("label", s.id)
+
+    edges = dag.get_all_relations()
+    effects = simulate_sliders(dag.sliders, slider_values, edges)
+
+    # Build Markdown report
+    summary = dag.get_graph_summary()
+    lines = [
+        f"# Simulatierapport — {summary['name']}",
+        f"",
+        f"**Model:** {summary['name']} v{summary['version']}  ",
+        f"**Factoren:** {summary['num_factors']} | **Relaties:** {summary['num_relations']}",
+        f"",
+        f"## Sliderinstellingen",
+        f"",
+        f"| Slider | Waarde |",
+        f"|--------|--------|",
+    ]
+    for sid, val in slider_values.items():
+        lines.append(f"| {slider_labels.get(sid, sid)} | {val:.2f} |")
+
+    lines.extend([
+        f"",
+        f"## Beïnvloede relaties ({len(effects)})",
+        f"",
+    ])
+
+    if effects:
+        lines.extend([
+            f"| Relatie | Origineel | Aangepast | Verschil |",
+            f"|---------|-----------|-----------|----------|",
+        ])
+        for e in effects:
+            label = e.get("label", f"{e.get('cause', '?')} → {e.get('effect', '?')}")
+            orig = e.get("original_weight", 0)
+            adj = e.get("adjusted_weight", 0)
+            diff = adj - orig
+            sign = "+" if diff >= 0 else ""
+            lines.append(f"| {label} | {orig:.3f} | {adj:.3f} | {sign}{diff:.3f} |")
+    else:
+        lines.append("Geen relaties beïnvloed door deze sliderinstellingen.")
+
+    lines.extend([
+        f"",
+        f"---",
+        f"*Gegenereerd door Graaf Zeppelin Beleidsverkenner*",
+    ])
+
+    markdown = "\n".join(lines)
+
+    from fastapi.responses import PlainTextResponse
+
+    return PlainTextResponse(
+        content=markdown,
+        media_type="text/markdown",
+        headers={
+            "Content-Disposition": "attachment; filename=simulatierapport.md"
+        },
+    )
+
+
 # ── Helpers ──────────────────────────────────────────────────────────────
 
 
@@ -365,5 +492,6 @@ async def _check_license(user: User, db: AsyncSession) -> None:
     lm = LicenseManager(db)
     try:
         await lm.validate_license(user.license_key)
-    except Exception as e:
-        raise HTTPException(status_code=403, detail=str(e))
+    except Exception:
+        logger.exception("Licentievalidatie mislukt voor gebruiker %s", user.id)
+        raise HTTPException(status_code=403, detail="Licentie is ongeldig of verlopen")

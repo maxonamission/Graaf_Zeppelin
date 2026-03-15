@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Graaf Zeppelin{% endblock %}</title>
     <link rel="stylesheet" href="/static/css/style.css">
-    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <script src="https://unpkg.com/htmx.org@2.0.4"
+            integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+            crossorigin="anonymous"></script>
     {% block head %}{% endblock %}
 </head>
 <body>
@@ -16,11 +18,12 @@
                 <a href="/dashboard" class="brand"><span>Graaf</span> Zeppelin</a>
                 <div class="nav-links">
                     <a href="/dashboard">Dashboard</a>
+                    <a href="/verkenner">Verkenner</a>
                     <a href="/graph">Model</a>
                     <a href="/reasoning">Redeneren</a>
                     <a href="/releases">Updates</a>
                     <a href="/license">Licentie</a>
-                    <a href="#" onclick="document.cookie='access_token=; path=/; max-age=0'; window.location='/login';">Uitloggen</a>
+                    <a href="#" onclick="fetch('/api/auth/logout',{method:'POST'}).finally(()=>window.location='/login');">Uitloggen</a>
                 </div>
             </div>
         </nav>

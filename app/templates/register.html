@@ -28,7 +28,8 @@
         </div>
         <div class="form-group">
             <label for="password">Wachtwoord</label>
-            <input type="password" id="password" name="password" minlength="8" required>
+            <input type="password" id="password" name="password" minlength="12" required>
+            <small style="color: var(--text-muted);">Minimaal 12 tekens</small>
         </div>
         <button type="submit" class="btn btn-primary" style="width: 100%;">
             Account aanmaken
@@ -57,17 +58,22 @@ async function handleRegister(e) {
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(body)
         });
-        const data = await res.json();
         if (res.ok) {
-            document.cookie = `access_token=${data.access_token}; path=/; max-age=86400; SameSite=Strict`;
             window.location.href = '/dashboard';
         } else {
-            document.getElementById('register-error').innerHTML =
-                `<div class="alert alert-error">${data.detail}</div>`;
+            const data = await res.json().catch(() => ({}));
+            const el = document.getElementById('register-error');
+            const msg = document.createElement('div');
+            msg.className = 'alert alert-error';
+            msg.textContent = data.detail || 'Registratie mislukt.';
+            el.replaceChildren(msg);
         }
     } catch (err) {
-        document.getElementById('register-error').innerHTML =
-            '<div class="alert alert-error">Verbindingsfout. Probeer het opnieuw.</div>';
+        const el = document.getElementById('register-error');
+        const msg = document.createElement('div');
+        msg.className = 'alert alert-error';
+        msg.textContent = 'Verbindingsfout. Probeer het opnieuw.';
+        el.replaceChildren(msg);
     }
 }
 </script>

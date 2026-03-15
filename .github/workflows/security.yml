@@ -1,0 +1,49 @@
+name: Security Checks (S11-05)
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Quarterly dependency check (1st of Jan/Apr/Jul/Oct)
+    - cron: '0 8 1 1,4,7,10 *'
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install bandit pip-audit semgrep
+
+      - name: Run bandit (Python SAST)
+        run: |
+          mkdir -p reports
+          bandit -r app/ -f json -o reports/bandit.json --severity-level medium || true
+          bandit -r app/ -f txt --severity-level medium
+
+      - name: Run pip-audit (dependency CVEs)
+        run: |
+          pip-audit --format json --output reports/pip-audit.json || true
+          pip-audit
+
+      - name: Run semgrep (OWASP patterns)
+        run: |
+          semgrep --config "p/owasp-top-ten" app/ --json -o reports/semgrep.json || true
+          semgrep --config "p/owasp-top-ten" app/
+
+      - name: Upload security reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: reports/
+          retention-days: 90

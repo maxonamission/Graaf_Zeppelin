@@ -38,17 +38,22 @@ async function handleLogin(e) {
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({email, password})
         });
-        const data = await res.json();
         if (res.ok) {
-            document.cookie = `access_token=${data.access_token}; path=/; max-age=86400; SameSite=Strict`;
             window.location.href = '/dashboard';
         } else {
-            document.getElementById('login-error').innerHTML =
-                `<div class="alert alert-error">${data.detail}</div>`;
+            const data = await res.json().catch(() => ({}));
+            const el = document.getElementById('login-error');
+            const msg = document.createElement('div');
+            msg.className = 'alert alert-error';
+            msg.textContent = data.detail || 'Inloggen mislukt.';
+            el.replaceChildren(msg);
         }
     } catch (err) {
-        document.getElementById('login-error').innerHTML =
-            '<div class="alert alert-error">Verbindingsfout. Probeer het opnieuw.</div>';
+        const el = document.getElementById('login-error');
+        const msg = document.createElement('div');
+        msg.className = 'alert alert-error';
+        msg.textContent = 'Verbindingsfout. Probeer het opnieuw.';
+        el.replaceChildren(msg);
     }
 }
 </script>

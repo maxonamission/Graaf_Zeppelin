@@ -1,0 +1,16 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+      - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
+      - DATABASE_URL=sqlite+aiosqlite:///./data/graaf_zeppelin.db
+      - GRAPH_MODEL_PATH=data/models/sportdeelname_graph.json
+    volumes:
+      - app-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  app-data:

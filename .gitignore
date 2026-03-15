@@ -51,5 +51,8 @@ output/
 # Database
 *.db
 
+# Security reports (generated, not committed)
+reports/*.json
+
 # Environment
 .env

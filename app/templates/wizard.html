@@ -1,0 +1,819 @@
+{% extends "base.html" %}
+{% block title %}Beleidsverkenner — Graaf Zeppelin{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+    <h1 style="margin: 0;">Beleidsverkenner</h1>
+    <div style="display: flex; gap: 0.5rem;">
+        <button class="btn btn-outline" onclick="toggleSavedPanel()" id="btn-saved" title="Opgeslagen verkenningen">
+            Opgeslagen <span id="saved-count" style="font-size: 0.75rem; color: var(--text-muted);"></span>
+        </button>
+    </div>
+</div>
+
+<!-- Saved explorations panel (S05-01) -->
+<div class="card" id="saved-panel" style="display: none; margin-bottom: 1rem;">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <span>Opgeslagen verkenningen</span>
+        <button class="btn btn-outline" style="padding: 0.2rem 0.6rem; font-size: 0.75rem;" onclick="toggleSavedPanel()">Sluiten</button>
+    </div>
+    <div id="saved-list">
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Laden...</p>
+    </div>
+</div>
+
+<!-- Progress stepper -->
+<div class="wizard-stepper" id="stepper">
+    <div class="wizard-step active" data-step="1">
+        <span class="step-number">1</span>
+        <span class="step-label">Beleidsvraag</span>
+    </div>
+    <div class="wizard-step" data-step="2">
+        <span class="step-number">2</span>
+        <span class="step-label">Kwalificatie</span>
+    </div>
+    <div class="wizard-step" data-step="3">
+        <span class="step-number">3</span>
+        <span class="step-label">Resultaten</span>
+    </div>
+    <div class="wizard-step" data-step="4">
+        <span class="step-number">4</span>
+        <span class="step-label">Advies</span>
+    </div>
+</div>
+
+<!-- Step 1: Policy question -->
+<div class="wizard-panel" id="step-1">
+    <div class="card">
+        <div class="card-header">Stap 1: Wat is je beleidsvraag?</div>
+        <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">
+            Beschrijf de beleidsvraag die je wilt verkennen. Het systeem zoekt automatisch
+            welke beleidsinstrumenten (sliders) relevant zijn.
+        </p>
+        <div class="form-group">
+            <textarea id="policy-question" rows="3" placeholder="Bijv. Hoe kunnen we de sportdeelname onder jongeren verhogen?"></textarea>
+        </div>
+        <div id="example-questions-wizard" style="margin-bottom: 1rem;">
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">Of kies een voorbeeldvraag:</p>
+        </div>
+        <button class="btn btn-primary" id="btn-analyse" onclick="analyseQuestion()">
+            Analyseer mijn vraag
+        </button>
+    </div>
+</div>
+
+<!-- Step 2: Qualification cards (S05-02 enhanced) -->
+<div class="wizard-panel" id="step-2" style="display: none;">
+    <div class="card" style="margin-bottom: 1rem;">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Stap 2: Kwalificatievragen</span>
+            <span id="qualifier-progress" class="validation-badge badge-success" style="display: none;"></span>
+        </div>
+        <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">
+            Beantwoord de vragen hieronder om de beleidsinstrumenten af te stemmen
+            op jouw situatie. Gebruik de schuifjes om aan te geven wat van toepassing is.
+        </p>
+        <!-- Overall progress bar (S05-02) -->
+        <div id="qualifier-progress-bar" style="display: none;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">
+                <span>Voortgang</span>
+                <span id="qualifier-progress-text">0 / 0 beantwoord</span>
+            </div>
+            <div class="quota-bar">
+                <div class="quota-fill ok" id="qualifier-progress-fill" style="width: 0%;"></div>
+            </div>
+        </div>
+    </div>
+    <div id="qualifier-cards">
+        <!-- Dynamically generated slider qualification cards -->
+    </div>
+    <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+        <button class="btn btn-outline" onclick="goToStep(1)">Terug</button>
+        <button class="btn btn-primary" id="btn-simulate" onclick="runSimulation()">
+            Simuleer resultaten
+        </button>
+    </div>
+</div>
+
+<!-- Step 3: Simulation results (S05-03 enhanced) -->
+<div class="wizard-panel" id="step-3" style="display: none;">
+    <div class="card">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Stap 3: Simulatieresultaten</span>
+            <div id="results-summary-badge" style="display: none; font-size: 0.8rem;"></div>
+        </div>
+        <!-- Summary stats (S05-03) -->
+        <div id="results-summary" style="display: none; margin-bottom: 1rem;">
+            <div class="grid grid-3" style="gap: 0.5rem;">
+                <div class="card stat" style="padding: 0.75rem; margin-bottom: 0;">
+                    <div class="stat-value" id="stat-total" style="font-size: 1.5rem;">0</div>
+                    <div class="stat-label">Beïnvloede relaties</div>
+                </div>
+                <div class="card stat" style="padding: 0.75rem; margin-bottom: 0;">
+                    <div class="stat-value" id="stat-positive" style="font-size: 1.5rem; color: var(--success);">0</div>
+                    <div class="stat-label">Versterkt</div>
+                </div>
+                <div class="card stat" style="padding: 0.75rem; margin-bottom: 0;">
+                    <div class="stat-value" id="stat-negative" style="font-size: 1.5rem; color: var(--error);">0</div>
+                    <div class="stat-label">Verzwakt</div>
+                </div>
+            </div>
+        </div>
+        <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">
+            Op basis van jouw antwoorden zijn de beleidsinstrumenten ingesteld. Hieronder
+            zie je welke verbanden het sterkst beïnvloed worden.
+        </p>
+        <!-- Filter tabs (S05-03) -->
+        <div id="results-filter" style="display: none; margin-bottom: 0.75rem;">
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <button class="btn btn-primary" style="padding: 0.3rem 0.75rem; font-size: 0.8rem;" onclick="filterEffects('all')" data-filter="all">Alles</button>
+                <button class="btn btn-outline" style="padding: 0.3rem 0.75rem; font-size: 0.8rem;" onclick="filterEffects('positive')" data-filter="positive">Versterkt</button>
+                <button class="btn btn-outline" style="padding: 0.3rem 0.75rem; font-size: 0.8rem;" onclick="filterEffects('negative')" data-filter="negative">Verzwakt</button>
+            </div>
+        </div>
+        <div id="simulation-results">
+            <!-- Dynamically filled -->
+        </div>
+    </div>
+    <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+        <button class="btn btn-outline" onclick="goToStep(2)">Terug naar kwalificatie</button>
+        <button class="btn btn-primary" id="btn-advice" onclick="requestAdvice()">
+            Genereer advies
+        </button>
+    </div>
+    <div class="card" style="margin-top: 1rem;">
+        <div class="card-header">LLM configuratie (voor advies)</div>
+        <div id="stored-key-indicator" style="display: none; margin-bottom: 0.75rem;">
+            <div class="alert alert-success" style="margin-bottom: 0; font-size: 0.85rem;">
+                Opgeslagen API key gevonden (<span id="stored-key-hint"></span>). Deze wordt automatisch gebruikt.
+            </div>
+        </div>
+        <div class="grid grid-2">
+            <div class="form-group">
+                <label for="wiz-provider">Provider</label>
+                <select id="wiz-provider" onchange="checkStoredKeys()">
+                    <option value="openai">OpenAI</option>
+                    <option value="anthropic">Anthropic</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="wiz-api-key">API key</label>
+                <input type="password" id="wiz-api-key" placeholder="sk-...">
+                <p id="wiz-key-note" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Step 4: Advice / results page -->
+<div class="wizard-panel" id="step-4" style="display: none;">
+    <div class="card">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Stap 4: Beleidsadvies</span>
+            <span id="advice-validation" class="validation-badge" style="display: none;"></span>
+        </div>
+        <div id="advice-content">
+            <!-- Dynamically filled with LLM advice -->
+        </div>
+    </div>
+    <div style="display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap;">
+        <button class="btn btn-outline" onclick="goToStep(3)">Terug naar resultaten</button>
+        <button class="btn btn-outline" onclick="goToStep(1)">Nieuwe verkenning</button>
+        <button class="btn btn-secondary" onclick="saveExploration()">Opslaan</button>
+        <button class="btn btn-outline" onclick="exportResults()">Exporteer als Markdown</button>
+    </div>
+</div>
+
+<script>
+let wizardState = {
+    question: '',
+    suggestedSliders: [],
+    sliderValues: {},
+    effects: [],
+    advice: '',
+    modelVersion: '',
+};
+
+let storedKeys = {};
+let allEffects = []; // for filtering (S05-03)
+
+// ── Init ──────────────────────────────────────────────────────────────
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await Promise.all([loadSavedExplorations(), loadStoredKeys(), loadWizardExamples()]);
+});
+
+// ── S07-04: Load stored API keys ──────────────────────────────────────
+
+async function loadStoredKeys() {
+    try {
+        const res = await fetch('/api/license/api-keys');
+        if (!res.ok) return;
+        const data = await res.json();
+        storedKeys = {};
+        (data.keys || []).forEach(k => { storedKeys[k.provider] = { id: k.id, hint: k.hint }; });
+        checkStoredKeys();
+    } catch (e) { /* ignore for non-BYOK */ }
+}
+
+function checkStoredKeys() {
+    const provider = document.getElementById('wiz-provider').value;
+    const indicator = document.getElementById('stored-key-indicator');
+    const keyInput = document.getElementById('wiz-api-key');
+    const keyNote = document.getElementById('wiz-key-note');
+
+    if (storedKeys[provider]) {
+        indicator.style.display = '';
+        document.getElementById('stored-key-hint').textContent = storedKeys[provider].hint;
+        keyInput.style.display = 'none';
+        keyNote.textContent = 'Opgeslagen key wordt gebruikt.';
+    } else {
+        indicator.style.display = 'none';
+        keyInput.style.display = '';
+        keyInput.placeholder = 'Sla eerst een key op via de licentiepagina';
+        keyInput.disabled = true;
+        keyNote.textContent = 'Sla een API key op via de licentiepagina om deze functie te gebruiken.';
+    }
+}
+
+// ── S05-01: Saved explorations ─────────────────────────────────────
+
+function toggleSavedPanel() {
+    const panel = document.getElementById('saved-panel');
+    panel.style.display = panel.style.display === 'none' ? '' : 'none';
+    if (panel.style.display !== 'none') loadSavedExplorations();
+}
+
+async function loadSavedExplorations() {
+    try {
+        const res = await fetch('/api/explorations');
+        if (!res.ok) return;
+        const data = await res.json();
+        const list = document.getElementById('saved-list');
+        const countEl = document.getElementById('saved-count');
+
+        if (!data.explorations || data.explorations.length === 0) {
+            list.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">Nog geen opgeslagen verkenningen.</p>';
+            countEl.textContent = '';
+            return;
+        }
+
+        countEl.textContent = `(${data.explorations.length})`;
+        list.innerHTML = data.explorations.map(e => `
+            <div class="factor-item" style="font-size: 0.85rem;">
+                <div style="flex: 1; cursor: pointer;" onclick="loadExploration(${e.id})">
+                    <span class="factor-name">${escapeHtml(e.title)}</span>
+                    <span style="font-size: 0.75rem; color: var(--text-muted); margin-left: 0.5rem;">
+                        ${new Date(e.created_at).toLocaleDateString('nl-NL')}
+                    </span>
+                    ${e.has_advice ? '<span class="validation-badge badge-success" style="margin-left: 0.5rem;">Advies</span>' : ''}
+                </div>
+                <button class="btn btn-outline" style="padding: 0.15rem 0.4rem; font-size: 0.7rem; color: var(--error);"
+                        onclick="event.stopPropagation(); deleteExploration(${e.id})">Verwijder</button>
+            </div>
+        `).join('');
+    } catch (e) { /* ignore */ }
+}
+
+async function loadExploration(id) {
+    try {
+        const res = await fetch(`/api/explorations/${id}`);
+        if (!res.ok) return;
+        const data = await res.json();
+
+        wizardState.question = data.question;
+        wizardState.sliderValues = data.slider_values;
+        wizardState.effects = data.effects;
+        wizardState.advice = data.advice || '';
+        wizardState.modelVersion = data.model_version || '';
+        allEffects = data.effects;
+
+        document.getElementById('policy-question').value = data.question;
+        document.getElementById('saved-panel').style.display = 'none';
+
+        if (data.effects && data.effects.length > 0) {
+            renderSimulationResults({ effects: data.effects, total_affected: data.effects.length });
+            if (data.advice) {
+                renderAdvice({ advice: data.advice, model_version: data.model_version });
+                goToStep(4);
+            } else {
+                goToStep(3);
+            }
+        } else {
+            goToStep(1);
+        }
+    } catch (e) { alert('Kon verkenning niet laden.'); }
+}
+
+async function saveExploration() {
+    const title = wizardState.question.length > 80
+        ? wizardState.question.substring(0, 77) + '...'
+        : wizardState.question;
+
+    try {
+        const res = await fetch('/api/explorations', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                title: title,
+                question: wizardState.question,
+                slider_values: wizardState.sliderValues,
+                effects: wizardState.effects,
+                advice: wizardState.advice || null,
+                model_version: wizardState.modelVersion || null,
+            }),
+        });
+
+        if (res.ok) {
+            const msg = document.createElement('div');
+            msg.className = 'alert alert-success';
+            msg.textContent = 'Verkenning opgeslagen!';
+            msg.style.cssText = 'position: fixed; top: 1rem; right: 1rem; z-index: 300; animation: fadeIn 0.3s;';
+            document.body.appendChild(msg);
+            setTimeout(() => msg.remove(), 3000);
+            await loadSavedExplorations();
+        } else {
+            alert('Opslaan mislukt.');
+        }
+    } catch (e) { alert('Verbindingsfout bij opslaan.'); }
+}
+
+async function deleteExploration(id) {
+    if (!confirm('Weet je zeker dat je deze verkenning wilt verwijderen?')) return;
+    try {
+        await fetch(`/api/explorations/${id}`, { method: 'DELETE' });
+        await loadSavedExplorations();
+    } catch (e) { /* ignore */ }
+}
+
+// ── Step navigation ───────────────────────────────────────────────────
+
+function useWizardExample(btn) {
+    document.getElementById('policy-question').value = btn.textContent.trim();
+    document.getElementById('example-questions-wizard').style.display = 'none';
+}
+
+async function loadWizardExamples() {
+    try {
+        const res = await fetch('/api/graph/examples');
+        if (!res.ok) return;
+        const data = await res.json();
+        const container = document.getElementById('example-questions-wizard');
+        if (!container) return;
+        const questions = data.wizard || [];
+        questions.forEach(q => {
+            const btn = document.createElement('button');
+            btn.className = 'example-question';
+            btn.textContent = q;
+            btn.addEventListener('click', () => useWizardExample(btn));
+            container.appendChild(btn);
+        });
+    } catch (e) { /* ignore */ }
+}
+
+function goToStep(step) {
+    document.querySelectorAll('.wizard-panel').forEach(p => p.style.display = 'none');
+    document.getElementById(`step-${step}`).style.display = '';
+
+    document.querySelectorAll('.wizard-step').forEach(s => {
+        const sStep = parseInt(s.dataset.step);
+        s.classList.remove('active', 'completed');
+        if (sStep < step) s.classList.add('completed');
+        if (sStep === step) s.classList.add('active');
+    });
+}
+
+// ── Step 1: Analyse ───────────────────────────────────────────────────
+
+async function analyseQuestion() {
+    const question = document.getElementById('policy-question').value.trim();
+    if (!question) return;
+
+    wizardState.question = question;
+    const btn = document.getElementById('btn-analyse');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Analyseren...';
+
+    try {
+        const res = await fetch('/api/wizard/analyse', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ question }),
+        });
+
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            alert(err.detail || 'Er ging iets mis bij de analyse.');
+            return;
+        }
+
+        const data = await res.json();
+        wizardState.suggestedSliders = data.suggested_sliders;
+
+        renderQualifierCards(data.suggested_sliders);
+        goToStep(2);
+    } catch (e) {
+        alert('Verbindingsfout. Probeer het opnieuw.');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Analyseer mijn vraag';
+    }
+}
+
+// ── Step 2: Qualifier cards (S05-02 enhanced) ─────────────────────────
+
+function renderQualifierCards(sliders) {
+    const container = document.getElementById('qualifier-cards');
+
+    if (sliders.length === 0) {
+        container.innerHTML = '<div class="alert alert-info">Geen relevante beleidsinstrumenten gevonden. Probeer een andere vraag.</div>';
+        return;
+    }
+
+    const totalQuestions = sliders.reduce((sum, s) => sum + (s.qualifiers?.length || 1), 0);
+    document.getElementById('qualifier-progress-bar').style.display = '';
+    document.getElementById('qualifier-progress-text').textContent = `0 / ${totalQuestions} beantwoord`;
+
+    container.innerHTML = sliders.map((slider, si) => {
+        const qualifiers = slider.qualifiers || [];
+        if (qualifiers.length === 0) {
+            return `
+                <div class="card qualifier-card">
+                    <div class="card-header">
+                        ${escapeHtml(slider.label)}
+                        <span class="validation-badge badge-warning" style="margin-left: 0.5rem; font-size: 0.7rem;">${si + 1}/${sliders.length}</span>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">${escapeHtml(slider.description || '')}</p>
+                    <div class="form-group" style="margin-top: 0.75rem;">
+                        <label>Instelwaarde</label>
+                        <input type="range" min="0" max="100" value="50"
+                               class="slider-range" data-slider="${slider.id}"
+                               oninput="this.nextElementSibling.textContent = (this.value / 100).toFixed(2); updateQualifierProgress();">
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">0.50</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        const questionsHtml = qualifiers.map((q, i) => `
+            <div class="qualifier-question">
+                <label style="font-size: 0.85rem; font-weight: 500; margin-bottom: 0.25rem; display: block;">
+                    ${escapeHtml(q.question || q.label || 'Vraag ' + (i + 1))}
+                </label>
+                ${q.help_text ? `<p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem;">${escapeHtml(q.help_text)}</p>` : ''}
+                ${q.options ? renderOptions(slider.id, i, q.options) : renderSlider(slider.id, i)}
+            </div>
+        `).join('');
+
+        return `
+            <div class="card qualifier-card" data-slider-id="${slider.id}">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>${escapeHtml(slider.label)}</span>
+                    <span class="validation-badge badge-warning" style="font-size: 0.7rem;">${si + 1}/${sliders.length}</span>
+                </div>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.75rem;">
+                    ${escapeHtml(slider.description || '')}
+                </p>
+                ${questionsHtml}
+                <div class="qualifier-result" style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">Resulterende waarde: </span>
+                        <strong class="result-value" id="result-${slider.id}">0.50</strong>
+                    </div>
+                    <div class="quota-bar" style="width: 80px; height: 6px;">
+                        <div class="quota-fill ok" id="bar-${slider.id}" style="width: 50%;"></div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function renderOptions(sliderId, qIndex, options) {
+    return `<div class="qualifier-options">` +
+        options.map((opt, oi) => `
+            <label class="qualifier-option">
+                <input type="radio" name="q-${sliderId}-${qIndex}"
+                       value="${opt.value !== undefined ? opt.value : (oi / Math.max(1, options.length - 1)).toFixed(2)}"
+                       onchange="updateSliderResult('${sliderId}'); updateQualifierProgress();"
+                       ${oi === Math.floor(options.length / 2) ? 'checked' : ''}>
+                <span>${escapeHtml(opt.label || opt)}</span>
+            </label>
+        `).join('') +
+    `</div>`;
+}
+
+function renderSlider(sliderId, qIndex) {
+    return `
+        <input type="range" min="0" max="100" value="50"
+               class="qualifier-input" data-slider="${sliderId}" data-q="${qIndex}"
+               oninput="updateSliderResult('${sliderId}'); updateQualifierProgress();">
+    `;
+}
+
+function updateSliderResult(sliderId) {
+    const card = document.querySelector(`[data-slider-id="${sliderId}"]`);
+    if (!card) return;
+
+    const radios = card.querySelectorAll('input[type="radio"]:checked');
+    const ranges = card.querySelectorAll('input[type="range"].qualifier-input');
+
+    const values = [];
+    radios.forEach(r => values.push(parseFloat(r.value)));
+    ranges.forEach(r => values.push(r.value / 100));
+
+    if (values.length === 0) return;
+    const avg = values.reduce((a, b) => a + b, 0) / values.length;
+
+    const resultEl = document.getElementById(`result-${sliderId}`);
+    if (resultEl) resultEl.textContent = avg.toFixed(2);
+
+    // Update mini bar (S05-02)
+    const barEl = document.getElementById(`bar-${sliderId}`);
+    if (barEl) {
+        barEl.style.width = (avg * 100) + '%';
+        barEl.className = 'quota-fill ' + (avg > 0.65 ? 'ok' : avg > 0.35 ? 'warning' : 'danger');
+    }
+}
+
+function updateQualifierProgress() {
+    const allRadioGroups = new Set();
+    document.querySelectorAll('.qualifier-card input[type="radio"]').forEach(r => {
+        allRadioGroups.add(r.name);
+    });
+    const allRanges = document.querySelectorAll('.qualifier-input, .slider-range');
+
+    const total = allRadioGroups.size + allRanges.length;
+    const answeredRadios = new Set();
+    document.querySelectorAll('.qualifier-card input[type="radio"]:checked').forEach(r => {
+        answeredRadios.add(r.name);
+    });
+    const answered = answeredRadios.size + allRanges.length; // ranges always have a value
+
+    const pct = total > 0 ? (answered / total * 100) : 0;
+    document.getElementById('qualifier-progress-text').textContent = `${answered} / ${total} beantwoord`;
+    document.getElementById('qualifier-progress-fill').style.width = pct + '%';
+
+    const badge = document.getElementById('qualifier-progress');
+    badge.style.display = 'inline-block';
+    badge.textContent = `${Math.round(pct)}%`;
+    badge.className = 'validation-badge ' + (pct >= 100 ? 'badge-success' : 'badge-warning');
+}
+
+// ── Step 3: Simulate (S05-03 enhanced) ────────────────────────────────
+
+async function runSimulation() {
+    const sliderValues = {};
+
+    wizardState.suggestedSliders.forEach(slider => {
+        const card = document.querySelector(`[data-slider-id="${slider.id}"]`);
+        if (card) {
+            const resultEl = document.getElementById(`result-${slider.id}`);
+            sliderValues[slider.id] = parseFloat(resultEl?.textContent || '0.5');
+        } else {
+            const range = document.querySelector(`input.slider-range[data-slider="${slider.id}"]`);
+            if (range) sliderValues[slider.id] = range.value / 100;
+        }
+    });
+
+    wizardState.sliderValues = sliderValues;
+
+    const btn = document.getElementById('btn-simulate');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Simuleren...';
+
+    try {
+        const res = await fetch('/api/wizard/simulate', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                question: wizardState.question,
+                slider_values: sliderValues,
+            }),
+        });
+
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            alert(err.detail || 'Simulatie mislukt.');
+            return;
+        }
+
+        const data = await res.json();
+        wizardState.effects = data.effects;
+        allEffects = data.effects;
+        renderSimulationResults(data);
+        goToStep(3);
+    } catch (e) {
+        alert('Verbindingsfout bij simulatie.');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Simuleer resultaten';
+    }
+}
+
+function renderSimulationResults(data) {
+    const container = document.getElementById('simulation-results');
+
+    if (!data.effects || data.effects.length === 0) {
+        container.innerHTML = '<div class="alert alert-info">Geen significante effecten gevonden met deze instellingen. Pas de kwalificatievragen aan of kies andere beleidsinstrumenten.</div>';
+        document.getElementById('results-summary').style.display = 'none';
+        document.getElementById('results-filter').style.display = 'none';
+        return;
+    }
+
+    // Summary stats (S05-03)
+    const positive = data.effects.filter(e => e.change > 0).length;
+    const negative = data.effects.filter(e => e.change < 0).length;
+    document.getElementById('stat-total').textContent = data.total_affected || data.effects.length;
+    document.getElementById('stat-positive').textContent = positive;
+    document.getElementById('stat-negative').textContent = negative;
+    document.getElementById('results-summary').style.display = '';
+    document.getElementById('results-filter').style.display = '';
+
+    renderEffectRows(data.effects);
+}
+
+function renderEffectRows(effects) {
+    const container = document.getElementById('simulation-results');
+
+    if (effects.length === 0) {
+        container.innerHTML = '<div class="alert alert-info">Geen resultaten voor dit filter.</div>';
+        return;
+    }
+
+    // Find max absolute change for bar scaling (S05-03)
+    const maxChange = Math.max(...effects.map(e => Math.abs(e.change)), 0.001);
+
+    const rows = effects.map(e => {
+        const changeClass = e.change > 0 ? 'effect-positive' : e.change < 0 ? 'effect-negative' : '';
+        const arrow = e.change > 0 ? '&#9650;' : e.change < 0 ? '&#9660;' : '&#9654;';
+        const barWidth = Math.round(Math.abs(e.change) / maxChange * 100);
+        const barColor = e.change > 0 ? 'var(--success)' : 'var(--error)';
+
+        return `
+            <div class="effect-row ${changeClass}" data-direction="${e.change > 0 ? 'positive' : e.change < 0 ? 'negative' : 'neutral'}">
+                <div class="effect-relation" style="flex: 1;">
+                    <strong>${escapeHtml(e.source)}</strong>
+                    <span style="color: var(--text-muted);"> beïnvloedt </span>
+                    <strong>${escapeHtml(e.target)}</strong>
+                    <div style="margin-top: 0.3rem; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden;">
+                        <div style="height: 100%; width: ${barWidth}%; background: ${barColor}; border-radius: 2px;"></div>
+                    </div>
+                </div>
+                <div class="effect-change">
+                    <span class="effect-arrow">${arrow}</span>
+                    <span>${e.direction_nl} (${e.change >= 0 ? '+' : ''}${e.change.toFixed(3)})</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    container.innerHTML = rows;
+}
+
+function filterEffects(type) {
+    // Update button styles
+    document.querySelectorAll('[data-filter]').forEach(btn => {
+        btn.className = btn.dataset.filter === type ? 'btn btn-primary' : 'btn btn-outline';
+        btn.style.cssText = 'padding: 0.3rem 0.75rem; font-size: 0.8rem;';
+    });
+
+    if (type === 'all') {
+        renderEffectRows(allEffects);
+    } else if (type === 'positive') {
+        renderEffectRows(allEffects.filter(e => e.change > 0));
+    } else {
+        renderEffectRows(allEffects.filter(e => e.change < 0));
+    }
+}
+
+// ── Step 4: Advice ────────────────────────────────────────────────────
+
+async function requestAdvice() {
+    const provider = document.getElementById('wiz-provider').value;
+
+    // S11-02: Only use stored keys (no raw keys in requests)
+    if (!storedKeys[provider]) {
+        alert('Sla eerst een API key op via de licentiepagina.');
+        return;
+    }
+    const storedKeyId = storedKeys[provider].id;
+
+    const btn = document.getElementById('btn-advice');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Advies genereren...';
+
+    try {
+        const res = await fetch('/api/wizard/advice', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                question: wizardState.question,
+                slider_values: wizardState.sliderValues,
+                effects: wizardState.effects,
+                provider: provider,
+                stored_key_id: storedKeyId,
+            }),
+        });
+
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            alert(err.detail || 'Advies genereren mislukt.');
+            return;
+        }
+
+        const data = await res.json();
+        wizardState.advice = data.advice;
+        wizardState.modelVersion = data.model_version;
+        renderAdvice(data);
+        goToStep(4);
+    } catch (e) {
+        alert('Verbindingsfout bij advies genereren.');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Genereer advies';
+    }
+}
+
+function renderAdvice(data) {
+    const container = document.getElementById('advice-content');
+
+    const paragraphs = data.advice.split('\n').filter(p => p.trim()).map(p => {
+        if (p.startsWith('#')) {
+            const level = p.match(/^#+/)[0].length;
+            const text = p.replace(/^#+\s*/, '');
+            return `<h${Math.min(level + 1, 4)}>${escapeHtml(text)}</h${Math.min(level + 1, 4)}>`;
+        }
+        if (p.startsWith('- ') || p.startsWith('* ')) {
+            return `<li style="margin-left: 1.5rem; margin-bottom: 0.3rem;">${escapeHtml(p.substring(2))}</li>`;
+        }
+        if (p.match(/^\d+\.\s/)) {
+            return `<li style="margin-left: 1.5rem; margin-bottom: 0.3rem;">${escapeHtml(p.replace(/^\d+\.\s/, ''))}</li>`;
+        }
+        return `<p style="margin-bottom: 0.75rem;">${escapeHtml(p)}</p>`;
+    }).join('');
+
+    container.innerHTML = `
+        <div class="advice-text" style="line-height: 1.7; font-size: 0.95rem;">
+            ${paragraphs}
+        </div>
+        <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-muted);">
+            Model: v${data.model_version || wizardState.modelVersion || '?'}
+        </div>
+    `;
+
+    if (data.validation) {
+        const badge = document.getElementById('advice-validation');
+        badge.textContent = `${data.validation.recognized_count} modelfactoren herkend`;
+        badge.style.display = 'inline-block';
+        badge.className = data.validation.recognized_count > 0
+            ? 'validation-badge badge-success'
+            : 'validation-badge badge-warning';
+    }
+}
+
+// ── Export ─────────────────────────────────────────────────────────────
+
+function exportResults() {
+    const lines = [
+        `# Beleidsverkenning — Graaf Zeppelin`,
+        ``,
+        `## Beleidsvraag`,
+        wizardState.question,
+        ``,
+        `## Sliderinstellingen`,
+        ...Object.entries(wizardState.sliderValues).map(([k, v]) => `- ${k}: ${v.toFixed(2)}`),
+        ``,
+    ];
+
+    if (wizardState.effects && wizardState.effects.length > 0) {
+        lines.push(`## Simulatieresultaten`);
+        lines.push(`Totaal beïnvloede relaties: ${wizardState.effects.length}`);
+        lines.push(``);
+        wizardState.effects.forEach(e => {
+            lines.push(`- ${e.source} beïnvloedt ${e.target}: ${e.direction_nl} (${e.change >= 0 ? '+' : ''}${e.change.toFixed(3)})`);
+        });
+        lines.push(``);
+    }
+
+    lines.push(`## Advies`);
+    lines.push(wizardState.advice || 'Geen advies gegenereerd.');
+
+    const blob = new Blob([lines.join('\n')], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'beleidsverkenning.md';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+</script>
+{% endblock %}

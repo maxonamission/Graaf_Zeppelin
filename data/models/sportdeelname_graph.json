@@ -2,6 +2,24 @@
    "metadata": {
       "deliverable": "SDM_graph",
       "project": "Sportdeelnamemodel KNSB",
+      "domain_name": "Sportdeelname",
+      "language": "nl",
+      "persona": "beleidsadviseur sportbeleid bij de KNSB",
+      "example_questions": {
+         "reasoning": [
+            "Welke factoren beïnvloeden sportdeelname het meest?",
+            "Hoe werkt de relatie tussen accommodatie en sportdeelname?",
+            "Wat is het effect van ledencontributie op sportparticipatie?",
+            "Hoe beïnvloedt het clubklimaat de motivatie van sporters?",
+            "Wat zijn de belangrijkste barrières voor sportdeelname?",
+            "Hoe hangt seizoensinvloed samen met trainingsaanbod?"
+         ],
+         "wizard": [
+            "Hoe kan ik sportdeelname in mijn regio verhogen?",
+            "Welke beleidsinstrumenten zijn effectief voor jeugdsport?",
+            "Wat is de impact van accommodatie-investeringen?"
+         ]
+      },
       "version": "2.3.0",
       "date": "2026-02-20",
       "sources": {

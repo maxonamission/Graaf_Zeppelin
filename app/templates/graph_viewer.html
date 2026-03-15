@@ -2,23 +2,56 @@
 {% block title %}Causaal Model — Graaf Zeppelin{% endblock %}
 
 {% block head %}
-<script src="https://d3js.org/d3.v7.min.js"></script>
+<!-- Pinned D3 version for SRI compatibility. Regenerate hash with:
+     curl -sL URL | openssl dgst -sha384 -binary | openssl base64 -A -->
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"
+        integrity="sha384-OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb"
+        crossorigin="anonymous"></script>
 {% endblock %}
 
 {% block content %}
-<h1 style="margin-bottom: 1.5rem;">Causaal Model — Sportdeelname</h1>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+    <h1>Causaal Model</h1>
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <label style="font-size: 0.85rem; font-weight: 500;">Model:</label>
+        <select id="model-selector" class="form-group" style="margin: 0; padding: 0.4rem 0.6rem; font-size: 0.85rem;" onchange="switchModel(this.value)">
+            <option>Laden...</option>
+        </select>
+    </div>
+</div>
 
 <div class="grid grid-2">
     <div>
         <div class="card">
-            <div class="card-header">Grafiekweergave</div>
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>Grafiekweergave</span>
+                <div style="display: flex; gap: 0.25rem;">
+                    <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;" onclick="zoomIn()">+</button>
+                    <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;" onclick="zoomOut()">-</button>
+                    <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;" onclick="zoomReset()">Reset</button>
+                </div>
+            </div>
             <div id="graph-container"></div>
+            <!-- Hover tooltip -->
+            <div id="graph-tooltip" style="display: none; position: fixed; background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 0.75rem; box-shadow: var(--shadow-lg); max-width: 280px; z-index: 100; font-size: 0.8rem; pointer-events: none;">
+                <div id="tooltip-title" style="font-weight: 600; margin-bottom: 0.25rem;"></div>
+                <div id="tooltip-domain" style="font-size: 0.7rem; margin-bottom: 0.4rem;"></div>
+                <div id="tooltip-desc" style="color: var(--text-muted);"></div>
+            </div>
+        </div>
+        <!-- Domain legend -->
+        <div class="card">
+            <div class="card-header">Domeinen</div>
+            <div id="domain-legend" style="display: flex; flex-wrap: wrap; gap: 0.5rem;"></div>
         </div>
     </div>
     <div>
         <div class="card">
             <div class="card-header">Factoren</div>
-            <div id="factor-list">
+            <div class="form-group" style="margin-bottom: 0.5rem;">
+                <input type="text" id="factor-filter" placeholder="Filter factoren..." oninput="filterFactors()">
+            </div>
+            <div id="factor-list" style="max-height: 300px; overflow-y: auto;">
                 <p style="color: var(--text-muted);">Laden...</p>
             </div>
         </div>
@@ -50,6 +83,20 @@
 </div>
 
 <script>
+// 9 domain colors for distinct visual mapping
+const DOMAIN_COLORS = {
+    'Individueel':      '#2563eb',
+    'Sociaal':          '#7c3aed',
+    'Organisatorisch':  '#059669',
+    'Infrastructuur':   '#d97706',
+    'Financieel':       '#dc2626',
+    'Beleid':           '#0891b2',
+    'Gezondheid':       '#ec4899',
+    'Cultureel':        '#8b5cf6',
+    'Sportaanbod':      '#f97316',
+};
+
+// Fallback: map old category names too
 const CATEGORY_COLORS = {
     uitkomst: '#dc2626',
     individueel: '#2563eb',
@@ -57,9 +104,17 @@ const CATEGORY_COLORS = {
     aanbod: '#059669',
     omgeving: '#d97706',
     beleid: '#0891b2',
+    ...DOMAIN_COLORS,
 };
 
+function getDomainColor(factor) {
+    return DOMAIN_COLORS[factor.domain] || CATEGORY_COLORS[factor.category] || '#64748b';
+}
+
 let graphData = { factors: [], relations: [] };
+let svgZoom = null;
+let svgElement = null;
+let highlightedFactors = new Set();
 
 async function loadGraph() {
     const [factorsRes, relationsRes] = await Promise.all([
@@ -75,20 +130,86 @@ async function loadGraph() {
     graphData.factors = factorsData.factors;
     graphData.relations = relationsData.relations;
 
+    renderDomainLegend();
     renderFactorList();
     renderFactorSelect();
     renderGraph();
 }
 
-function renderFactorList() {
-    const html = graphData.factors.map(f => `
-        <div class="factor-item" onclick="showFactorDetail('${f.id}')">
-            <span class="factor-name">${f.label}</span>
-            <span class="factor-category">${f.category}</span>
-        </div>
-    `).join('');
-    document.getElementById('factor-list').innerHTML = html;
+function renderDomainLegend() {
+    const domains = {};
+    graphData.factors.forEach(f => {
+        const d = f.domain || f.category || 'Overig';
+        if (!domains[d]) domains[d] = 0;
+        domains[d]++;
+    });
+
+    const legend = document.getElementById('domain-legend');
+    legend.replaceChildren();
+    Object.entries(domains).forEach(([name, count]) => {
+        const color = DOMAIN_COLORS[name] || CATEGORY_COLORS[name] || '#64748b';
+        const span = document.createElement('span');
+        span.className = 'domain-badge';
+        span.style.cssText = `display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.75rem; background: ${color}15; color: ${color}; border: 1px solid ${color}40; cursor: pointer;`;
+        span.dataset.domain = name;
+        span.addEventListener('click', () => filterByDomain(name));
+        const dot = document.createElement('span');
+        dot.style.cssText = `width: 8px; height: 8px; border-radius: 50%; background: ${color};`;
+        span.appendChild(dot);
+        span.appendChild(document.createTextNode(` ${name} (${count})`));
+        legend.appendChild(span);
+    });
 }
+
+function filterByDomain(domain) {
+    const input = document.getElementById('factor-filter');
+    input.value = domain;
+    filterFactors();
+}
+
+function renderFactorList() {
+    const filter = (document.getElementById('factor-filter')?.value || '').toLowerCase();
+    const filtered = filter
+        ? graphData.factors.filter(f =>
+            (f.label || '').toLowerCase().includes(filter) ||
+            (f.domain || '').toLowerCase().includes(filter) ||
+            (f.category || '').toLowerCase().includes(filter))
+        : graphData.factors;
+
+    const list = document.getElementById('factor-list');
+    list.replaceChildren();
+
+    if (filtered.length === 0) {
+        const p = document.createElement('p');
+        p.style.color = 'var(--text-muted)';
+        p.textContent = 'Geen factoren gevonden.';
+        list.appendChild(p);
+        return;
+    }
+
+    filtered.forEach(f => {
+        const color = getDomainColor(f);
+        const div = document.createElement('div');
+        div.className = 'factor-item';
+        div.dataset.factorId = f.id;
+        div.addEventListener('click', () => showFactorDetail(f.id));
+
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'factor-name';
+        nameSpan.textContent = f.label;
+
+        const catSpan = document.createElement('span');
+        catSpan.className = 'factor-category';
+        catSpan.style.cssText = `background: ${color}15; color: ${color}; border: 1px solid ${color}40;`;
+        catSpan.textContent = f.domain || f.category;
+
+        div.appendChild(nameSpan);
+        div.appendChild(catSpan);
+        list.appendChild(div);
+    });
+}
+
+function filterFactors() { renderFactorList(); }
 
 function renderFactorSelect() {
     const select = document.getElementById('intervene-factor');
@@ -98,7 +219,7 @@ function renderFactorSelect() {
 }
 
 async function showFactorDetail(factorId) {
-    const res = await fetch(`/api/graph/factors/${factorId}`);
+    const res = await fetch(`/api/graph/factors/${encodeURIComponent(factorId)}`);
     if (!res.ok) return;
     const info = await res.json();
 
@@ -106,25 +227,70 @@ async function showFactorDetail(factorId) {
     detail.style.display = 'block';
     document.getElementById('detail-title').textContent = info.label;
 
-    let html = `<p style="margin-bottom: 0.75rem; color: var(--text-muted);">${info.description || ''}</p>`;
+    const content = document.getElementById('detail-content');
+    content.replaceChildren();
 
-    if (info.causes && info.causes.length > 0) {
-        html += '<p style="font-weight: 500; margin-top: 0.5rem;">Wordt beïnvloed door:</p><ul>';
-        info.causes.forEach(c => {
-            html += `<li>${c.label} (${c.relation.direction}, sterkte: ${c.relation.strength})</li>`;
+    const color = getDomainColor(info);
+
+    const catBadge = document.createElement('span');
+    catBadge.className = 'factor-category';
+    catBadge.style.cssText = `background: ${color}15; color: ${color}; border: 1px solid ${color}40; margin-bottom: 0.5rem; display: inline-block;`;
+    catBadge.textContent = info.domain || info.category || '';
+    content.appendChild(catBadge);
+
+    const desc = document.createElement('p');
+    desc.style.cssText = 'margin-bottom: 0.75rem; color: var(--text-muted);';
+    desc.textContent = info.description || '';
+    content.appendChild(desc);
+
+    function buildRelationList(title, items, keyProp) {
+        if (!items || items.length === 0) return;
+        const heading = document.createElement('p');
+        heading.style.cssText = 'font-weight: 500; margin-top: 0.5rem;';
+        heading.textContent = title;
+        content.appendChild(heading);
+
+        const ul = document.createElement('ul');
+        items.forEach(item => {
+            const li = document.createElement('li');
+            li.style.cssText = 'cursor: pointer; color: var(--primary);';
+            li.textContent = `${item.label} (${item.relation.direction}, sterkte: ${item.relation.strength})`;
+            li.addEventListener('click', () => showFactorDetail(item[keyProp]));
+            ul.appendChild(li);
         });
-        html += '</ul>';
+        content.appendChild(ul);
     }
 
-    if (info.effects && info.effects.length > 0) {
-        html += '<p style="font-weight: 500; margin-top: 0.5rem;">Beïnvloedt:</p><ul>';
-        info.effects.forEach(e => {
-            html += `<li>${e.label} (${e.relation.direction}, sterkte: ${e.relation.strength})</li>`;
-        });
-        html += '</ul>';
-    }
+    buildRelationList('Wordt be\u00EFnvloed door:', info.causes, 'factor');
+    buildRelationList('Be\u00EFnvloedt:', info.effects, 'factor');
 
-    document.getElementById('detail-content').innerHTML = html;
+    highlightNode(factorId);
+}
+
+function highlightNode(factorId) {
+    if (!svgElement) return;
+    // Reset all nodes
+    d3.select('#graph-container svg').selectAll('circle')
+        .attr('stroke', '#fff')
+        .attr('stroke-width', 2)
+        .attr('r', 12);
+
+    // Highlight selected node
+    d3.select('#graph-container svg').selectAll('circle')
+        .filter(d => d.id === factorId)
+        .attr('stroke', '#1e293b')
+        .attr('stroke-width', 3)
+        .attr('r', 16);
+}
+
+function highlightIntervention(affectedIds) {
+    if (!svgElement) return;
+    highlightedFactors = new Set(affectedIds);
+
+    d3.select('#graph-container svg').selectAll('circle')
+        .attr('stroke', d => highlightedFactors.has(d.id) ? '#f59e0b' : '#fff')
+        .attr('stroke-width', d => highlightedFactors.has(d.id) ? 3 : 2)
+        .attr('r', d => highlightedFactors.has(d.id) ? 14 : 12);
 }
 
 async function simulateIntervention(e) {
@@ -145,19 +311,38 @@ async function simulateIntervention(e) {
     }
 
     const data = await res.json();
-    let html = '<p style="font-weight: 500;">Verwachte effecten:</p>';
+    const resultsEl = document.getElementById('intervention-results');
+    resultsEl.replaceChildren();
+
+    const heading = document.createElement('p');
+    heading.style.fontWeight = '500';
+    heading.textContent = 'Verwachte effecten:';
+    resultsEl.appendChild(heading);
+
+    const affectedIds = [factorId];
     data.effects.forEach(effect => {
         const color = effect.estimated_impact > 0 ? 'var(--success)' : 'var(--error)';
         const arrow = effect.estimated_impact > 0 ? '\u2191' : '\u2193';
-        html += `<div class="factor-item">
-            <span>${effect.label}</span>
-            <span style="color: ${color}; font-weight: 600;">
-                ${arrow} ${(effect.estimated_impact * 100).toFixed(1)}%
-            </span>
-        </div>`;
-    });
+        affectedIds.push(effect.factor);
 
-    document.getElementById('intervention-results').innerHTML = html;
+        const div = document.createElement('div');
+        div.className = 'factor-item';
+        div.style.cursor = 'pointer';
+        div.addEventListener('click', () => showFactorDetail(effect.factor));
+
+        const label = document.createElement('span');
+        label.textContent = effect.label;
+
+        const impact = document.createElement('span');
+        impact.style.cssText = `color: ${color}; font-weight: 600;`;
+        impact.textContent = `${arrow} ${(effect.estimated_impact * 100).toFixed(1)}%`;
+
+        div.appendChild(label);
+        div.appendChild(impact);
+        resultsEl.appendChild(div);
+    });
+    // Highlight affected nodes in graph
+    highlightIntervention(affectedIds);
 }
 
 function renderGraph() {
@@ -172,18 +357,31 @@ function renderGraph() {
         .attr('width', width)
         .attr('height', height);
 
-    // Arrow marker
-    svg.append('defs').append('marker')
-        .attr('id', 'arrowhead')
+    svgElement = svg;
+
+    // Zoom behavior
+    const g = svg.append('g');
+    svgZoom = d3.zoom()
+        .scaleExtent([0.2, 4])
+        .on('zoom', (event) => g.attr('transform', event.transform));
+    svg.call(svgZoom);
+
+    // Arrow markers
+    const defs = svg.append('defs');
+    defs.append('marker')
+        .attr('id', 'arrowhead-pos')
         .attr('viewBox', '0 -5 10 10')
-        .attr('refX', 20)
-        .attr('refY', 0)
-        .attr('markerWidth', 6)
-        .attr('markerHeight', 6)
+        .attr('refX', 20).attr('refY', 0)
+        .attr('markerWidth', 6).attr('markerHeight', 6)
         .attr('orient', 'auto')
-        .append('path')
-        .attr('d', 'M0,-5L10,0L0,5')
-        .attr('fill', '#94a3b8');
+        .append('path').attr('d', 'M0,-5L10,0L0,5').attr('fill', '#86efac');
+    defs.append('marker')
+        .attr('id', 'arrowhead-neg')
+        .attr('viewBox', '0 -5 10 10')
+        .attr('refX', 20).attr('refY', 0)
+        .attr('markerWidth', 6).attr('markerHeight', 6)
+        .attr('orient', 'auto')
+        .append('path').attr('d', 'M0,-5L10,0L0,5').attr('fill', '#fca5a5');
 
     const nodes = graphData.factors.map(f => ({...f}));
     const links = graphData.relations.map(r => ({
@@ -199,32 +397,35 @@ function renderGraph() {
         .force('center', d3.forceCenter(width / 2, height / 2))
         .force('collision', d3.forceCollide().radius(30));
 
-    const link = svg.append('g')
+    const link = g.append('g')
         .selectAll('line')
         .data(links)
         .enter().append('line')
         .attr('stroke', d => d.direction === 'positive' ? '#86efac' : '#fca5a5')
         .attr('stroke-width', d => Math.max(1, d.strength * 4))
         .attr('stroke-opacity', 0.7)
-        .attr('marker-end', 'url(#arrowhead)');
+        .attr('marker-end', d => d.direction === 'positive' ? 'url(#arrowhead-pos)' : 'url(#arrowhead-neg)');
 
-    const node = svg.append('g')
+    const node = g.append('g')
         .selectAll('circle')
         .data(nodes)
         .enter().append('circle')
         .attr('r', 12)
-        .attr('fill', d => CATEGORY_COLORS[d.category] || '#64748b')
+        .attr('fill', d => getDomainColor(d))
         .attr('stroke', '#fff')
         .attr('stroke-width', 2)
         .style('cursor', 'pointer')
         .on('click', (e, d) => showFactorDetail(d.id))
+        .on('mouseenter', (e, d) => showTooltip(e, d))
+        .on('mousemove', (e) => moveTooltip(e))
+        .on('mouseleave', hideTooltip)
         .call(d3.drag()
             .on('start', (e, d) => { if (!e.active) simulation.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
             .on('drag', (e, d) => { d.fx = e.x; d.fy = e.y; })
             .on('end', (e, d) => { if (!e.active) simulation.alphaTarget(0); d.fx = null; d.fy = null; })
         );
 
-    const label = svg.append('g')
+    const label = g.append('g')
         .selectAll('text')
         .data(nodes)
         .enter().append('text')
@@ -249,6 +450,89 @@ function renderGraph() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', loadGraph);
+// Tooltip functions
+function showTooltip(event, d) {
+    const tip = document.getElementById('graph-tooltip');
+    document.getElementById('tooltip-title').textContent = d.label;
+    const domainName = d.domain || d.category || '';
+    const color = getDomainColor(d);
+    const domainEl = document.getElementById('tooltip-domain');
+    domainEl.textContent = domainName;
+    domainEl.style.color = color;
+    document.getElementById('tooltip-desc').textContent =
+        d.description || d.definition || '';
+    tip.style.display = 'block';
+    moveTooltip(event);
+}
+
+function moveTooltip(event) {
+    const tip = document.getElementById('graph-tooltip');
+    tip.style.left = (event.clientX + 12) + 'px';
+    tip.style.top = (event.clientY - 10) + 'px';
+}
+
+function hideTooltip() {
+    document.getElementById('graph-tooltip').style.display = 'none';
+}
+
+// Zoom controls
+function zoomIn() {
+    if (svgElement && svgZoom) svgElement.transition().call(svgZoom.scaleBy, 1.5);
+}
+function zoomOut() {
+    if (svgElement && svgZoom) svgElement.transition().call(svgZoom.scaleBy, 0.67);
+}
+function zoomReset() {
+    if (svgElement && svgZoom) svgElement.transition().call(svgZoom.transform, d3.zoomIdentity);
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text || '';
+    return div.innerHTML;
+}
+
+async function loadModelSelector() {
+    try {
+        const [modelsRes, currentRes] = await Promise.all([
+            fetch('/api/models'),
+            fetch('/api/models/current'),
+        ]);
+        if (!modelsRes.ok) return;
+        const modelsData = await modelsRes.json();
+        const currentData = currentRes.ok ? await currentRes.json() : null;
+
+        const select = document.getElementById('model-selector');
+        select.replaceChildren();
+        modelsData.models.forEach(m => {
+            const opt = document.createElement('option');
+            opt.value = m.id;
+            opt.textContent = `${m.name} v${m.version} (${m.num_factors} factoren)`;
+            if (currentData && currentData.model_id === m.id) opt.selected = true;
+            select.appendChild(opt);
+        });
+    } catch (e) { /* ignore */ }
+}
+
+async function switchModel(modelId) {
+    const res = await fetch('/api/models/switch', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ model_id: modelId }),
+    });
+
+    if (res.ok) {
+        // Reload the graph with the new model
+        await loadGraph();
+    } else {
+        const err = await res.json().catch(() => ({}));
+        alert(err.detail || 'Model wisselen mislukt.');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadModelSelector();
+    await loadGraph();
+});
 </script>
 {% endblock %}
