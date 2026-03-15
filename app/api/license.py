@@ -9,12 +9,12 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_current_user
+from app.api.deps import get_current_user, require_role
 from app.core.audit import audit_log
 from app.core.key_vault import KeyVault
 from app.core.license_manager import LicenseManager
 from app.db import get_db
-from app.models.user import User
+from app.models.user import User, UserRole
 from app.models.user_api_key import UserApiKey
 
 logger = logging.getLogger(__name__)
@@ -211,7 +211,7 @@ _MAX_TOPUP_AMOUNT = 100  # Maximum credits per top-up to prevent abuse
 @router.post("/credits/topup")
 async def topup_credits(
     request: TopUpRequest,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_role(UserRole.ADMIN)),
     db: AsyncSession = Depends(get_db),
 ):
     """Add extra credits (flexible top-up) to the user's license.
@@ -219,11 +219,6 @@ async def topup_credits(
     Restricted to admin users only. In a real system this would also
     involve payment processing.
     """
-    if user.role != "admin":
-        raise HTTPException(
-            status_code=403,
-            detail="Alleen beheerders kunnen credits toevoegen",
-        )
 
     if not user.license_key:
         raise HTTPException(status_code=403, detail="Geen licentie gekoppeld")

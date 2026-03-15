@@ -48,7 +48,7 @@ async def _create_auth_cookies():
         await session.commit()
         user = User(
             email="feature@example.com",
-            hashed_password=hash_password("pass123"),
+            hashed_password=hash_password("StrongPass123!"),
             full_name="Feature User",
             organization="Feature Org",
             license_key="GZ-FEAT-TEST",

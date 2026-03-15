@@ -51,10 +51,11 @@ async def client():
             session.add(lic)
             user = User(
                 email="sprint4@test.nl",
-                hashed_password=hash_password("test1234"),
+                hashed_password=hash_password("StrongPass123!"),
                 full_name="Sprint4 User",
                 organization="Sprint4 Org",
                 license_key="GZ-SPRINT4-TEST",
+                role="admin",
             )
             session.add(user)
             await session.commit()

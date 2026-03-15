@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy import select
@@ -18,11 +20,13 @@ from app.db import get_db
 from app.models.user import User
 from app.models.user_api_key import UserApiKey
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter(prefix="/api/reasoning", tags=["reasoning"])
 
 
 class ReasoningRequest(BaseModel):
-    query: str = Field(..., min_length=1, max_length=5000)
+    query: str = Field(..., min_length=1, max_length=2000)
     provider: str = Field("openai", pattern=r"^(openai|anthropic)$")
     stored_key_id: int = Field(..., description="ID van opgeslagen API key")
     model: str | None = Field(None, max_length=100)
@@ -30,7 +34,7 @@ class ReasoningRequest(BaseModel):
 
 
 class InterventionReasoningRequest(BaseModel):
-    factor_id: str = Field(..., min_length=1, max_length=200)
+    factor_id: str = Field(..., min_length=1, max_length=100, pattern=r"^[a-zA-Z0-9_]+$")
     change: float
     description: str = Field("", max_length=2000)
     provider: str = Field("openai", pattern=r"^(openai|anthropic)$")
@@ -58,8 +62,10 @@ async def reason_query(
     try:
         response = await connector.generate(messages)
     except LLMProviderError as e:
+        logger.warning("LLM provider error (query, user=%s): %s", user.id, e)
         raise HTTPException(status_code=502, detail=_format_llm_error(str(e)))
     except Exception:
+        logger.exception("Unexpected LLM error (query, user=%s)", user.id)
         raise HTTPException(
             status_code=502,
             detail="De AI-service is tijdelijk niet bereikbaar. Probeer het later opnieuw.",
@@ -107,8 +113,10 @@ async def reason_intervention(
     try:
         response = await connector.generate(messages)
     except LLMProviderError as e:
+        logger.warning("LLM provider error (intervene, user=%s): %s", user.id, e)
         raise HTTPException(status_code=502, detail=_format_llm_error(str(e)))
     except Exception:
+        logger.exception("Unexpected LLM error (intervene, user=%s)", user.id)
         raise HTTPException(
             status_code=502,
             detail="De AI-service is tijdelijk niet bereikbaar. Probeer het later opnieuw.",
@@ -169,8 +177,10 @@ async def reason_query_validated(
     try:
         response = await connector.generate(messages)
     except LLMProviderError as e:
+        logger.warning("LLM provider error (validated, user=%s): %s", user.id, e)
         raise HTTPException(status_code=502, detail=_format_llm_error(str(e)))
     except Exception:
+        logger.exception("Unexpected LLM error (validated, user=%s)", user.id)
         raise HTTPException(
             status_code=502,
             detail="De AI-service is tijdelijk niet bereikbaar. Probeer het later opnieuw.",

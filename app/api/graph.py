@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,6 +14,8 @@ from app.core.license_manager import LicenseManager
 from app.core.slider_engine import apply_slider, simulate_sliders
 from app.db import get_db
 from app.models.user import User
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/graph", tags=["graph"])
 
@@ -471,5 +475,6 @@ async def _check_license(user: User, db: AsyncSession) -> None:
     lm = LicenseManager(db)
     try:
         await lm.validate_license(user.license_key)
-    except Exception as e:
-        raise HTTPException(status_code=403, detail=str(e))
+    except Exception:
+        logger.exception("Licentievalidatie mislukt voor gebruiker %s", user.id)
+        raise HTTPException(status_code=403, detail="Licentie is ongeldig of verlopen")

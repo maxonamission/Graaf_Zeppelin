@@ -59,7 +59,7 @@ async def _create_licensed_user(db_session):
         # Create user
         user = User(
             email="test@example.com",
-            hashed_password=hash_password("testpass123"),
+            hashed_password=hash_password("StrongPass123!"),
             full_name="Test User",
             organization="Test Org",
             license_key="GZ-TEST-0001",
@@ -289,12 +289,13 @@ class TestAuthAPI:
         ) as client:
             response = await client.post(
                 "/api/auth/login",
-                json={"email": "test@example.com", "password": "testpass123"},
+                json={"email": "test@example.com", "password": "StrongPass123!"},
             )
             assert response.status_code == 200
             data = response.json()
-            assert "access_token" in data
             assert data["token_type"] == "bearer"
+            # Token is now in httponly cookie, not response body
+            assert "access_token" in response.cookies
 
 
 @pytest.mark.asyncio

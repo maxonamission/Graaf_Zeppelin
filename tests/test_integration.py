@@ -25,6 +25,10 @@ async def setup_db():
     from app.config import settings
     from app.core.dag_engine import CausalDAG
 
+    # Reset rate limiter between tests to prevent cross-test 429s
+    from app.core.rate_limit import limiter
+    limiter.reset()
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     if not getattr(app.state, "dag", None):
@@ -66,7 +70,7 @@ class TestRegistrationLoginFlow:
                 "/api/auth/register",
                 json={
                     "email": "new@example.com",
-                    "password": "strongpass123",
+                    "password": "StrongPass123!",
                     "full_name": "New User",
                     "organization": "Integration Org",
                     "license_key": "GZ-INTEG-TEST",
@@ -74,25 +78,25 @@ class TestRegistrationLoginFlow:
             )
             assert reg_response.status_code == 200
             reg_data = reg_response.json()
-            assert "access_token" in reg_data
+            assert reg_data["token_type"] == "bearer"
+            # Token is now set as httponly cookie, not in response body
+            assert "access_token" in reg_response.cookies
 
             # Login with same credentials
             login_response = await client.post(
                 "/api/auth/login",
                 json={
                     "email": "new@example.com",
-                    "password": "strongpass123",
+                    "password": "StrongPass123!",
                 },
             )
             assert login_response.status_code == 200
             login_data = login_response.json()
-            assert "access_token" in login_data
+            assert login_data["token_type"] == "bearer"
+            assert "access_token" in login_response.cookies
 
-            # Access protected endpoint with token
-            cookies = {"access_token": login_data["access_token"]}
-            summary_response = await client.get(
-                "/api/graph/summary", cookies=cookies
-            )
+            # Access protected endpoint with token from cookie
+            summary_response = await client.get("/api/graph/summary")
             assert summary_response.status_code == 200
             assert "num_factors" in summary_response.json()
 
@@ -104,7 +108,7 @@ class TestRegistrationLoginFlow:
         ) as client:
             payload = {
                 "email": "dupe@example.com",
-                "password": "pass123",
+                "password": "StrongPass123!",
                 "full_name": "User",
                 "organization": "Org",
                 "license_key": "GZ-INTEG-TEST",
@@ -112,7 +116,6 @@ class TestRegistrationLoginFlow:
             await client.post("/api/auth/register", json=payload)
             response = await client.post("/api/auth/register", json=payload)
             assert response.status_code == 400
-            assert "al geregistreerd" in response.json()["detail"]
 
     async def test_register_invalid_license(self):
         async with AsyncClient(
@@ -122,7 +125,7 @@ class TestRegistrationLoginFlow:
                 "/api/auth/register",
                 json={
                     "email": "noone@example.com",
-                    "password": "pass123",
+                    "password": "StrongPass123!",
                     "full_name": "User",
                     "organization": "Org",
                     "license_key": "INVALID-KEY",
@@ -140,7 +143,7 @@ class TestModelExplorationFlow:
         async with async_session() as session:
             user = User(
                 email="explorer@example.com",
-                hashed_password=hash_password("pass123"),
+                hashed_password=hash_password("StrongPass123!"),
                 full_name="Explorer",
                 organization="Org",
                 license_key="GZ-INTEG-TEST",
@@ -210,7 +213,7 @@ class TestSliderSimulationFlow:
         async with async_session() as session:
             user = User(
                 email="simulator@example.com",
-                hashed_password=hash_password("pass123"),
+                hashed_password=hash_password("StrongPass123!"),
                 full_name="Simulator",
                 organization="Org",
                 license_key="GZ-INTEG-TEST",
@@ -295,7 +298,7 @@ class TestReasoningFlow:
         async with async_session() as session:
             user = User(
                 email="reasoner@example.com",
-                hashed_password=hash_password("pass123"),
+                hashed_password=hash_password("StrongPass123!"),
                 full_name="Reasoner",
                 organization="Org",
                 license_key="GZ-INTEG-TEST",

@@ -3,7 +3,7 @@
 **Epic**: EPIC-11 Beveiliging
 **Prioriteit**: GEMIDDELD — binnen 30 dagen na launch
 **Geschatte omvang**: S
-**Status:** 🔶 Deels geïmplementeerd
+**Status:** ✅ Afgerond
 
 ## Doel
 
@@ -27,8 +27,8 @@ Beveiligingsrelevante events loggen zodat aanvallen detecteerbaar en traceerbaar
   - ✅ Credit-mutaties (topup)
   - ✅ Model-switches
   - ✅ Reasoning-queries (audit_log in reasoning.py, zonder inhoud)
-- [ ] Alle `str(e)` in HTTPException-responses vervangen door generieke berichten ⚠️ deels
-- [ ] Gedetailleerde errors alleen in server-logs (niet naar client) ⚠️ deels
+- [x] Alle `str(e)` in HTTPException-responses vervangen door generieke berichten + server-side logging
+- [x] Gedetailleerde errors alleen in server-logs (logger.exception/warning), niet naar client
 - [x] Log-format: JSON met timestamp, event_type, user_id, IP, details
 - [ ] Logbestanden niet wereldleesbaar (`chmod 640`) — N/A (deployment-afhankelijk)
 

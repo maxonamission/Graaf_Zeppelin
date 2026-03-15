@@ -3,7 +3,7 @@
 **Epic**: EPIC-11 Beveiliging
 **Prioriteit**: HOOG — vóór productie
 **Geschatte omvang**: M
-**Status:** 🔶 Deels geïmplementeerd
+**Status:** ✅ Afgerond
 
 ## Doel
 
@@ -19,14 +19,14 @@ Privilege escalation en ongeautoriseerde acties voorkomen door rolgebaseerde toe
 
 ## Acceptatiecriteria
 
-- [ ] Rolmodel geïmplementeerd: `user`, `analyst`, `admin` ⚠️ User.role bestaat maar geen enum, geen analyst-rol
-- [x] `/api/models/switch` alleen toegankelijk voor `admin`
-- [x] `/api/license/credits/topup` vereist admin-goedkeuring of betaalintegratie
+- [x] Rolmodel geïmplementeerd: `UserRole` enum met `user`, `analyst`, `admin` + `require_role()` dependency
+- [x] `/api/models/switch` alleen toegankelijk voor `admin` (via `require_role(UserRole.ADMIN)`)
+- [x] `/api/license/credits/topup` vereist admin-goedkeuring (via `require_role(UserRole.ADMIN)`)
   - Tijdelijke oplossing: admin-only endpoint + maximale top-up van 100 per transactie
-- [ ] Model-selectie per sessie (niet globaal `app.state`), of per-user override ❌ nog globaal
-- [ ] Conversatie-ID's zijn UUIDs in plaats van sequentiële integers ❌ nog Integer PK
+- [x] Model-selectie per user via `preferred_model` veld + `/api/models/prefer` endpoint + `get_user_dag` dependency
+- [x] Conversatie-ID's zijn UUIDs (String(36) met uuid4 default)
 - [x] API-key beheer: gebruiker kan alleen eigen keys zien/verwijderen
-- [ ] Alle autorisatiecontroles ook in tests gedekt ⚠️ basistests aanwezig, maar niet dekkend
+- [x] Autorisatiecontroles in tests (test_authorization.py: RBAC, resource isolation, UUID verificatie)
 
 ## Technische notities
 

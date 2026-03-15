@@ -15,7 +15,7 @@ _INSECURE_DEFAULTS = frozenset({
 class Settings(BaseSettings):
     app_name: str = "Graaf Zeppelin"
     environment: str = "development"
-    secret_key: str = "dev-secret-key-change-in-production"
+    secret_key: str = ""
     # SQLite for development, PostgreSQL for production
     # Set DATABASE_URL=postgresql+asyncpg://user:pass@host/db for production
     database_url: str = "sqlite+aiosqlite:///./graaf_zeppelin.db"
@@ -28,7 +28,16 @@ class Settings(BaseSettings):
         return self.database_url.startswith("sqlite")
 
     def validate_secret_key(self) -> None:
-        """Validate that the secret key is safe for the current environment."""
+        """Validate that the secret key is safe for the current environment.
+
+        S11-01: App refuses to start without a proper SECRET_KEY.
+        """
+        if not self.secret_key:
+            raise ValueError(
+                "FATAL: SECRET_KEY is niet ingesteld. "
+                "Stel een willekeurige sleutel in van minimaal 32 tekens via de "
+                "SECRET_KEY omgevingsvariabele."
+            )
         is_weak = (
             self.secret_key in _INSECURE_DEFAULTS
             or len(self.secret_key) < 32

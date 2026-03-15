@@ -22,11 +22,12 @@ class TestPasswordHashing:
         hashed = hash_password("correct-password")
         assert not verify_password("wrong-password", hashed)
 
-    def test_hash_contains_salt(self):
-        hashed = hash_password("test")
-        assert "$" in hashed
-        salt, digest = hashed.split("$", 1)
-        assert len(salt) == 32  # 16 bytes hex
+    def test_hash_is_bcrypt(self):
+        hashed = hash_password("TestPassword1")
+        # bcrypt hashes start with $2b$ (or $2a$/$2y$)
+        assert hashed.startswith("$2"), f"Expected bcrypt hash, got: {hashed[:10]}"
+        # bcrypt format: $2b$rounds$22-char-salt+31-char-hash
+        assert len(hashed) == 60
 
     def test_different_hashes_for_same_password(self):
         h1 = hash_password("same-password")

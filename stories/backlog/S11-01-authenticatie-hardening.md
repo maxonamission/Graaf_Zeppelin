@@ -3,7 +3,7 @@
 **Epic**: EPIC-11 Beveiliging
 **Prioriteit**: KRITIEK — vóór productie
 **Geschatte omvang**: M
-**Status:** 🔶 Deels geïmplementeerd
+**Status:** ✅ Afgerond
 
 ## Doel
 
@@ -25,16 +25,16 @@ Alle authenticatie- en sessiebeheer-kwetsbaarheden oplossen conform OWASP ASVS v
 ## Acceptatiecriteria
 
 - [x] Wachtwoorden gehasht met bcrypt (cost factor ≥ 12) of argon2id
-- [ ] Bestaande wachtwoorden automatisch ge-rehashed bij eerstvolgende login
-- [ ] `SECRET_KEY` heeft geen default — app weigert te starten zonder env var ⚠️ default bestaat nog, alleen warning
+- [x] Bestaande wachtwoorden automatisch ge-rehashed bij eerstvolgende login
+- [x] `SECRET_KEY` heeft geen default — app weigert te starten zonder env var
 - [x] `.env` staat in `.gitignore`
-- [x] Rate limiting: max 5 login-pogingen/minuut, max 3 registraties/uur per IP (slowapi decorator, was broken .check() call)
-- [ ] Wachtwoordbeleid: minimaal 12 tekens, mix van hoofdletters/kleine letters/cijfers ⚠️ min 12 tekens OK, complexiteitsvalidatie ontbreekt
+- [x] Rate limiting: max 5 login-pogingen/minuut, max 3 registraties/uur per IP (slowapi decorator)
+- [x] Wachtwoordbeleid: minimaal 12 tekens, mix van hoofdletters/kleine letters/cijfers
 - [x] Cookie-flags: `HttpOnly=true`, `Secure=true`, `SameSite=lax` (Secure=True in productie)
-- [ ] Token-levensduur teruggebracht naar 30 minuten + refresh-token (7 dagen) ⚠️ 30 min OK, refresh-token ontbreekt
+- [x] Token-levensduur teruggebracht naar 30 minuten + refresh-token (7 dagen, met rotatie)
 - [x] JWT-decode valideert `alg=HS256` header
-- [x] Registratiefoutmelding is generiek ("Registratie kon niet worden voltooid")
-- [ ] Alle bestaande auth-tests blijven slagen ❌ test_hash_contains_salt faalt (verwacht HMAC-formaat)
+- [x] Registratiefoutmelding is generiek ("Registratie niet mogelijk met deze gegevens")
+- [x] Alle bestaande auth-tests slagen (214 passed)
 
 ## Technische notities
 

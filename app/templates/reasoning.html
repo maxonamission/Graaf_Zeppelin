@@ -186,8 +186,8 @@ async function loadFactors() {
             allFactors = data.factors;
             const html = data.factors.map(f => `
                 <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.3rem 0; cursor: pointer;">
-                    <input type="checkbox" class="factor-checkbox" value="${f.id}">
-                    <span style="font-size: 0.85rem;">${f.label}</span>
+                    <input type="checkbox" class="factor-checkbox" value="${escapeHtml(f.id)}">
+                    <span style="font-size: 0.85rem;">${escapeHtml(f.label)}</span>
                 </label>
             `).join('');
             document.getElementById('factor-checkboxes').innerHTML = html;
@@ -467,15 +467,19 @@ function addRetryButton(query) {
     const chat = document.getElementById('chat-messages');
     const div = document.createElement('div');
     div.style.cssText = 'text-align: center; margin-bottom: 1rem;';
-    div.innerHTML = `<button class="btn btn-outline" style="font-size: 0.8rem;" onclick="retryQuery(this, '${escapeAttr(query)}')">Opnieuw proberen</button>`;
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-outline';
+    btn.style.fontSize = '0.8rem';
+    btn.textContent = 'Opnieuw proberen';
+    btn.dataset.retryQuery = query;
+    btn.addEventListener('click', function() {
+        this.parentElement.remove();
+        document.getElementById('chat-input').value = this.dataset.retryQuery;
+        document.getElementById('chat-form').dispatchEvent(new Event('submit'));
+    });
+    div.appendChild(btn);
     chat.appendChild(div);
     chat.scrollTop = chat.scrollHeight;
-}
-
-function retryQuery(btn, query) {
-    btn.parentElement.remove();
-    document.getElementById('chat-input').value = query;
-    document.getElementById('chat-form').dispatchEvent(new Event('submit'));
 }
 
 function addMessage(text, role) {
@@ -493,8 +497,5 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-function escapeAttr(text) {
-    return text.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-}
 </script>
 {% endblock %}

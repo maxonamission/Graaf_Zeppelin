@@ -3,7 +3,7 @@
 **Epic**: EPIC-11 Beveiliging
 **Prioriteit**: LAAG — plannen voor toekomstige sprint
 **Geschatte omvang**: S
-**Status:** 🔲 Backlog
+**Status:** ✅ Afgerond
 
 ## Doel
 
@@ -11,10 +11,10 @@ Security checks automatiseren zodat nieuwe kwetsbaarheden vroeg ontdekt worden, 
 
 ## Acceptatiecriteria
 
-- [ ] `bandit` (Python SAST) draait als onderdeel van test-suite of CI ❌ geïnstalleerd maar niet geautomatiseerd
-- [ ] `pip-audit` controleert dependencies op bekende CVE's ❌ beschikbaar maar niet geautomatiseerd
-- [ ] Resultaten rapporteren in JSON-formaat in `reports/` ❌ reports/ map bestaat niet
-- [ ] Minimaal kwartaalijkse dependency-update ❌ geen schema
+- [x] `bandit` (Python SAST) draait als onderdeel van CI (GitHub Actions workflow)
+- [x] `pip-audit` controleert dependencies op bekende CVE's (GitHub Actions workflow)
+- [x] Resultaten rapporteren in JSON-formaat in `reports/` (uploaded als artifact)
+- [x] Kwartaalijkse dependency-update via cron schedule in CI
 - [x] Checklist-template voor security review bij nieuwe features
 
 ## Tooling

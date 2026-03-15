@@ -75,7 +75,7 @@ async def create_conversation(
 
 @router.get("/{conversation_id}")
 async def get_conversation(
-    conversation_id: int,
+    conversation_id: str,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -114,7 +114,7 @@ async def get_conversation(
 
 @router.post("/{conversation_id}/messages")
 async def add_message(
-    conversation_id: int,
+    conversation_id: str,
     request: AddMessageRequest,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -148,7 +148,7 @@ async def add_message(
 
 @router.delete("/{conversation_id}")
 async def delete_conversation(
-    conversation_id: int,
+    conversation_id: str,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):

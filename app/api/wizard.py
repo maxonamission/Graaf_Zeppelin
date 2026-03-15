@@ -33,7 +33,7 @@ router = APIRouter(prefix="/api/wizard", tags=["wizard"])
 
 
 class PolicyQuestionRequest(BaseModel):
-    question: str = Field(..., min_length=1, max_length=5000)
+    question: str = Field(..., min_length=1, max_length=2000)
 
 
 class QualificationAnswer(BaseModel):
@@ -42,12 +42,12 @@ class QualificationAnswer(BaseModel):
 
 
 class SimulateQualifiedRequest(BaseModel):
-    question: str = Field(..., min_length=1, max_length=5000)
+    question: str = Field(..., min_length=1, max_length=2000)
     slider_values: dict[str, float]  # already resolved slider values
 
 
 class GenerateAdviceRequest(BaseModel):
-    question: str = Field(..., min_length=1, max_length=5000)
+    question: str = Field(..., min_length=1, max_length=2000)
     slider_values: dict[str, float]
     effects: list[dict] | None = None
     provider: str = Field("openai", pattern=r"^(openai|anthropic)$")

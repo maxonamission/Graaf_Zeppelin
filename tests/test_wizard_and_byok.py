@@ -111,7 +111,7 @@ async def authenticated_client(tmp_path):
             session.add(lic)
             user = User(
                 email="wizard@test.nl",
-                hashed_password=hash_password("test1234"),
+                hashed_password=hash_password("StrongPass123!"),
                 full_name="Test Wizard",
                 organization="Test Org",
                 license_key="GZ-TEST-WIZARD",
@@ -283,7 +283,7 @@ async def byok_client(tmp_path):
             session.add(lic)
             user = User(
                 email="byok@test.nl",
-                hashed_password=hash_password("test1234"),
+                hashed_password=hash_password("StrongPass123!"),
                 full_name="BYOK User",
                 organization="BYOK Org",
                 license_key="GZ-BYOK-TEST",

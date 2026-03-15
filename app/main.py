@@ -88,7 +88,10 @@ class CSRFMiddleware(BaseHTTPMiddleware):
             path = request.url.path
             if path.startswith("/api/"):
                 content_type = request.headers.get("content-type", "")
-                if "application/json" not in content_type:
+                content_length = request.headers.get("content-length", "0")
+                # Allow bodyless requests (e.g. DELETE with no payload)
+                has_body = content_length != "0" and content_type != ""
+                if has_body and "application/json" not in content_type:
                     from fastapi.responses import JSONResponse
                     return JSONResponse(
                         status_code=415,

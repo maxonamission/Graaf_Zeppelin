@@ -9,12 +9,12 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_current_user
+from app.api.deps import get_current_user, require_role
 from app.config import settings
 from app.core.audit import audit_log
 from app.core.dag_engine import CausalDAG
 from app.db import get_db
-from app.models.user import User
+from app.models.user import User, UserRole
 
 router = APIRouter(prefix="/api/models", tags=["models"])
 
@@ -104,7 +104,7 @@ async def current_model(
 @router.post("/switch")
 async def switch_model(
     request: SwitchModelRequest,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_role(UserRole.ADMIN)),
     db: AsyncSession = Depends(get_db),
 ):
     """Switch to a different causal graph model.
@@ -112,11 +112,6 @@ async def switch_model(
     Restricted to admin users to prevent a single user from affecting
     all other users (the DAG is shared app state).
     """
-    if user.role != "admin":
-        raise HTTPException(
-            status_code=403,
-            detail="Alleen beheerders kunnen het actieve model wisselen",
-        )
 
     models_dir = Path(settings.dag_models_path)
     model_path = models_dir / f"{request.model_id}.json"
@@ -151,3 +146,37 @@ async def switch_model(
         "num_factors": new_dag.graph.number_of_nodes(),
         "num_relations": new_dag.graph.number_of_edges(),
     }
+
+
+@router.post("/prefer")
+async def set_preferred_model(
+    request: SwitchModelRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Set the user's preferred model (S11-03: per-user model selection).
+
+    Unlike /switch (admin-only, changes global default), this sets a per-user
+    override. The user's preferred model will be used for their reasoning queries.
+    """
+    models_dir = Path(settings.dag_models_path)
+    model_path = models_dir / f"{request.model_id}.json"
+
+    if not model_path.exists():
+        raise HTTPException(status_code=404, detail="Model niet gevonden")
+
+    user.preferred_model = request.model_id
+    await db.commit()
+
+    return {"preferred_model": request.model_id}
+
+
+@router.delete("/prefer")
+async def clear_preferred_model(
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Clear the user's model preference; fall back to the global default."""
+    user.preferred_model = None
+    await db.commit()
+    return {"preferred_model": None}

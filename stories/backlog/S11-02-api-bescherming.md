@@ -3,7 +3,7 @@
 **Epic**: EPIC-11 Beveiliging
 **Prioriteit**: KRITIEK/HOOG — vóór productie
 **Geschatte omvang**: L
-**Status:** 🔶 Deels geïmplementeerd
+**Status:** ✅ Afgerond
 
 ## Doel
 
@@ -27,32 +27,25 @@ API-endpoints en frontend beschermen tegen injection, CSRF, XSS, en transport-aa
 ### Backend
 - [x] Reasoning/wizard endpoints accepteren alleen `stored_key_id` (int), niet raw API keys
 - [x] Bestaande BYOK-flow werkt via opgeslagen keys
-- [ ] Input-validatie op alle user-facing strings: ⚠️ geïmplementeerd maar limieten wijken af van spec
-  - `query`/`question`: max 5.000 tekens (spec: 2.000)
-  - `factor_id`: max 200 tekens (spec: 100), alfanumeriek + underscore
-  - `model_id`: max 100 tekens, alfanumeriek + underscore/hyphen ✅
-- [x] CSRF-token op alle state-changing endpoints (POST, PUT, DELETE)
+- [x] Input-validatie op alle user-facing strings:
+  - `query`/`question`: max 2.000 tekens
+  - `factor_id`: max 100 tekens, alfanumeriek + underscore
+  - `model_id`: max 100 tekens, alfanumeriek + underscore/hyphen
+- [x] CSRF-bescherming via Content-Type check (bodyless requests toegestaan voor DELETE)
 - [x] Security headers middleware:
   - `X-Content-Type-Options: nosniff`
   - `X-Frame-Options: DENY`
   - `Strict-Transport-Security: max-age=31536000`
-- [ ] Geen raw exception details in API responses ⚠️ sommige endpoints tonen nog str(e)
+- [x] Geen raw exception details in API responses (str(e) vervangen door generieke berichten + server-side logging)
 
 ### Frontend (XSS/CSP)
 - [x] `login.html`: `data.detail` via `textContent` i.p.v. `innerHTML`
 - [x] `register.html`: idem
-- [x] `graph_viewer.html`: domein-namen en factor-ID's in onclick via `data-*` attributen + event delegation i.p.v. string-interpolatie
-- [ ] `reasoning.html`: `escapeAttr()` vervangen door `JSON.stringify()` voor attribuutwaarden ❌ nog escapeAttr()
-- [ ] Alle `innerHTML` paden consistent via `escapeHtml()` of `textContent` ⚠️ deels
-- [x] Content Security Policy header:
-  ```
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://unpkg.com https://d3js.org; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'
-  ```
-- [ ] SRI-hashes op externe scripts (htmx, D3): ⚠️ htmx heeft SRI, D3 niet
-  ```html
-  <script src="https://d3js.org/d3.v7.min.js"
-          integrity="sha384-..." crossorigin="anonymous"></script>
-  ```
+- [x] `graph_viewer.html`: domein-namen en factor-ID's in onclick via `data-*` attributen + event delegation
+- [x] `reasoning.html`: `escapeAttr()` vervangen door DOM API (createElement + addEventListener + dataset)
+- [x] Alle `innerHTML` paden consistent via `escapeHtml()` of `textContent`
+- [x] Content Security Policy header
+- [x] SRI-hashes op externe scripts (htmx + D3)
 
 ## Technische notities
 

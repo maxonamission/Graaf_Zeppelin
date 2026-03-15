@@ -20,7 +20,7 @@ router = APIRouter(prefix="/api/explorations", tags=["explorations"])
 
 class SaveExplorationRequest(BaseModel):
     title: str = Field(..., min_length=1, max_length=500)
-    question: str = Field(..., min_length=1, max_length=5000)
+    question: str = Field(..., min_length=1, max_length=2000)
     slider_values: dict[str, float] = Field(default_factory=dict)
     effects: list[dict] = Field(default_factory=list)
     advice: str | None = None
