@@ -9,7 +9,7 @@
 
 ## Managementsamenvatting
 
-De applicatie heeft een solide functionele basis maar bevat **4 kritieke**, **7 hoge**, **6 gemiddelde** en **4 lage** beveiligingsrisico's die opgelost moeten worden vóór productie-inzet. De meest urgente problemen zitten in de authenticatielaag (wachtwoordhashing, tokenbeveiliging), de API-laag (rate limiting, input-validatie, autorisatiecontroles) en de frontend (XSS via innerHTML, ontbrekende CSP/SRI).
+De applicatie heeft een solide functionele basis maar bevat **4 kritieke**, **7 hoge**, **8 gemiddelde** en **4 lage** beveiligingsrisico's die opgelost moeten worden vóór productie-inzet. De meest urgente problemen zitten in de authenticatielaag (wachtwoordhashing, tokenbeveiliging), de API-laag (rate limiting, input-validatie, autorisatiecontroles) en de frontend (XSS via innerHTML, ontbrekende CSP/SRI).
 
 **Geen van de gevonden kwetsbaarheden is op dit moment actief exploiteerbaar** omdat de applicatie nog niet publiek draait. Alle bevindingen zijn preventief.
 
@@ -310,6 +310,35 @@ POST /api/license/credits/topup {"amount": 999999}
 
 ---
 
+#### G6. Zwakke key-derivatie in KeyVault
+
+| | |
+|---|---|
+| **Ernst** | GEMIDDELD |
+| **CWE** | CWE-327 (Use of Broken Cryptographic Algorithm) |
+| **OWASP** | A02:2021 Cryptographic Failures |
+| **Bestand** | `app/core/key_vault.py:21-23` |
+
+**Probleem**: De Fernet-encryptiesleutel voor opgeslagen API-keys wordt afgeleid via een simpele `SHA-256(secret_key)`. Dit biedt geen key stretching. Als de `secret_key` zwak of gelekt is, zijn alle opgeslagen API-keys te ontsleutelen.
+
+**Moet worden**: Proper KDF zoals PBKDF2 met ≥100.000 iteraties, of een apart beheerde encryptiesleutel (`ENCRYPTION_MASTER_KEY` env var).
+
+---
+
+#### G7. Geen SSL-afdwinging op PostgreSQL-verbinding (productie)
+
+| | |
+|---|---|
+| **Ernst** | GEMIDDELD |
+| **CWE** | CWE-295 (Improper Certificate Validation) |
+| **Bestand** | `app/db.py:8` |
+
+**Probleem**: De database-verbinding dwingt geen SSL af in productie. Als de PostgreSQL-server op een ander netwerk draait, kunnen credentials en data onderschept worden.
+
+**Moet worden**: `?sslmode=require` in de `DATABASE_URL` voor productie, of validatie bij opstart.
+
+---
+
 #### L4. Ontbrekende Subresource Integrity (SRI) op CDN-scripts
 
 | | |
@@ -425,6 +454,8 @@ Content-Security-Policy: default-src 'self'; script-src 'self' https://unpkg.com
 | G4 | Geen auditlogging | GEMIDDELD | A09 | 778 | S11-04 |
 | G5 | Sequentiële ID's | GEMIDDELD | A01 | 639 | S11-03 |
 | F3 | Ontbrekende CSP-header | GEMIDDELD | A03 | 693 | S11-02 |
+| G6 | Zwakke key-derivatie KeyVault | GEMIDDELD | A02 | 327 | S11-01 |
+| G7 | Geen SSL op PostgreSQL (prod) | GEMIDDELD | A02 | 295 | S11-02 |
 | L1 | Geen overige security headers | LAAG | A05 | 693 | S11-02 |
 | L2 | Onvolledige escapeAttr() | LAAG | A03 | 79 | S11-02 |
 | L3 | Account-enumeratie | LAAG | A07 | 204 | S11-01 |
