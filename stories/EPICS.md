@@ -76,7 +76,7 @@ naar een onderbouwd advies via kwalificatievragen en simulatie.
 | [S05-01](backlog/S05-01-interventie-flow.md) | 🔲 Backlog | Begeleide interventie-flow |
 | [S05-02](backlog/S05-02-slider-kwalificatie-ux.md) | 🔲 Backlog | Slider-kwalificatie UX |
 | [S05-03](backlog/S05-03-resultaatpagina.md) | 🔲 Backlog | Resultaatpagina |
-| [S05-04](backlog/S05-04-graph-viewer-verbeteren.md) | 🔲 Backlog | Graph viewer verbeteren |
+| [S05-04](done/S05-04-graph-viewer-verbeteren.md) | ✅ Done | Graph viewer verbeteren (kleurcodering, hover, zoom) |
 | [S05-05](backlog/S05-05-dashboard-aanscherpen.md) | 🔲 Backlog | Dashboard aanscherpen |
 
 ---
@@ -95,15 +95,15 @@ De LLM-integratie naadloos laten werken voor niet-technische gebruikers.
 
 ---
 
-### EPIC-07: Businessmodel & toegang 🔲
+### EPIC-07: Businessmodel & toegang ✅
 
 Prijsmodel en toegangsstructuur voor de beleidsverkenner.
 
 | Story | Status | Beschrijving |
 |-------|--------|-------------|
 | [S07-01](backlog/S07-01-gratis-vragen.md) | 🔲 Backlog | Gratis vragen (1-2 per sessie) |
-| [S07-02](backlog/S07-02-betaald-account.md) | 🔲 Backlog | Betaald account met keuze |
-| [S07-03](backlog/S07-03-credits-systeem.md) | 🔲 Backlog | Credits-systeem (vast + flexibel) |
+| [S07-02](done/S07-02-betaald-account.md) | ✅ Done | Betaald account met keuze (tier vergelijking) |
+| [S07-03](done/S07-03-credits-systeem.md) | ✅ Done | Credits-systeem (vast + flexibel quotum) |
 | [S07-04](backlog/S07-04-eigen-llm-optie.md) | 🔲 Backlog | Eigen LLM-optie (BYOK met modellicentie) |
 
 ---
@@ -123,7 +123,7 @@ Inhoudelijke validatie van de kwalificatievragen door domeinexperts en gebruiker
 
 ---
 
-### EPIC-09: Stabiliteit & kwaliteit 🔲
+### EPIC-09: Stabiliteit & kwaliteit ✅
 
 Testdekking, error handling en documentatie op productieniveau brengen.
 
@@ -134,18 +134,36 @@ Testdekking, error handling en documentatie op productieniveau brengen.
 | [S09-03](done/S09-03-integratietests.md) | ✅ Done | Integratietests (register → login → explore → simulate → AI) |
 | [S09-04](done/S09-04-error-handling.md) | ✅ Done | Error handling & feedback |
 | [S09-05](done/S09-05-readme-update.md) | ✅ Done | README.md bijwerken naar productfocus |
-| [S09-06](backlog/S09-06-onboarding.md) | 🔲 Backlog | Onboarding flow |
+| [S09-06](done/S09-06-onboarding.md) | ✅ Done | Onboarding flow (3-staps wizard) |
 
 ---
 
-### EPIC-10: Productie & deployment 🔲
+### EPIC-10: Productie & deployment ✅
 
 Deployment, monitoring en uitbreidingen voor productiegebruik.
 
 | Story | Status | Beschrijving |
 |-------|--------|-------------|
 | [S10-01](done/S10-01-docker.md) | ✅ Done | Docker deployment |
-| [S10-02](backlog/S10-02-postgresql.md) | 🔲 Backlog | PostgreSQL migratie |
+| [S10-02](done/S10-02-postgresql.md) | ✅ Done | PostgreSQL migratie (+ Alembic) |
 | [S10-03](backlog/S10-03-monitoring.md) | 🔲 Backlog | Monitoring & logging |
 | [S10-04](done/S10-04-export.md) | ✅ Done | Interventie-rapportage export |
-| [S10-05](backlog/S10-05-multi-model.md) | 🔲 Backlog | Meerdere modellen ondersteunen |
+| [S10-05](done/S10-05-multi-model.md) | ✅ Done | Meerdere modellen ondersteunen |
+
+---
+
+### EPIC-11: Beveiliging 🔲🔴
+
+Beveiligingsaudit en hardening vóór productie-deployment.
+Beoordeeld conform OWASP Top 10 (2021), CWE/SANS Top 25, OWASP ASVS v4.0.
+Zie: `docs/beveiligingsaudit-v2.md` voor het volledige auditrapport.
+
+| Story | Status | Prioriteit | Beschrijving |
+|-------|--------|------------|-------------|
+| [S11-01](backlog/S11-01-authenticatie-hardening.md) | 🔲 Backlog | KRITIEK | Authenticatie hardening (wachtwoord, tokens, rate limiting) |
+| [S11-02](backlog/S11-02-api-bescherming.md) | 🔲 Backlog | KRITIEK/HOOG | API-bescherming (input, CSRF, headers, transport) |
+| [S11-03](backlog/S11-03-autorisatie-verbeteren.md) | 🔲 Backlog | HOOG | Autorisatie & toegangscontrole (RBAC, credits, IDOR) |
+| [S11-04](backlog/S11-04-logging-monitoring.md) | 🔲 Backlog | GEMIDDELD | Beveiligingslogging & monitoring |
+| [S11-05](backlog/S11-05-geautomatiseerde-security-checks.md) | 🔲 Backlog | LAAG | Geautomatiseerde security checks (CI, herhaalbaar) |
+
+**Volgorde**: S11-01 → S11-02 → S11-03 moeten vóór productie. S11-04 binnen 30 dagen. S11-05 daarna.
