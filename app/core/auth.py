@@ -70,13 +70,23 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
 
 
 def decode_access_token(token: str) -> dict | None:
-    """Decode and verify a JWT access token."""
+    """Decode and verify a JWT access token.
+
+    Validates the algorithm in the header is HS256 to prevent
+    algorithm-confusion attacks (e.g. "alg": "none").
+    """
     try:
         parts = token.split(".")
         if len(parts) != 3:
             return None
 
         header_b64, payload_b64, signature_b64 = parts
+
+        # Validate algorithm before checking signature
+        header = json.loads(_b64url_decode(header_b64))
+        if header.get("alg") != ALGORITHM:
+            return None
+
         signing_input = f"{header_b64}.{payload_b64}"
 
         expected_sig = hmac.new(

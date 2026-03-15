@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user
 from app.config import settings
+from app.core.audit import audit_log
 from app.core.dag_engine import CausalDAG
 from app.db import get_db
 from app.models.user import User
@@ -108,24 +109,30 @@ async def switch_model(
 ):
     """Switch to a different causal graph model.
 
-    Loads the specified model and replaces the active DAG in app state.
-    The switch is immediate and affects the entire session.
+    Restricted to admin users to prevent a single user from affecting
+    all other users (the DAG is shared app state).
     """
+    if user.role != "admin":
+        raise HTTPException(
+            status_code=403,
+            detail="Alleen beheerders kunnen het actieve model wisselen",
+        )
+
     models_dir = Path(settings.dag_models_path)
     model_path = models_dir / f"{request.model_id}.json"
 
     if not model_path.exists():
         raise HTTPException(
             status_code=404,
-            detail=f"Model '{request.model_id}' niet gevonden in {models_dir}",
+            detail="Model niet gevonden",
         )
 
     try:
         new_dag = CausalDAG.load(str(model_path))
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=500,
-            detail=f"Kon model niet laden: {e}",
+            detail="Kon model niet laden",
         )
 
     # Update app state
@@ -134,6 +141,7 @@ async def switch_model(
 
     # Update config to reflect new active model
     settings.graph_model_path = str(model_path)
+    audit_log("model_switched", user_id=user.id, model_id=request.model_id)
 
     return {
         "switched": True,

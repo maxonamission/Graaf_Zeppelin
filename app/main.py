@@ -39,6 +39,68 @@ app = FastAPI(
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+
+# ── Security headers middleware (S11-02) ──────────────────────────────
+from starlette.middleware.base import BaseHTTPMiddleware
+
+
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'self'; "
+            "script-src 'self' https://unpkg.com https://d3js.org 'unsafe-inline'; "
+            "style-src 'self' 'unsafe-inline'; "
+            "img-src 'self' data:; "
+            "frame-ancestors 'none'"
+        )
+        if settings.environment == "production":
+            response.headers["Strict-Transport-Security"] = (
+                "max-age=31536000; includeSubDomains"
+            )
+        return response
+
+
+app.add_middleware(SecurityHeadersMiddleware)
+
+
+# ── CSRF protection via custom header check (S11-02) ─────────────────
+# Combined with SameSite=Lax cookies, this provides double-submit defense.
+# All fetch() calls from JS already include Content-Type: application/json,
+# which is a custom header that cannot be set by plain HTML forms.
+
+_CSRF_SAFE_METHODS = frozenset({"GET", "HEAD", "OPTIONS"})
+
+
+class CSRFMiddleware(BaseHTTPMiddleware):
+    """Reject state-changing requests that lack a JSON content-type.
+
+    Browser forms send application/x-www-form-urlencoded or multipart.
+    Our API only accepts application/json, so a cross-site form submission
+    will be rejected here. Combined with SameSite=Lax cookies, this
+    prevents CSRF attacks.
+    """
+
+    async def dispatch(self, request: Request, call_next):
+        if request.method not in _CSRF_SAFE_METHODS:
+            path = request.url.path
+            if path.startswith("/api/"):
+                content_type = request.headers.get("content-type", "")
+                if "application/json" not in content_type:
+                    from fastapi.responses import JSONResponse
+                    return JSONResponse(
+                        status_code=415,
+                        content={"detail": "Content-Type moet application/json zijn"},
+                    )
+        return await call_next(request)
+
+
+app.add_middleware(CSRFMiddleware)
+
 # Mount static files and templates
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))

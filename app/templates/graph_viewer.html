@@ -2,7 +2,9 @@
 {% block title %}Causaal Model — Graaf Zeppelin{% endblock %}
 
 {% block head %}
-<script src="https://d3js.org/d3.v7.min.js"></script>
+<!-- SRI hash: regenerate with: curl -sL URL | openssl dgst -sha384 -binary | openssl base64 -A -->
+<script src="https://d3js.org/d3.v7.min.js"
+        crossorigin="anonymous"></script>
 {% endblock %}
 
 {% block content %}
@@ -141,13 +143,20 @@ function renderDomainLegend() {
     });
 
     const legend = document.getElementById('domain-legend');
-    legend.innerHTML = Object.entries(domains).map(([name, count]) => {
+    legend.replaceChildren();
+    Object.entries(domains).forEach(([name, count]) => {
         const color = DOMAIN_COLORS[name] || CATEGORY_COLORS[name] || '#64748b';
-        return `<span class="domain-badge" style="display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.75rem; background: ${color}15; color: ${color}; border: 1px solid ${color}40; cursor: pointer;" onclick="filterByDomain('${name}')">
-            <span style="width: 8px; height: 8px; border-radius: 50%; background: ${color};"></span>
-            ${name} (${count})
-        </span>`;
-    }).join('');
+        const span = document.createElement('span');
+        span.className = 'domain-badge';
+        span.style.cssText = `display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.75rem; background: ${color}15; color: ${color}; border: 1px solid ${color}40; cursor: pointer;`;
+        span.dataset.domain = name;
+        span.addEventListener('click', () => filterByDomain(name));
+        const dot = document.createElement('span');
+        dot.style.cssText = `width: 8px; height: 8px; border-radius: 50%; background: ${color};`;
+        span.appendChild(dot);
+        span.appendChild(document.createTextNode(` ${name} (${count})`));
+        legend.appendChild(span);
+    });
 }
 
 function filterByDomain(domain) {
@@ -165,14 +174,37 @@ function renderFactorList() {
             (f.category || '').toLowerCase().includes(filter))
         : graphData.factors;
 
-    const html = filtered.map(f => {
+    const list = document.getElementById('factor-list');
+    list.replaceChildren();
+
+    if (filtered.length === 0) {
+        const p = document.createElement('p');
+        p.style.color = 'var(--text-muted)';
+        p.textContent = 'Geen factoren gevonden.';
+        list.appendChild(p);
+        return;
+    }
+
+    filtered.forEach(f => {
         const color = getDomainColor(f);
-        return `<div class="factor-item" onclick="showFactorDetail('${f.id}')">
-            <span class="factor-name">${escapeHtml(f.label)}</span>
-            <span class="factor-category" style="background: ${color}15; color: ${color}; border: 1px solid ${color}40;">${escapeHtml(f.domain || f.category)}</span>
-        </div>`;
-    }).join('');
-    document.getElementById('factor-list').innerHTML = html || '<p style="color: var(--text-muted);">Geen factoren gevonden.</p>';
+        const div = document.createElement('div');
+        div.className = 'factor-item';
+        div.dataset.factorId = f.id;
+        div.addEventListener('click', () => showFactorDetail(f.id));
+
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'factor-name';
+        nameSpan.textContent = f.label;
+
+        const catSpan = document.createElement('span');
+        catSpan.className = 'factor-category';
+        catSpan.style.cssText = `background: ${color}15; color: ${color}; border: 1px solid ${color}40;`;
+        catSpan.textContent = f.domain || f.category;
+
+        div.appendChild(nameSpan);
+        div.appendChild(catSpan);
+        list.appendChild(div);
+    });
 }
 
 function filterFactors() { renderFactorList(); }
@@ -185,7 +217,7 @@ function renderFactorSelect() {
 }
 
 async function showFactorDetail(factorId) {
-    const res = await fetch(`/api/graph/factors/${factorId}`);
+    const res = await fetch(`/api/graph/factors/${encodeURIComponent(factorId)}`);
     if (!res.ok) return;
     const info = await res.json();
 
@@ -193,29 +225,43 @@ async function showFactorDetail(factorId) {
     detail.style.display = 'block';
     document.getElementById('detail-title').textContent = info.label;
 
+    const content = document.getElementById('detail-content');
+    content.replaceChildren();
+
     const color = getDomainColor(info);
-    let html = `<span class="factor-category" style="background: ${color}15; color: ${color}; border: 1px solid ${color}40; margin-bottom: 0.5rem; display: inline-block;">${escapeHtml(info.domain || info.category || '')}</span>`;
-    html += `<p style="margin-bottom: 0.75rem; color: var(--text-muted);">${escapeHtml(info.description || '')}</p>`;
 
-    if (info.causes && info.causes.length > 0) {
-        html += '<p style="font-weight: 500; margin-top: 0.5rem;">Wordt be\u00EFnvloed door:</p><ul>';
-        info.causes.forEach(c => {
-            html += `<li style="cursor: pointer; color: var(--primary);" onclick="showFactorDetail('${c.factor}')">${escapeHtml(c.label)} (${c.relation.direction}, sterkte: ${c.relation.strength})</li>`;
+    const catBadge = document.createElement('span');
+    catBadge.className = 'factor-category';
+    catBadge.style.cssText = `background: ${color}15; color: ${color}; border: 1px solid ${color}40; margin-bottom: 0.5rem; display: inline-block;`;
+    catBadge.textContent = info.domain || info.category || '';
+    content.appendChild(catBadge);
+
+    const desc = document.createElement('p');
+    desc.style.cssText = 'margin-bottom: 0.75rem; color: var(--text-muted);';
+    desc.textContent = info.description || '';
+    content.appendChild(desc);
+
+    function buildRelationList(title, items, keyProp) {
+        if (!items || items.length === 0) return;
+        const heading = document.createElement('p');
+        heading.style.cssText = 'font-weight: 500; margin-top: 0.5rem;';
+        heading.textContent = title;
+        content.appendChild(heading);
+
+        const ul = document.createElement('ul');
+        items.forEach(item => {
+            const li = document.createElement('li');
+            li.style.cssText = 'cursor: pointer; color: var(--primary);';
+            li.textContent = `${item.label} (${item.relation.direction}, sterkte: ${item.relation.strength})`;
+            li.addEventListener('click', () => showFactorDetail(item[keyProp]));
+            ul.appendChild(li);
         });
-        html += '</ul>';
+        content.appendChild(ul);
     }
 
-    if (info.effects && info.effects.length > 0) {
-        html += '<p style="font-weight: 500; margin-top: 0.5rem;">Be\u00EFnvloedt:</p><ul>';
-        info.effects.forEach(e => {
-            html += `<li style="cursor: pointer; color: var(--primary);" onclick="showFactorDetail('${e.factor}')">${escapeHtml(e.label)} (${e.relation.direction}, sterkte: ${e.relation.strength})</li>`;
-        });
-        html += '</ul>';
-    }
+    buildRelationList('Wordt be\u00EFnvloed door:', info.causes, 'factor');
+    buildRelationList('Be\u00EFnvloedt:', info.effects, 'factor');
 
-    document.getElementById('detail-content').innerHTML = html;
-
-    // Highlight this node in the graph
     highlightNode(factorId);
 }
 
@@ -263,21 +309,36 @@ async function simulateIntervention(e) {
     }
 
     const data = await res.json();
-    let html = '<p style="font-weight: 500;">Verwachte effecten:</p>';
+    const resultsEl = document.getElementById('intervention-results');
+    resultsEl.replaceChildren();
+
+    const heading = document.createElement('p');
+    heading.style.fontWeight = '500';
+    heading.textContent = 'Verwachte effecten:';
+    resultsEl.appendChild(heading);
+
     const affectedIds = [factorId];
     data.effects.forEach(effect => {
         const color = effect.estimated_impact > 0 ? 'var(--success)' : 'var(--error)';
         const arrow = effect.estimated_impact > 0 ? '\u2191' : '\u2193';
         affectedIds.push(effect.factor);
-        html += `<div class="factor-item" style="cursor: pointer;" onclick="showFactorDetail('${effect.factor}')">
-            <span>${escapeHtml(effect.label)}</span>
-            <span style="color: ${color}; font-weight: 600;">
-                ${arrow} ${(effect.estimated_impact * 100).toFixed(1)}%
-            </span>
-        </div>`;
-    });
 
-    document.getElementById('intervention-results').innerHTML = html;
+        const div = document.createElement('div');
+        div.className = 'factor-item';
+        div.style.cursor = 'pointer';
+        div.addEventListener('click', () => showFactorDetail(effect.factor));
+
+        const label = document.createElement('span');
+        label.textContent = effect.label;
+
+        const impact = document.createElement('span');
+        impact.style.cssText = `color: ${color}; font-weight: 600;`;
+        impact.textContent = `${arrow} ${(effect.estimated_impact * 100).toFixed(1)}%`;
+
+        div.appendChild(label);
+        div.appendChild(impact);
+        resultsEl.appendChild(div);
+    });
     // Highlight affected nodes in graph
     highlightIntervention(affectedIds);
 }
@@ -393,8 +454,9 @@ function showTooltip(event, d) {
     document.getElementById('tooltip-title').textContent = d.label;
     const domainName = d.domain || d.category || '';
     const color = getDomainColor(d);
-    document.getElementById('tooltip-domain').innerHTML =
-        `<span style="color: ${color};">${escapeHtml(domainName)}</span>`;
+    const domainEl = document.getElementById('tooltip-domain');
+    domainEl.textContent = domainName;
+    domainEl.style.color = color;
     document.getElementById('tooltip-desc').textContent =
         d.description || d.definition || '';
     tip.style.display = 'block';
@@ -439,9 +501,14 @@ async function loadModelSelector() {
         const currentData = currentRes.ok ? await currentRes.json() : null;
 
         const select = document.getElementById('model-selector');
-        select.innerHTML = modelsData.models.map(m =>
-            `<option value="${m.id}" ${currentData && currentData.model_id === m.id ? 'selected' : ''}>${escapeHtml(m.name)} v${m.version} (${m.num_factors} factoren)</option>`
-        ).join('');
+        select.replaceChildren();
+        modelsData.models.forEach(m => {
+            const opt = document.createElement('option');
+            opt.value = m.id;
+            opt.textContent = `${m.name} v${m.version} (${m.num_factors} factoren)`;
+            if (currentData && currentData.model_id === m.id) opt.selected = true;
+            select.appendChild(opt);
+        });
     } catch (e) { /* ignore */ }
 }
 

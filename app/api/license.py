@@ -10,6 +10,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user
+from app.core.audit import audit_log
 from app.core.key_vault import KeyVault
 from app.core.license_manager import LicenseManager
 from app.db import get_db
@@ -145,6 +146,7 @@ async def store_api_key(
     db.add(new_key)
     await db.commit()
 
+    audit_log("api_key_stored", user_id=user.id, provider=request.provider)
     return {"provider": request.provider, "hint": hint, "stored": True}
 
 
@@ -192,6 +194,7 @@ async def delete_api_key(
         raise HTTPException(status_code=404, detail="API-sleutel niet gevonden")
     key.is_active = False
     await db.commit()
+    audit_log("api_key_deleted", user_id=user.id, key_id=key_id)
     return {"deleted": True}
 
 
@@ -202,6 +205,9 @@ class TopUpRequest(BaseModel):
     amount: int  # number of extra credits to add
 
 
+_MAX_TOPUP_AMOUNT = 100  # Maximum credits per top-up to prevent abuse
+
+
 @router.post("/credits/topup")
 async def topup_credits(
     request: TopUpRequest,
@@ -210,14 +216,26 @@ async def topup_credits(
 ):
     """Add extra credits (flexible top-up) to the user's license.
 
-    In a real system this would involve payment processing.
-    For now it directly adds credits to the license quota.
+    Restricted to admin users only. In a real system this would also
+    involve payment processing.
     """
+    if user.role != "admin":
+        raise HTTPException(
+            status_code=403,
+            detail="Alleen beheerders kunnen credits toevoegen",
+        )
+
     if not user.license_key:
         raise HTTPException(status_code=403, detail="Geen licentie gekoppeld")
 
     if request.amount <= 0:
         raise HTTPException(status_code=422, detail="Aantal moet positief zijn")
+
+    if request.amount > _MAX_TOPUP_AMOUNT:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Maximaal {_MAX_TOPUP_AMOUNT} credits per keer",
+        )
 
     from app.models.license import License
     result = await db.execute(
@@ -230,6 +248,13 @@ async def topup_credits(
     # Reset usage counter by reducing queries_used (simulates adding credits)
     license_obj.queries_used = max(0, license_obj.queries_used - request.amount)
     await db.commit()
+
+    audit_log(
+        "credits_topup",
+        user_id=user.id,
+        amount=request.amount,
+        license_key=user.license_key,
+    )
 
     lm = LicenseManager(db)
     info = await lm.get_license_info(user.license_key)
