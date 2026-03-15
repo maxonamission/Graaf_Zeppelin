@@ -1,6 +1,6 @@
 """Authentication utilities — JWT tokens and password hashing.
 
-Uses only stdlib for JWT (HS256) to avoid cryptography C-extension issues.
+Uses bcrypt for password hashing and stdlib for JWT (HS256).
 """
 
 from __future__ import annotations
@@ -12,20 +12,27 @@ import json
 import secrets
 from datetime import datetime, timedelta, timezone
 
+import bcrypt
+
 from app.config import settings
 
 ALGORITHM = "HS256"
 
 
 def hash_password(password: str) -> str:
-    """Hash a password using HMAC-SHA256 with a random salt."""
-    salt = secrets.token_hex(16)
-    h = hmac.new(salt.encode(), password.encode(), hashlib.sha256).hexdigest()
-    return f"{salt}${h}"
+    """Hash a password using bcrypt with cost factor 12."""
+    return bcrypt.hashpw(password.encode(), bcrypt.gensalt(rounds=12)).decode()
 
 
 def verify_password(plain: str, hashed: str) -> bool:
-    """Verify a password against its hash."""
+    """Verify a password against its bcrypt hash.
+
+    Also supports legacy HMAC-SHA256 hashes (salt$hex format) for migration.
+    """
+    if "$2" in hashed[:4]:
+        # bcrypt hash
+        return bcrypt.checkpw(plain.encode(), hashed.encode())
+    # Legacy HMAC-SHA256 format: salt$hexdigest
     salt, expected = hashed.split("$", 1)
     h = hmac.new(salt.encode(), plain.encode(), hashlib.sha256).hexdigest()
     return hmac.compare_digest(h, expected)

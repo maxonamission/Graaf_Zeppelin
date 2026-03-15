@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user, get_dag
@@ -18,20 +18,20 @@ router = APIRouter(prefix="/api/reasoning", tags=["reasoning"])
 
 
 class ReasoningRequest(BaseModel):
-    query: str
-    provider: str = "openai"
-    api_key: str
-    model: str | None = None
+    query: str = Field(..., min_length=1, max_length=5000)
+    provider: str = Field("openai", pattern=r"^(openai|anthropic)$")
+    api_key: str = Field(..., min_length=10, max_length=256)
+    model: str | None = Field(None, max_length=100)
     factor_ids: list[str] | None = None
 
 
 class InterventionReasoningRequest(BaseModel):
-    factor_id: str
+    factor_id: str = Field(..., min_length=1, max_length=200)
     change: float
-    description: str = ""
-    provider: str = "openai"
-    api_key: str
-    model: str | None = None
+    description: str = Field("", max_length=2000)
+    provider: str = Field("openai", pattern=r"^(openai|anthropic)$")
+    api_key: str = Field(..., min_length=10, max_length=256)
+    model: str | None = Field(None, max_length=100)
 
 
 @router.post("/query")
@@ -184,7 +184,7 @@ def _format_llm_error(error_msg: str) -> str:
         return "Het antwoord duurde te lang. Probeer het later opnieuw."
     if "500" in msg or "internal" in msg:
         return "De AI-service heeft een interne fout. Probeer het later opnieuw."
-    return f"AI-fout: {error_msg}"
+    return "De AI-service kon het verzoek niet verwerken. Probeer het later opnieuw."
 
 
 async def _check_license(user: User, db: AsyncSession) -> None:
@@ -193,5 +193,5 @@ async def _check_license(user: User, db: AsyncSession) -> None:
     lm = LicenseManager(db)
     try:
         await lm.validate_license(user.license_key)
-    except Exception as e:
-        raise HTTPException(status_code=403, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=403, detail="Licentie is ongeldig of verlopen")

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy import select
@@ -13,6 +15,8 @@ from app.core.license_manager import LicenseManager
 from app.db import get_db
 from app.models.user import User
 from app.models.user_api_key import UserApiKey
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/license", tags=["license"])
 
@@ -34,8 +38,9 @@ async def license_info(
     lm = LicenseManager(db)
     try:
         info = await lm.get_license_info(user.license_key)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    except Exception:
+        logger.exception("Licentie-info ophalen mislukt voor gebruiker %s", user.id)
+        raise HTTPException(status_code=400, detail="Kon licentie-informatie niet ophalen")
 
     return info
 
@@ -53,8 +58,8 @@ async def validate_license(
     try:
         await lm.validate_license(user.license_key)
         return {"valid": True}
-    except Exception as e:
-        return {"valid": False, "reason": str(e)}
+    except Exception:
+        return {"valid": False, "reason": "Licentie is ongeldig of verlopen"}
 
 
 # ── Free quota (S07-01) ──────────────────────────────────────────────
@@ -248,8 +253,9 @@ async def credits_status(
     lm = LicenseManager(db)
     try:
         info = await lm.get_license_info(user.license_key)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    except Exception:
+        logger.exception("Credit-status ophalen mislukt voor gebruiker %s", user.id)
+        raise HTTPException(status_code=400, detail="Kon credit-status niet ophalen")
 
     used = info["queries_used"]
     limit = info["queries_limit"]

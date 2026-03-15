@@ -11,7 +11,7 @@ Implements the step-by-step wizard:
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user, get_dag
@@ -29,7 +29,7 @@ router = APIRouter(prefix="/api/wizard", tags=["wizard"])
 
 
 class PolicyQuestionRequest(BaseModel):
-    question: str
+    question: str = Field(..., min_length=1, max_length=5000)
 
 
 class QualificationAnswer(BaseModel):
@@ -38,17 +38,17 @@ class QualificationAnswer(BaseModel):
 
 
 class SimulateQualifiedRequest(BaseModel):
-    question: str
+    question: str = Field(..., min_length=1, max_length=5000)
     slider_values: dict[str, float]  # already resolved slider values
 
 
 class GenerateAdviceRequest(BaseModel):
-    question: str
+    question: str = Field(..., min_length=1, max_length=5000)
     slider_values: dict[str, float]
     effects: list[dict] | None = None
-    provider: str = "openai"
-    api_key: str
-    model: str | None = None
+    provider: str = Field("openai", pattern=r"^(openai|anthropic)$")
+    api_key: str = Field(..., min_length=10, max_length=256)
+    model: str | None = Field(None, max_length=100)
 
 
 # ── Step 1: Analyse question → suggest sliders ────────────────────────
@@ -264,8 +264,11 @@ Schrijf in het Nederlands."""
     connector = LLMConnector(request.provider, request.api_key, request.model)
     try:
         response = await connector.generate(messages)
-    except LLMProviderError as e:
-        raise HTTPException(status_code=502, detail=str(e))
+    except LLMProviderError:
+        raise HTTPException(
+            status_code=502,
+            detail="De AI-service kon het verzoek niet verwerken. Probeer het later opnieuw.",
+        )
     except Exception:
         raise HTTPException(
             status_code=502,
@@ -296,5 +299,5 @@ async def _check_license(user: User, db: AsyncSession) -> None:
     lm = LicenseManager(db)
     try:
         await lm.validate_license(user.license_key)
-    except Exception as e:
-        raise HTTPException(status_code=403, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=403, detail="Licentie is ongeldig of verlopen")

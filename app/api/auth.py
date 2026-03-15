@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -13,30 +15,39 @@ from app.core.license_manager import LicenseManager
 from app.db import get_db
 from app.models.user import User
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 
 class RegisterRequest(BaseModel):
     email: EmailStr
-    password: str
-    full_name: str
-    organization: str
+    password: str = Field(
+        ...,
+        min_length=12,
+        max_length=128,
+        description="Wachtwoord moet minimaal 12 tekens bevatten",
+    )
+    full_name: str = Field(..., min_length=1, max_length=200)
+    organization: str = Field(..., min_length=1, max_length=200)
     license_key: str
 
 
 class LoginRequest(BaseModel):
-    email: str
-    password: str
+    email: str = Field(..., max_length=320)
+    password: str = Field(..., max_length=128)
 
 
 @router.post("/register")
-async def register(data: RegisterRequest, db: AsyncSession = Depends(get_db)):
+async def register(request: Request, data: RegisterRequest, db: AsyncSession = Depends(get_db)):
+    await request.app.state.limiter.check("5/minute", request)
+
     # Verify license
     lm = LicenseManager(db)
     try:
         await lm.validate_license(data.license_key)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=400, detail="Ongeldige licentie")
 
     # Check user limit for license
     if not await lm.check_user_count(data.license_key):
@@ -65,11 +76,14 @@ async def register(data: RegisterRequest, db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/login")
-async def login(data: LoginRequest, db: AsyncSession = Depends(get_db)):
+async def login(request: Request, data: LoginRequest, db: AsyncSession = Depends(get_db)):
+    await request.app.state.limiter.check("10/minute", request)
+
     result = await db.execute(select(User).where(User.email == data.email))
     user = result.scalar_one_or_none()
 
     if not user or not verify_password(data.password, user.hashed_password):
+        logger.warning("Mislukte login voor e-mail: %s", data.email)
         raise HTTPException(status_code=401, detail="Ongeldige inloggegevens")
 
     if not user.is_active:
@@ -80,8 +94,9 @@ async def login(data: LoginRequest, db: AsyncSession = Depends(get_db)):
         lm = LicenseManager(db)
         try:
             await lm.validate_license(user.license_key)
-        except Exception as e:
-            raise HTTPException(status_code=403, detail=f"Licentieprobleem: {e}")
+        except Exception:
+            logger.warning("Licentievalidatie mislukt voor gebruiker %s", user.id)
+            raise HTTPException(status_code=403, detail="Licentieprobleem")
 
     token = create_access_token({"sub": user.email})
     return {
