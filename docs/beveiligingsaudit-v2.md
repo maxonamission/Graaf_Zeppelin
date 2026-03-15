@@ -9,7 +9,7 @@
 
 ## Managementsamenvatting
 
-De applicatie heeft een solide functionele basis maar bevat **4 kritieke**, **6 hoge**, **5 gemiddelde** en **3 lage** beveiligingsrisico's die opgelost moeten worden vóór productie-inzet. De meest urgente problemen zitten in de authenticatielaag (wachtwoordhashing, tokenbeveiliging) en de API-laag (rate limiting, input-validatie, autorisatiecontroles).
+De applicatie heeft een solide functionele basis maar bevat **4 kritieke**, **7 hoge**, **6 gemiddelde** en **4 lage** beveiligingsrisico's die opgelost moeten worden vóór productie-inzet. De meest urgente problemen zitten in de authenticatielaag (wachtwoordhashing, tokenbeveiliging), de API-laag (rate limiting, input-validatie, autorisatiecontroles) en de frontend (XSS via innerHTML, ontbrekende CSP/SRI).
 
 **Geen van de gevonden kwetsbaarheden is op dit moment actief exploiteerbaar** omdat de applicatie nog niet publiek draait. Alle bevindingen zijn preventief.
 
@@ -310,6 +310,100 @@ POST /api/license/credits/topup {"amount": 999999}
 
 ---
 
+#### L4. Ontbrekende Subresource Integrity (SRI) op CDN-scripts
+
+| | |
+|---|---|
+| **Ernst** | LAAG |
+| **CWE** | CWE-829 (Inclusion of Functionality from Untrusted Control Sphere) |
+| **OWASP** | A06:2021 Vulnerable and Outdated Components |
+| **Bestanden** | `app/templates/base.html:8`, `app/templates/graph_viewer.html:5` |
+
+**Probleem**: Externe scripts (htmx van unpkg, D3 van d3js.org) worden geladen zonder `integrity` attribuut. Als de CDN gecompromitteerd wordt, kan kwaadaardige code geïnjecteerd worden.
+
+**Moet worden**:
+```html
+<script src="https://d3js.org/d3.v7.min.js"
+        integrity="sha384-..." crossorigin="anonymous"></script>
+```
+
+---
+
+### AANVULLEND: Frontend-specifieke bevindingen (uit template-audit)
+
+De volgende bevindingen kwamen uit de gedetailleerde template-analyse en zijn al verwerkt in de bestaande stories:
+
+#### F1. DOM-XSS via innerHTML met API-data (→ S11-02)
+
+| | |
+|---|---|
+| **Ernst** | HOOG |
+| **CWE** | CWE-79 (Cross-site Scripting) |
+| **Bestanden** | `login.html:46`, `register.html:65`, `graph_viewer.html:146,217` |
+
+**Probleem**: Foutmeldingen van de API (`data.detail`) worden via `innerHTML` in de DOM geplaatst zonder escaping. In `login.html` en `register.html` wordt dit niet via `escapeHtml()` gedaan. In `graph_viewer.html` worden domein-namen en factor-ID's in `onclick` attributen geïnterpoleerd zonder volledige escaping.
+
+**Voorbeeld**: `login.html:46`:
+```javascript
+document.getElementById('login-error').innerHTML =
+    `<div class="alert alert-error">${data.detail}</div>`;
+```
+
+**Fix**: Gebruik `.textContent` voor data, of `escapeHtml()` consistent op alle paden.
+
+---
+
+#### F2. Cookie zonder HttpOnly/Secure via JavaScript (→ S11-01)
+
+| | |
+|---|---|
+| **Ernst** | HOOG |
+| **CWE** | CWE-614 |
+| **Bestanden** | `login.html:43`, `register.html:62`, `base.html:24` |
+
+**Probleem**: Het access_token wordt via JavaScript in een cookie gezet (`document.cookie = ...`) zonder `Secure` of `HttpOnly` flags. De token moet server-side via `Set-Cookie` header worden gezet.
+
+---
+
+#### F3. Ontbrekende Content Security Policy (→ S11-02)
+
+| | |
+|---|---|
+| **Ernst** | HOOG |
+| **CWE** | CWE-693 (Protection Mechanism Failure) |
+| **Bestand** | `app/main.py` (middleware), `base.html` |
+
+**Probleem**: Geen CSP-header. Alle inline scripts en styles zijn toegestaan. In combinatie met de innerHTML-kwetsbaarheden is dit een risico-vermenigvuldiger. Aanbevolen:
+```
+Content-Security-Policy: default-src 'self'; script-src 'self' https://unpkg.com https://d3js.org; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'
+```
+
+---
+
+#### F4. Onvolledige escape-functie in reasoning.html (→ S11-02)
+
+| | |
+|---|---|
+| **Ernst** | GEMIDDELD |
+| **CWE** | CWE-79 |
+| **Bestand** | `app/templates/reasoning.html:418-420` |
+
+**Probleem**: `escapeAttr()` escaped alleen quotes, niet backslashes of HTML-entities. Wordt gebruikt voor `onclick` attributen. Beter: `JSON.stringify()` gebruiken voor attribuut-waarden.
+
+---
+
+#### F5. Logout alleen client-side (→ S11-01)
+
+| | |
+|---|---|
+| **Ernst** | LAAG |
+| **CWE** | CWE-613 |
+| **Bestand** | `base.html:24` |
+
+**Probleem**: Uitloggen verwijdert alleen de cookie client-side. Er is geen server-side sessie-invalidatie. Het token blijft tot 24 uur geldig. Wordt opgelost met refresh-token mechanisme (S11-01).
+
+---
+
 ## Samenvattingsmatrix
 
 | # | Bevinding | Ernst | OWASP | CWE | Story |
@@ -319,19 +413,22 @@ POST /api/license/credits/topup {"amount": 999999}
 | K3 | API-keys in plaintext | KRITIEK | A02 | 319 | S11-02 |
 | K4 | Geen rate limiting auth | KRITIEK | A07 | 307 | S11-01 |
 | H1 | Geen wachtwoordbeleid | HOOG | A07 | 521 | S11-01 |
-| H2 | Ontbrekende cookie-flags | HOOG | A07 | 614 | S11-01 |
+| H2 | Ontbrekende cookie-flags (backend + frontend) | HOOG | A07 | 614 | S11-01 |
 | H3 | Credits topup onbeveiligd | HOOG | A01 | 269 | S11-03 |
 | H4 | Model switch globaal | HOOG | A01 | 269 | S11-03 |
 | H5 | Geen CSRF | HOOG | A01 | 352 | S11-02 |
 | H6 | Geen input-lengtevalidatie | HOOG | A03 | 20 | S11-02 |
+| F1 | DOM-XSS via innerHTML (login, register, graph) | HOOG | A03 | 79 | S11-02 |
 | G1 | Token 24 uur geldig | GEMIDDELD | A07 | 613 | S11-01 |
 | G2 | JWT alg niet gevalideerd | GEMIDDELD | A02 | 347 | S11-01 |
 | G3 | Foutmeldingen lekken info | GEMIDDELD | A09 | 209 | S11-04 |
 | G4 | Geen auditlogging | GEMIDDELD | A09 | 778 | S11-04 |
 | G5 | Sequentiële ID's | GEMIDDELD | A01 | 639 | S11-03 |
-| L1 | Geen security headers | LAAG | A05 | 693 | S11-02 |
-| L2 | XSS via innerHTML | LAAG | A03 | 79 | S11-02 |
+| F3 | Ontbrekende CSP-header | GEMIDDELD | A03 | 693 | S11-02 |
+| L1 | Geen overige security headers | LAAG | A05 | 693 | S11-02 |
+| L2 | Onvolledige escapeAttr() | LAAG | A03 | 79 | S11-02 |
 | L3 | Account-enumeratie | LAAG | A07 | 204 | S11-01 |
+| L4 | Geen SRI op CDN-scripts | LAAG | A06 | 829 | S11-02 |
 
 ---
 
