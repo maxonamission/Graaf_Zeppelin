@@ -94,6 +94,7 @@ Gebruik deze checklist bij elke pull request die code wijzigt. Niet elk punt is 
 | **Bij elke PR** | Security checklist (sectie 3) | Reviewer + Security Champion | Goedgekeurde PR |
 | **Wekelijks** | Dependabot/pip-audit meldingen controleren | Security Champion | Patches of triage |
 | **Kwartaal** | Geautomatiseerde security scan (bandit + semgrep + pip-audit) | CI/CD (automatisch) | Scan-rapport |
+| **Kwartaal** | LLM Guard audit log analyse (`python -m app.core.guard_analyst`) | Security Champion | Nieuwe patronen in `data/llm_guard_patterns.json` |
 | **Halfjaar** | Handmatige security review van nieuwe code sinds vorige review | Security Champion + extern | Review-rapport |
 | **Jaar** | Penetratietest door externe partij | Security Champion (coördinatie) | Pentest-rapport |
 | **Jaar** | Tabletop exercise (incident response oefening) | Security Champion | Evaluatieverslag |

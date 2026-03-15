@@ -100,7 +100,8 @@ app/
     slider_engine.py      # Curve-functies en slider-simulatie
     prompt_builder.py     # DAG → gestructureerde LLM-prompts
     llm_connector.py      # Multi-provider LLM client
-    llm_guard.py          # OWASP LLM Top 10 mitigaties (prompt injection, output sanitisatie)
+    llm_guard.py          # OWASP LLM Top 10 mitigaties (patronen uit data/llm_guard_patterns.json)
+    guard_analyst.py      # Post-hoc analyse van geblokkeerde queries (CLI tool)
     license_manager.py    # Licentie-validatie en quota
     auth.py               # JWT tokens en wachtwoordhashing
   models/                 # SQLAlchemy ORM (User, License, Release)

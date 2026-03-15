@@ -474,13 +474,13 @@ Content-Security-Policy: default-src 'self'; script-src 'self' https://unpkg.com
 
 | # | Risico | Status | Toelichting |
 |---|--------|--------|-------------|
-| **LLM01** | Prompt Injection | ✅ Gemitigeerd | `check_prompt_injection()` blokkeert 18 bekende patronen (NL+EN) vóór de LLM-aanroep. Audit logging van geblokkeerde pogingen. Geïntegreerd in reasoning- en wizard-endpoints. |
+| **LLM01** | Prompt Injection | ✅ Gemitigeerd | `check_prompt_injection()` blokkeert patronen (NL+EN) vóór de LLM-aanroep. Patronen configureerbaar via `data/llm_guard_patterns.json` (S11-06). Post-hoc analyse via `guard_analyst.py` ontdekt nieuwe patronen (S11-07). Audit logging van geblokkeerde pogingen. |
 | **LLM02** | Sensitive Information Disclosure | ✅ OK | API-keys versleuteld (Fernet+PBKDF2, 480k iteraties). BYOK-model: keys nooit in requests of logs. Foutmeldingen gemaskeerd. |
 | **LLM03** | Supply Chain | ✅ OK | `pip-audit` en `semgrep` in CI (GitHub Actions). Dependency CVE-scan per kwartaal. |
 | **LLM04** | Data and Model Poisoning | ✅ Laag risico | Causaal model is server-side JSON, geen gebruikers-upload. Modelselectie vereist admin-rol. |
 | **LLM05** | Improper Output Handling | ✅ Gemitigeerd | `sanitize_llm_output()` neutraliseert HTML/script-tags in LLM-responses vóór teruggave aan client. Voorkomt XSS bij browser-rendering. |
 | **LLM06** | Excessive Agency | ✅ OK | LLM heeft geen tools, geen function calling, geen code execution. Uitsluitend tekstgeneratie. |
-| **LLM07** | System Prompt Leakage | ✅ Gemitigeerd | `check_prompt_leakage_attempt()` detecteert extractiepogingen (NL+EN). Systeemprompt bevat expliciete "nooit onthullen"-regel. Audit logging. |
+| **LLM07** | System Prompt Leakage | ✅ Gemitigeerd | `check_prompt_leakage_attempt()` detecteert extractiepogingen (NL+EN). Patronen configureerbaar via JSON (S11-06). Systeemprompt bevat expliciete "nooit onthullen"-regel. Audit logging. |
 | **LLM08** | Vector and Embedding Weaknesses | N.v.t. | Geen RAG of embeddings. Factor-selectie via keyword matching (`find_relevant_factors()`). |
 | **LLM09** | Misinformation | ✅ Gemitigeerd | `validate_response_factors()` controleert of genoemde factoren in het causale model voorkomen. Temperature=0.1. Systeemprompt dwingt causale constraints af. |
 | **LLM10** | Unbounded Consumption | ✅ OK | Rate limiting (slowapi), quota per tier (2/dag gratis, 1000/maand professioneel), max_tokens=2000, httpx timeout=60s. |

@@ -37,7 +37,8 @@ Runtime-beveiliging conform OWASP Top 10 for LLM Applications:
 - **LLM05 Output Handling**: HTML/script-sanitisatie op LLM-responses
 - **LLM07 System Prompt Leakage**: Detectie van extractiepogingen
 
-Patronen zijn gedefinieerd als compiled regex in `_INJECTION_PATTERNS` en `_LEAKAGE_PATTERNS`. Voeg nieuwe patronen toe aan deze lijsten wanneer nieuwe technieken worden ontdekt.
+Patronen worden geladen uit `data/llm_guard_patterns.json` (S11-06). Nieuwe patronen
+kunnen worden ontdekt via post-hoc analyse met de Guard Analyst CLI (S11-07).
 
 ## Checklist bij nieuwe feature (template)
 
