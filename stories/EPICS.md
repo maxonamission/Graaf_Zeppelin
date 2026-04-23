@@ -202,3 +202,29 @@ penetratietests, en een doorlopend review-proces.
 | [S13-04](backlog/S13-04-dependency-lifecycle.md) | 🔲 Backlog | GEMIDDELD | Dependency lifecycle management (Dependabot, SLA, lock-file) |
 | [S13-05](backlog/S13-05-keyvault-hardening.md) | 🔲 Backlog | GEMIDDELD | KeyVault en cryptografie hardening (PBKDF2, database-SSL) |
 | [S13-06](backlog/S13-06-security-review-proces.md) | 🔲 Backlog | GEMIDDELD | Structureel security review proces (checklist, jaarplanning, champion) |
+
+---
+
+### EPIC-14: Graph-methodologie afstemming (OS-actieplan) 🔲
+
+Afstemmen van Graaf Zeppelin op de gedeelde graph-methodologie (acht conventies +
+appendix tijdsdimensie) vanuit Codebase-Olympus. Repareert twee structurele
+inconsistenties (FEEDBACK-edges vs. globale acyclic-check, `time_lag` als dead field),
+introduceert Pydantic-modellen, een invarianten-catalogus, leesbare IDs, en tilt de
+ontwikkelstraat op Olympus-niveau.
+
+Bron: `docs/actieplan-os.md` (overgenomen vanuit `maxonamission/Codebase-Olympus`).
+
+**Kritisch pad:** S14-01 → S14-02 → S14-04 → S14-05. S14-03 (time_lag) vereist een
+beleidskeuze (Pad A/B — zie actieplan §"Open beleidskeuzes"). S14-07 kan parallel
+lopen (alleen docs).
+
+| Story | Status | Prioriteit | Beschrijving |
+|-------|--------|------------|-------------|
+| [S14-01](backlog/S14-01-cycle-check-per-edge-type.md) | 🔲 Backlog | HOOG | Cycle-check per edge-type (GZ-01) — FEEDBACK-edges mogen cyclisch zijn |
+| [S14-02](backlog/S14-02-pydantic-graph-models.md) | 🔲 Backlog | HOOG | Pydantic-modellen voor Node en Edge (GZ-02) |
+| [S14-03](backlog/S14-03-time-lag-beslissing.md) | 🔲 Backlog | GEMIDDELD | Beslissing en implementatie rond `time_lag` (GZ-03, Pad A/B) |
+| [S14-04](backlog/S14-04-invarianten-catalogus.md) | 🔲 Backlog | HOOG | Invarianten-catalogus: cycle/orphan/duplicate/dangling + CLI (GZ-04) |
+| [S14-05](backlog/S14-05-id-schema-herontwerp.md) | 🔲 Backlog | GEMIDDELD | ID-schema herontwerp en migratie (GZ-05) |
+| [S14-06](backlog/S14-06-ontwikkelstraat.md) | 🔲 Backlog | GEMIDDELD | Ontwikkelstraat parallel aan Olympus: ruff, mypy, pre-commit, CI, hooks, stories (GZ-06) |
+| [S14-07](backlog/S14-07-schema-evolutie-doc.md) | 🔲 Backlog | LAAG | Schema-evolutie v1→v2 documenteren als methodologie-bijdrage (GZ-07) |
