@@ -215,16 +215,20 @@ ontwikkelstraat op Olympus-niveau.
 
 Bron: `docs/actieplan-os.md` (overgenomen vanuit `maxonamission/Codebase-Olympus`).
 
-**Kritisch pad:** S14-01 → S14-02 → S14-04 → S14-05. S14-03 (time_lag) vereist een
-beleidskeuze (Pad A/B — zie actieplan §"Open beleidskeuzes"). S14-07 kan parallel
-lopen (alleen docs).
+**Genomen beleidskeuzes (zie actieplan §"Open beleidskeuzes"):**
+1. **`time_lag`** — Pad B (schrappen) nu, Pad A (iteratieve-tikken-simulatie) op roadmap als eigen epic
+2. **ID-schema** — direct integraal migreren naar leesbaar schema; geen externe consumenten, dus geen compatibiliteitslaag nodig; volledige per-node-review van de mapping
+3. **`knowledge_graph.py`** — consolideren met Pydantic-`Graph`-model in `app/core/`; standalone module verwijderd of dunne wrapper
+
+**Kritisch pad:** S14-01 → S14-02 → S14-04 → S14-05. S14-03 is triviaal (~1u) zodra
+S14-02 staat. S14-07 kan parallel (alleen docs).
 
 | Story | Status | Prioriteit | Beschrijving |
 |-------|--------|------------|-------------|
 | [S14-01](backlog/S14-01-cycle-check-per-edge-type.md) | 🔲 Backlog | HOOG | Cycle-check per edge-type (GZ-01) — FEEDBACK-edges mogen cyclisch zijn |
-| [S14-02](backlog/S14-02-pydantic-graph-models.md) | 🔲 Backlog | HOOG | Pydantic-modellen voor Node en Edge (GZ-02) |
-| [S14-03](backlog/S14-03-time-lag-beslissing.md) | 🔲 Backlog | GEMIDDELD | Beslissing en implementatie rond `time_lag` (GZ-03, Pad A/B) |
+| [S14-02](backlog/S14-02-pydantic-graph-models.md) | 🔲 Backlog | HOOG | Pydantic-modellen voor Node en Edge + consolidatie `knowledge_graph.py` (GZ-02) |
+| [S14-03](backlog/S14-03-time-lag-beslissing.md) | 🔲 Backlog | GEMIDDELD | `time_lag` schrappen (Pad B); Pad A op roadmap (GZ-03) |
 | [S14-04](backlog/S14-04-invarianten-catalogus.md) | 🔲 Backlog | HOOG | Invarianten-catalogus: cycle/orphan/duplicate/dangling + CLI (GZ-04) |
-| [S14-05](backlog/S14-05-id-schema-herontwerp.md) | 🔲 Backlog | GEMIDDELD | ID-schema herontwerp en migratie (GZ-05) |
+| [S14-05](backlog/S14-05-id-schema-herontwerp.md) | 🔲 Backlog | GEMIDDELD | ID-schema integrale migratie (GZ-05) |
 | [S14-06](backlog/S14-06-ontwikkelstraat.md) | 🔲 Backlog | GEMIDDELD | Ontwikkelstraat parallel aan Olympus: ruff, mypy, pre-commit, CI, hooks, stories (GZ-06) |
 | [S14-07](backlog/S14-07-schema-evolutie-doc.md) | 🔲 Backlog | LAAG | Schema-evolutie v1→v2 documenteren als methodologie-bijdrage (GZ-07) |
