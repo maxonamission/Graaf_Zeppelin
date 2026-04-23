@@ -1,9 +1,74 @@
 # S14-02: Pydantic-modellen voor Node en Edge (GZ-02)
 
 **Epic:** EPIC-14 Graph-methodologie afstemming
-**Status:** 🔲 Backlog
+**Status:** ✅ Done
 **Prioriteit:** Hoog
 **Bron:** `docs/actieplan-os.md` §GZ-02
+
+## Resultaat
+
+- **`app/core/graph_models.py`** — canonieke Pydantic-modellen voor het
+  v2-schema: `Graph`, `Node`, `Edge` en acht StrEnums (`Polarity`,
+  `Strength`, `EdgeType`, `CurveType`, `TimeLag`, `BondInfluence`,
+  `NodeStatus`, `TargetType`). Generieke graph-velden staan gegroepeerd
+  boven project-specifieke velden (sportdeelname-kenmerken) zodat een
+  latere formele splitsing volgens `docs/uniforme-kenmerken-taxonomie.md`
+  een mechanische refactor wordt.
+- **Validators:**
+  - `base_weight ∈ [0.0, 1.0]` (per-edge)
+  - `polarity` en `strength` accepteren NL+EN (S12-05 meertaligheid)
+  - Lege strings op optionele enum-velden → `None` (matcht de v2-data)
+  - Graph-level model_validator catcht dangling `source`/`target`-refs;
+    moderator-edges (`target_type=edge`) worden tegen edge-IDs gecheckt
+  - `extra="allow"` op Node/Edge voor niet-schema-breuken bij data-
+    additions
+- **`CausalDAG.from_dict(..., strict=True)`** roept
+  `Graph.model_validate(data)` aan vóór de NetworkX-opbouw; validatie-
+  fouten verschijnen nu als één `ValidationError` i.p.v. een
+  late-binding KeyError. `strict=False` (gebruikt door de S14-04-
+  validator) skipt ook deze stap.
+- **Consolidatie uitgevoerd:**
+  - `graaf_zeppelin/` package volledig verwijderd
+    (`knowledge_graph.py`, `converters.py`, `cli.py`, `__main__.py`,
+    `__init__.py`)
+  - `graaf_zeppelin/converters.py` → `app/core/graph_io.py` (dict-based,
+    generieke JSON↔GEXF↔Markdown; onafhankelijk van Pydantic — format
+    conversion heeft het semantische schema niet nodig)
+  - `graaf_zeppelin/cli.py` → `scripts/convert_graph.py`
+  - `setup.py` entry-point verwijderd
+  - `examples/example_usage.py` herschreven om nieuwe dict-based API te
+    gebruiken
+  - `tests/test_conversions.py` herschreven voor `app.core.graph_io`
+    (van 7 ad-hoc assert-prints → 8 pytest-tests)
+- **Dependency**: `requirements.txt` krijgt `pydantic[email]>=2.6.0`
+  (afgesproken in S14-02; maakt S15-03 obsoleet).
+- **Tests**: 20 nieuwe tests in `tests/test_graph_models.py` (enum
+  normalisatie, alias-mapping, base_weight-range, required fields,
+  dangling refs, moderator-edge-target, real-data round-trip). Totaal
+  **118 graph-gerelateerde tests groen**.
+
+## Niet gedaan (bewust doorgeschoven)
+
+- **Mypy-strict config** (acceptatiecriterium uit actieplan): er is nog
+  geen `pyproject.toml` of `mypy.ini` in de repo. De Pydantic-models zijn
+  mypy-strict-compatible geschreven; de daadwerkelijke `strict = true`-
+  opname in de build-tooling hoort bij S14-06 (ontwikkelstraat).
+- **S14-04 `validate_edge_weights` aanpassing**: twee tests gebruikten
+  voorheen strict=True met ongeldige waarden — Pydantic vangt die nu al
+  af bij het laden. Tests nu omgezet naar `strict=False` (om de
+  graph-level checker te blijven dekken) resp. naar een pure NetworkX-
+  fixture.
+
+## Vervolg
+
+- S14-03 (time_lag schrappen) kan nu cleanly uitgevoerd worden: veld +
+  enum uit `Edge`/`TimeLag` verwijderen, migratiescript de data-laag
+  bijwerken.
+- S14-05 (ID-schema migratie) bouwt op de Pydantic-validators: de
+  ID-format-validator wordt als `@field_validator` op `Node.id` en
+  `Edge.id` toegevoegd.
+- S15-03 (email-validator dep) is overbodig geworden: `pydantic[email]`
+  zit nu al in requirements.txt.
 
 ## Doel
 

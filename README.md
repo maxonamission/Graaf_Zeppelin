@@ -23,7 +23,7 @@ sportbeleid en onderbouwde antwoorden krijgen.
 |-----------|-----|-------------|
 | **App** (`app/`) | Het product | Webapplicatie met API en frontend |
 | **Causaal model** (`data/models/`) | Externe input | Wordt separaat ontwikkeld; de app laadt het model as-is |
-| **Conversie-tools** (`graaf_zeppelin/`) | Developer tooling | Hulpmiddelen voor de modelontwikkelaar |
+| **Conversie-tools** (`scripts/convert_graph.py`) | Developer tooling | JSON ↔ GEXF ↔ Markdown voor de modelontwikkelaar |
 
 ## Installatie
 
@@ -113,6 +113,9 @@ app/
     deps.py               # Gedeelde dependencies (auth, graph)
   core/
     dag_engine.py         # CausalDAG — NetworkX-based graph engine
+    graph_models.py       # Pydantic-modellen voor v2-schema (S14-02)
+    validation.py         # Graph-invarianten catalog + ValidationReport (S14-04)
+    graph_io.py           # JSON ↔ GEXF ↔ Markdown converters (generic)
     slider_engine.py      # Curve-functies en slider-simulatie
     prompt_builder.py     # DAG → gestructureerde LLM-prompts
     llm_connector.py      # Multi-provider LLM client
@@ -150,14 +153,15 @@ De test suite dekt:
 - **API endpoints** — publieke pagina's, auth, graph, sliders
 - **Integratietests** — registratie → login → verken → simuleer → AI-vraag
 
-## CLI Tool (developer tooling)
+## Developer tooling
 
 ```bash
-# JSON naar GEXF
-python -m graaf_zeppelin.cli convert examples/knowledge_graph.json output.gexf
+# Graph-validatie (cycles, orphans, duplicates, dangling refs, ...)
+python scripts/validate_graph.py data/models/sportdeelname_graph.json
 
-# JSON naar Markdown
-python -m graaf_zeppelin.cli convert examples/knowledge_graph.json output.md
+# Conversie tussen JSON ↔ GEXF ↔ Markdown
+python scripts/convert_graph.py data/models/sportdeelname_graph.json output.gexf
+python scripts/convert_graph.py data/models/sportdeelname_graph.json output.md
 ```
 
 ## Licentie

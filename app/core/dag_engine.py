@@ -595,6 +595,14 @@ class CausalDAG:
     @classmethod
     def _from_dict_v2(cls, data: dict[str, Any], *, strict: bool = True) -> CausalDAG:
         """Load v2 schema (nodes/edges/sliders with domains, moderators, etc.)."""
+        if strict:
+            # Pydantic validation catches enum, range and dangling-reference
+            # issues before we build the NetworkX graph. S14-02 introduces
+            # this; the model lives in app.core.graph_models.Graph.
+            from app.core.graph_models import Graph as _Graph
+
+            _Graph.model_validate(data)
+
         meta = data.get("metadata", {})
         summary = meta.get("summary", {})
 

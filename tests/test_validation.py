@@ -236,32 +236,36 @@ class TestValidateEdgeWeights:
         assert validate_edge_weights(dag.graph) == []
 
     def test_base_weight_out_of_range(self):
+        """Pydantic catches this at load time (S14-02); the weights-checker
+        catches it on already-loaded graphs that bypass strict validation."""
         data = _v2_base()
         data["edges"][0]["base_weight"] = 1.5
-        dag = CausalDAG.from_dict(data)
+        # strict=False so we can still inspect graph-level edge attributes
+        dag = CausalDAG.from_dict(data, strict=False)
         violations = validate_edge_weights(dag.graph)
         assert len(violations) == 1
         assert violations[0]["field"] == "base_weight"
         assert violations[0]["value"] == 1.5
 
     def test_strength_enum_unknown(self):
-        data = _v2_base()
-        # strength is a string; loader leaves the string on the attr in addition
-        # to the numeric strength from base_weight — but the validator runs on
-        # the NetworkX edge attrs, which in the loader's v2 path keep the
-        # original string unless base_weight is present. To force the string
-        # through, drop base_weight and supply an unknown string.
-        data["edges"][0].pop("base_weight", None)
-        data["edges"][0]["strength"] = "colossaal"
-        dag = CausalDAG.from_dict(data)
-        # The loader coerces strength to numeric when base_weight absent via
-        # _STRENGTH_MAP lookup; "colossaal" isn't in the map, so it falls back
-        # to 0.5. The string does not survive on the edge attr — this check
-        # is therefore primarily useful for v1 edges. We assert instead that
-        # validate_edge_weights does NOT raise, regardless of outcome.
-        violations = validate_edge_weights(dag.graph)
-        # Either 0 (if loader stripped the string) or 1 (if it survived).
-        assert isinstance(violations, list)
+        """validate_edge_weights guards against non-enum strength strings
+        that slipped through a non-strict load path (e.g. raw dicts added
+        via ``graph.add_edge`` bypassing Pydantic). With strict=True,
+        Pydantic itself rejects the value."""
+        import networkx as nx
+
+        g: nx.DiGraph = nx.DiGraph()
+        g.add_node("A")
+        g.add_node("B")
+        g.add_edge(
+            "A",
+            "B",
+            id="E1",
+            strength="colossaal",
+            base_weight=0.5,
+        )
+        violations = validate_edge_weights(g)
+        assert any(v["field"] == "strength" for v in violations)
 
 
 # ── validate_graph (orchestrator) ───────────────────────────────────

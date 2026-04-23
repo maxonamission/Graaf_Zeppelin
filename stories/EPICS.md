@@ -226,17 +226,14 @@ Bron: `docs/actieplan-os.md` (overgenomen vanuit `maxonamission/Codebase-Olympus
 Niet blokkerend voor uitvoering van S14-01..S14-07; hoort thuis in een
 Olympus-conversatie en uiteindelijk in `docs/graph-methodology.md` bij Olympus.
 
-**Kritisch pad:** S14-01 ✅ → S14-04 ✅ → **S14-02** → S14-05. (Na S14-01
-herzien: S14-04 is eerst uitgevoerd omdat het direct op de helpers uit
-S14-01 doorbouwt en een diagnostische tool opleverde die het
-bodem-check van de dataset deed vóór de grotere Pydantic-refactor van
-S14-02.) S14-03 is triviaal (~1u) zodra S14-02 staat. S14-07 kan
-parallel (alleen docs).
+**Kritisch pad:** S14-01 ✅ → S14-04 ✅ → S14-02 ✅ → **S14-05**. S14-03
+is triviaal (~1u) en bouwt op S14-02 (nu klaar). S14-07 kan parallel
+(alleen docs). S14-06 sluit de epic af met de ontwikkelstraat.
 
 | Story | Status | Prioriteit | Beschrijving |
 |-------|--------|------------|-------------|
 | [S14-01](done/S14-01-cycle-check-per-edge-type.md) | ✅ Done | HOOG | Cycle-check per edge-type (GZ-01) — FEEDBACK-edges mogen cyclisch zijn |
-| [S14-02](backlog/S14-02-pydantic-graph-models.md) | 🔲 Backlog | HOOG | Pydantic-modellen voor Node en Edge + consolidatie `knowledge_graph.py` (GZ-02) |
+| [S14-02](done/S14-02-pydantic-graph-models.md) | ✅ Done | HOOG | Pydantic-modellen voor Node en Edge + consolidatie `knowledge_graph.py` (GZ-02) |
 | [S14-03](backlog/S14-03-time-lag-beslissing.md) | 🔲 Backlog | GEMIDDELD | `time_lag` schrappen (Pad B); Pad A op roadmap (GZ-03) |
 | [S14-04](done/S14-04-invarianten-catalogus.md) | ✅ Done | HOOG | Invarianten-catalogus: cycle/orphan/duplicate/dangling + CLI (GZ-04) |
 | [S14-05](backlog/S14-05-id-schema-herontwerp.md) | 🔲 Backlog | GEMIDDELD | ID-schema integrale migratie (GZ-05) |
@@ -260,4 +257,4 @@ misleidend rood beeld en is CI niet betrouwbaar.
 |-------|--------|------------|-------------|
 | [S15-01](backlog/S15-01-async-testing-plugin.md) | 🔲 Backlog | HOOG | `pytest-asyncio` installeren; lost ~80 async-gerelateerde test-errors op |
 | [S15-02](backlog/S15-02-jinja2-template-render.md) | 🔲 Backlog | GEMIDDELD | Jinja2 `unhashable type: 'dict'` in 5 pagina-render-tests — mogelijk ook productie-impact |
-| [S15-03](backlog/S15-03-email-validator-dep.md) | 🔲 Backlog | LAAG | `email-validator` toevoegen als dep (wordt ook door S14-02 afgedekt) |
+| [S15-03](backlog/S15-03-email-validator-dep.md) | ✅ Done (S14-02) | LAAG | `email-validator` toevoegen als dep (gedekt door `pydantic[email]` in S14-02) |
