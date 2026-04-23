@@ -1,9 +1,42 @@
 # S14-04: Invarianten-catalogus aanvullen (GZ-04)
 
 **Epic:** EPIC-14 Graph-methodologie afstemming
-**Status:** 🔲 Backlog
+**Status:** ✅ Done
 **Prioriteit:** Hoog
 **Bron:** `docs/actieplan-os.md` §GZ-04
+
+## Resultaat
+
+- `app/core/validation.py` met `ValidationReport`-dataclass en
+  zes invarianten-functies (`detect_cycles`, `find_orphan_nodes`,
+  `find_duplicate_ids`, `find_dangling_refs`, `check_connectivity`,
+  `validate_edge_weights`) plus de `validate_graph`-orchestrator.
+  `detect_cycles` hergebruikt `_acyclic_subgraph` uit S14-01.
+- `scripts/validate_graph.py` CLI met `--json` en `--fail-on-warnings`;
+  exit-codes 0 (valid) / 1 (errors of warnings-bij-flag) / 2 (bad file).
+- `CausalDAG.from_dict(..., strict=False)` toegevoegd zodat de validator
+  alle invarianten in één rapport kan verzamelen i.p.v. te falen op de
+  eerste cyclus; bestaande `strict=True` default is onveranderd.
+- `tests/test_validation.py` met 21 tests: per invariant één
+  passend-én-falend-fixture, plus een orchestrator-test op een gemengde
+  dirty fixture en een smoke-test op de echte `sportdeelname_graph.json`.
+- **Bevinding op echte data**: `sportdeelname_graph.json` is
+  `is_valid=True`; wel één informatieve warning ("graph heeft 2
+  weakly-connected components") omdat `N066` alleen via een
+  moderator-edge (E099) aan de graaf hangt, niet via een gewone
+  NetworkX-edge. Geen data-probleem — wel waardevol om expliciet te
+  weten. De orphan-check sluit moderator-bronnen correct uit (anders
+  was `N066` ten onrechte als orphan gerapporteerd).
+- Alle 99 graph-gerelateerde tests (`test_dag_engine.py`,
+  `test_validation.py`, `test_slider_engine.py`,
+  `test_prompt_builder.py`, `test_conversions.py`) groen.
+
+## Vervolg
+
+De CI-aanroep van `scripts/validate_graph.py` valt onder S14-06
+(ontwikkelstraat). `ValidationReport` kan in S14-05 gebruikt worden als
+consistentiecheck ná de ID-migratie (al als afhankelijkheid vastgelegd
+in S14-05).
 
 ## Doel
 

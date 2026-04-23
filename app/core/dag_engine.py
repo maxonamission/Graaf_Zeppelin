@@ -556,16 +556,21 @@ class CausalDAG:
         }
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> CausalDAG:
-        """Deserialize a graph from a dictionary. Auto-detects v1 vs v2 schema."""
+    def from_dict(cls, data: dict[str, Any], *, strict: bool = True) -> CausalDAG:
+        """Deserialize a graph from a dictionary. Auto-detects v1 vs v2 schema.
+
+        When ``strict`` is False, acyclicity enforcement is skipped. Intended
+        for the validation module (S14-04) which wants to report all
+        invariant violations at once instead of aborting on the first cycle.
+        """
         is_v2 = "nodes" in data and "edges" in data
 
         if is_v2:
-            return cls._from_dict_v2(data)
-        return cls._from_dict_v1(data)
+            return cls._from_dict_v2(data, strict=strict)
+        return cls._from_dict_v1(data, strict=strict)
 
     @classmethod
-    def _from_dict_v1(cls, data: dict[str, Any]) -> CausalDAG:
+    def _from_dict_v1(cls, data: dict[str, Any], *, strict: bool = True) -> CausalDAG:
         """Load v1 schema (factors/relations)."""
         dag = cls(
             name=data["name"],
@@ -583,12 +588,12 @@ class CausalDAG:
             relation = dict(relation)
             cause = relation.pop("cause")
             effect = relation.pop("effect")
-            dag.add_relation(cause, effect, **relation)
+            dag.add_relation(cause, effect, check_dag=strict, **relation)
 
         return dag
 
     @classmethod
-    def _from_dict_v2(cls, data: dict[str, Any]) -> CausalDAG:
+    def _from_dict_v2(cls, data: dict[str, Any], *, strict: bool = True) -> CausalDAG:
         """Load v2 schema (nodes/edges/sliders with domains, moderators, etc.)."""
         meta = data.get("metadata", {})
         summary = meta.get("summary", {})
@@ -665,7 +670,8 @@ class CausalDAG:
 
         # Enforce acyclicity on the subgraph of acyclic edge-types.
         # FEEDBACK and SOCIAL_REGULATORY edges may form cycles by design.
-        _assert_acyclic(dag.graph)
+        if strict:
+            _assert_acyclic(dag.graph)
 
         return dag
 
