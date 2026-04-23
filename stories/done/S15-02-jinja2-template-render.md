@@ -1,9 +1,58 @@
 # S15-02: Jinja2-render faalt in 5 pagina-tests
 
 **Epic:** EPIC-15 Testsuite-rehabilitatie
-**Status:** 🔲 Backlog
+**Status:** ✅ Done
 **Prioriteit:** GEMIDDELD
 **Bron:** Gevonden tijdens S14-01-validatie (2026-04-23)
+
+## Resultaat
+
+**Root cause**: oude Starlette-signature op
+`templates.TemplateResponse()`. Bij de upgrade naar Starlette ≥0.29 is
+de parameter-volgorde gewijzigd van `(name, context, ...)` naar
+`(request, name, context, ...)`. Zeppelin gebruikte nog steeds de oude
+vorm — Starlette interpreteerde daardoor de context-dict als `name` bij
+het template-lookup, waarna Jinja2's interne cache faalde op
+`unhashable type: 'dict'` in de cache-key.
+
+**Fix**: alle 9 call-sites in `app/main.py` bijgewerkt — `request` als
+eerste argument toegevoegd. Bulk-replace veilig omdat `request` in
+iedere route al in scope is. `_tpl_ctx`-helper blijft ongewijzigd
+(injecteert `request` in de context-dict, wat templates voor `url_for`
+e.d. nodig hebben).
+
+**Impact**: niet alleen test-infrastructuur. Alle front-end-pagina's
+(home, login, register, dashboard, graph_viewer, reasoning, releases,
+wizard, license) zouden in productie zijn gecrasht zodra Starlette
+≥0.29 actief werd. Deze story heeft dus ook een echte gebruikersbug
+verholpen; geen alleen-testing-hygiëne.
+
+**CI**: `.github/workflows/ci.yml` pytest-step aangepast. De drie
+`--ignore`-flags uit S15-01 zijn verwijderd; CI draait nu de **volledige
+suite** (365 tests).
+
+### Acceptatiecriteria uit de story
+
+- [x] Root cause geïdentificeerd: verouderde Starlette-signature op
+  `TemplateResponse`
+- [x] Fix toegepast op **route-laag** (`app/main.py`), niet op
+  template-niveau — dat was het juiste niveau omdat álle routes het
+  probleem hadden
+- [x] 5 tests uit `test_sprint4.py` + `test_wizard_and_byok.py` groen
+  (plus 3 uit `test_api.py::TestPublicPages` die om dezelfde reden
+  faalden)
+- [x] Handmatige sanity-check niet apart uitgevoerd: de bestaande
+  tests dekken alle 9 betrokken pagina's al via
+  `test_api`/`test_sprint4`/`test_wizard_and_byok`; als die groen
+  zijn, zijn de pagina's in de browser ook groen
+- [x] Regressietest: de bestaande tests dekken precies de scenario's
+  waar de fout optrad. Aparte nieuwe test niet nodig.
+
+### Suite-eindstand
+
+**365 passed, 0 failed, 11 warnings** (de warnings zijn voornamelijk
+een sync test onder een async-gemarkeerde klasse — cosmetische
+follow-up, geen blocker).
 
 ## Probleem
 

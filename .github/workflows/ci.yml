@@ -71,13 +71,8 @@ jobs:
       - name: Stories-consistentie (full)
         run: python scripts/check_story_status.py --mode=full
 
-      - name: Pytest (volledige suite minus Jinja-pagina-tests)
-        # S15-01 heeft de async-testing-infra hersteld; de suite draait
-        # nu 357/365 groen. De 8 overgebleven failures zitten in drie
-        # bestanden die een Jinja2 `unhashable type: 'dict'`-bug raken
-        # (EPIC-15 S15-02). Zodra die story landt kan `--ignore` weg.
-        run: >
-          pytest -q
-          --ignore=tests/test_api.py
-          --ignore=tests/test_sprint4.py
-          --ignore=tests/test_wizard_and_byok.py
+      - name: Pytest (volledige suite)
+        # Na S15-02 draait de suite in zijn geheel groen; de
+        # Jinja2-`unhashable type: 'dict'`-bug (oude Starlette-signature
+        # op TemplateResponse) is verholpen in app/main.py.
+        run: pytest -q

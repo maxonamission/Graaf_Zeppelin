@@ -157,17 +157,17 @@ async def home(request: Request):
     user = _get_user_from_cookie(request)
     if user:
         return RedirectResponse(url="/dashboard")
-    return templates.TemplateResponse("home.html", _tpl_ctx(request))
+    return templates.TemplateResponse(request, "home.html", _tpl_ctx(request))
 
 
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
-    return templates.TemplateResponse("login.html", _tpl_ctx(request))
+    return templates.TemplateResponse(request, "login.html", _tpl_ctx(request))
 
 
 @app.get("/register", response_class=HTMLResponse)
 async def register_page(request: Request):
-    return templates.TemplateResponse("register.html", _tpl_ctx(request))
+    return templates.TemplateResponse(request, "register.html", _tpl_ctx(request))
 
 
 @app.get("/dashboard", response_class=HTMLResponse)
@@ -175,7 +175,7 @@ async def dashboard(request: Request):
     user = _get_user_from_cookie(request)
     if not user:
         return RedirectResponse(url="/login")
-    return templates.TemplateResponse("dashboard.html", _tpl_ctx(request, user=user))
+    return templates.TemplateResponse(request, "dashboard.html", _tpl_ctx(request, user=user))
 
 
 @app.get("/graph", response_class=HTMLResponse)
@@ -183,7 +183,7 @@ async def graph_page(request: Request):
     user = _get_user_from_cookie(request)
     if not user:
         return RedirectResponse(url="/login")
-    return templates.TemplateResponse("graph_viewer.html", _tpl_ctx(request, user=user))
+    return templates.TemplateResponse(request, "graph_viewer.html", _tpl_ctx(request, user=user))
 
 
 @app.get("/reasoning", response_class=HTMLResponse)
@@ -191,7 +191,7 @@ async def reasoning_page(request: Request):
     user = _get_user_from_cookie(request)
     if not user:
         return RedirectResponse(url="/login")
-    return templates.TemplateResponse("reasoning.html", _tpl_ctx(request, user=user))
+    return templates.TemplateResponse(request, "reasoning.html", _tpl_ctx(request, user=user))
 
 
 @app.get("/releases", response_class=HTMLResponse)
@@ -199,7 +199,7 @@ async def releases_page(request: Request):
     user = _get_user_from_cookie(request)
     if not user:
         return RedirectResponse(url="/login")
-    return templates.TemplateResponse("releases.html", _tpl_ctx(request, user=user))
+    return templates.TemplateResponse(request, "releases.html", _tpl_ctx(request, user=user))
 
 
 @app.get("/verkenner", response_class=HTMLResponse)
@@ -207,7 +207,7 @@ async def wizard_page(request: Request):
     user = _get_user_from_cookie(request)
     if not user:
         return RedirectResponse(url="/login")
-    return templates.TemplateResponse("wizard.html", _tpl_ctx(request, user=user))
+    return templates.TemplateResponse(request, "wizard.html", _tpl_ctx(request, user=user))
 
 
 @app.get("/license", response_class=HTMLResponse)
@@ -215,4 +215,4 @@ async def license_page(request: Request):
     user = _get_user_from_cookie(request)
     if not user:
         return RedirectResponse(url="/login")
-    return templates.TemplateResponse("license.html", _tpl_ctx(request, user=user))
+    return templates.TemplateResponse(request, "license.html", _tpl_ctx(request, user=user))
