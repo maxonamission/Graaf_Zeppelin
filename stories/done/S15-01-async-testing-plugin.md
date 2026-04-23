@@ -1,9 +1,68 @@
 # S15-01: async testing-plugin + fixtures herstellen
 
 **Epic:** EPIC-15 Testsuite-rehabilitatie
-**Status:** 🔲 Backlog
+**Status:** ✅ Done
 **Prioriteit:** HOOG
 **Bron:** Gevonden tijdens S14-01-validatie (2026-04-23)
+
+## Resultaat
+
+De testsuite gaat van **~80 collection-errors + failures** naar
+**357 passed, 8 failed** (alle 8 overgebleven failures zijn de
+Jinja2-`unhashable type: 'dict'`-bug uit S15-02, in 3 aparte files).
+pytest-asyncio-infrastructuur is volledig werkend.
+
+Concrete wijzigingen op deze branch:
+
+- **`pytest-asyncio>=0.23`** was al in `pyproject.toml`'s
+  `[project.optional-dependencies].dev` via S14-06; lokaal en in CI
+  wordt die nu meegepakt door `pip install -e ".[dev]"`.
+  `asyncio_mode = "auto"` in `[tool.pytest.ini_options]` doet nu wat
+  het moet doen — `PytestConfigWarning: Unknown config option:
+  asyncio_mode` is verdwenen, `PytestUnknownMarkWarning: Unknown
+  pytest.mark.asyncio` ook.
+- **`app/api/reasoning.py`** — `InterventionReasoningRequest.factor_id`
+  Pydantic-regex `^[a-zA-Z0-9_]+$` toegestaan geen dashes; S14-05
+  introduceerde IDs met dashes (`UIT-L0-001`), wat 422-respons gaf op
+  `/api/reasoning/intervene`. Pattern aangepast naar `^[A-Za-z0-9_-]+$`
+  — nog steeds een tight whitelist, maar compatibel met Vorm A-IDs.
+  Regressie uit S14-05, hier verholpen.
+- **`.github/workflows/ci.yml`** — pytest-step uitgebreid van
+  graph-subset naar **volledige suite minus drie Jinja-getroffen
+  bestanden** (`test_api.py`, `test_sprint4.py`, `test_wizard_and_byok.py`).
+  De `--ignore`-flags hebben een expliciete comment-verwijzing naar
+  S15-02; zodra die story landt kunnen de ignores weg en komt de hele
+  suite in CI.
+
+Acceptatiecriteria uit de story:
+
+- [x] `requirements.txt` / dev-deps bevatten `pytest-asyncio` (via
+  `pyproject.toml [project.optional-dependencies].dev` uit S14-06)
+- [x] Lokaal `pytest` met alleen `SECRET_KEY`/`DATABASE_URL` geeft 0
+  collection-errors en 0 "async not supported"-failures
+- [x] Resterende 8 failures zijn inhoudelijk (Jinja2-bug); vastgelegd
+  voor S15-02
+- [x] CI installeert de dep en draait schoon op een uitgebreide subset
+  (volle suite minus de 3 S15-02-bestanden)
+- [x] Warnings over `PytestUnknownMarkWarning` en over
+  `asyncio_mode` als onbekende config-optie zijn weg
+
+## Bevinding langs de weg
+
+Eén regressie uit S14-05 was zichtbaar geworden zodra de
+integration-tests weer draaiden: de input-regex op `factor_id` in de
+reasoning-API accepteerde geen dashes, terwijl de ID-migratie nou net
+dashes had geïntroduceerd. Zonder S15-01 was deze tegenstrijdigheid
+onzichtbaar gebleven tot een gebruiker met een echt nieuw ID langs een
+interventie-endpoint zou komen.
+
+## Niet gedaan (bewust)
+
+- **Jinja2-renderfout** in 5 pagina-tests + 3 publieke-page-tests — dat
+  is S15-02 en mogelijk ook productie-impact.
+- **11 resterende pytest-warnings**, voornamelijk een sync test onder
+  een async-gemarkeerde klasse (`test_role_enum_membership`). Klein,
+  niet-blokkerend; kan in een opruim-vervolg.
 
 ## Probleem
 

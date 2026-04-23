@@ -39,7 +39,10 @@ class ReasoningRequest(BaseModel):
 
 
 class InterventionReasoningRequest(BaseModel):
-    factor_id: str = Field(..., min_length=1, max_length=100, pattern=r"^[a-zA-Z0-9_]+$")
+    # S14-05: node-IDs bevatten dashes (bv. "UIT-L0-001"). Pattern geüpdatet
+    # naar `^[A-Z0-9_-]+$` — nog steeds een tight whitelist die path-traversal
+    # / injection afweert, maar verenigbaar met de Vorm A ID-conventie.
+    factor_id: str = Field(..., min_length=1, max_length=100, pattern=r"^[A-Za-z0-9_-]+$")
     change: float
     description: str = Field("", max_length=2000)
     provider: str = Field("openai", pattern=r"^(openai|anthropic)$")
