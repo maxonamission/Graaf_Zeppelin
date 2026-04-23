@@ -98,6 +98,12 @@ ignore_missing_imports = true
 module = "slowapi.*"
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+# defusedxml heeft optionele types-defusedxml stubs; we laten de stubs
+# onverplicht om de dev-dep-list klein te houden.
+module = "defusedxml.*"
+ignore_missing_imports = true
+
 [tool.pydantic-mypy]
 init_forbid_extra = true
 init_typed = true
