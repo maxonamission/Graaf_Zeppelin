@@ -238,3 +238,22 @@ S14-02 staat. S14-07 kan parallel (alleen docs).
 | [S14-05](backlog/S14-05-id-schema-herontwerp.md) | 🔲 Backlog | GEMIDDELD | ID-schema integrale migratie (GZ-05) |
 | [S14-06](backlog/S14-06-ontwikkelstraat.md) | 🔲 Backlog | GEMIDDELD | Ontwikkelstraat parallel aan Olympus: ruff, mypy, pre-commit, CI, hooks, stories (GZ-06) |
 | [S14-07](backlog/S14-07-schema-evolutie-doc.md) | 🔲 Backlog | LAAG | Schema-evolutie v1→v2 documenteren als methodologie-bijdrage (GZ-07) |
+
+---
+
+### EPIC-15: Testsuite-rehabilitatie 🔲
+
+Gevonden tijdens S14-01-validatie (2026-04-23): de testsuite heeft
+**één kernoorzaak** (`pytest-asyncio` niet geïnstalleerd) die ~80 errors +
+failures over 8 testbestanden verklaart, plus twee kleine nevenproblemen
+(een renderfout in vijf template-pagina's, en een ontbrekende
+`email-validator`-dependency). Dit staat volledig los van EPIC-14; S14-01
+raakt alleen `dag_engine.py` en `test_dag_engine.py`, en daar is alles
+groen. Maar zolang EPIC-15 niet loopt, geeft een volle `pytest`-run een
+misleidend rood beeld en is CI niet betrouwbaar.
+
+| Story | Status | Prioriteit | Beschrijving |
+|-------|--------|------------|-------------|
+| [S15-01](backlog/S15-01-async-testing-plugin.md) | 🔲 Backlog | HOOG | `pytest-asyncio` installeren; lost ~80 async-gerelateerde test-errors op |
+| [S15-02](backlog/S15-02-jinja2-template-render.md) | 🔲 Backlog | GEMIDDELD | Jinja2 `unhashable type: 'dict'` in 5 pagina-render-tests — mogelijk ook productie-impact |
+| [S15-03](backlog/S15-03-email-validator-dep.md) | 🔲 Backlog | LAAG | `email-validator` toevoegen als dep (wordt ook door S14-02 afgedekt) |
