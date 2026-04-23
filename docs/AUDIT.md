@@ -95,7 +95,7 @@ Dit is het **wetenschappelijk hart** van het project — een causaal model van s
 | Literatuurreferenties | 66 |
 | Edges met literatuur | 70 (61,4%) |
 | Cross-domein edges | 88 (80%) |
-| Hub-node | N018 — Intrinsieke motivatie (degree 16) |
+| Hub-node | PSY-L1-001 — Intrinsieke motivatie (degree 16) |
 
 #### Negen domeinen
 

@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.deps import get_current_user, get_dag
 from app.core.dag_engine import CausalDAG
 from app.core.license_manager import LicenseManager
-from app.core.slider_engine import apply_slider, simulate_sliders
+from app.core.slider_engine import simulate_sliders
 from app.db import get_db
 from app.models.user import User
 
@@ -158,9 +158,7 @@ async def list_relations(
 ):
     """List all causal relations, optionally filtered."""
     await _check_license(user, db)
-    relations = dag.get_all_relations(
-        cluster=cluster, polarity=polarity, edge_type=edge_type
-    )
+    relations = dag.get_all_relations(cluster=cluster, polarity=polarity, edge_type=edge_type)
     return {"relations": relations, "count": len(relations)}
 
 
@@ -197,9 +195,7 @@ async def simulate_intervention(
 
     info = dag.get_factor_info(request.factor_id)
     if not info:
-        raise HTTPException(
-            status_code=404, detail=f"Factor '{request.factor_id}' niet gevonden"
-        )
+        raise HTTPException(status_code=404, detail=f"Factor '{request.factor_id}' niet gevonden")
 
     effects = dag.simulate_intervention(request.factor_id, request.change)
 
@@ -255,11 +251,13 @@ async def get_relevant_qualifiers(
     for slider in relevant:
         qualifiers = slider.get("qualifiers", [])
         if qualifiers:
-            result.append({
-                "slider_id": slider["id"],
-                "slider_label": slider.get("label", ""),
-                "qualifiers": qualifiers,
-            })
+            result.append(
+                {
+                    "slider_id": slider["id"],
+                    "slider_label": slider.get("label", ""),
+                    "qualifiers": qualifiers,
+                }
+            )
     return {
         "factor_ids": ids,
         "sliders": result,
@@ -344,9 +342,7 @@ async def resolve_qualifiers(
                     status_code=422,
                     detail="Antwoordwaarden moeten tussen 0 en 1 liggen",
                 )
-        slider_values[response.slider_id] = round(
-            sum(response.answers) / len(response.answers), 4
-        )
+        slider_values[response.slider_id] = round(sum(response.answers) / len(response.answers), 4)
 
     return {
         "slider_values": slider_values,
@@ -375,13 +371,9 @@ async def simulate_slider_changes(
     for s in request.sliders:
         slider_def = dag.get_slider(s.id)
         if not slider_def:
-            raise HTTPException(
-                status_code=404, detail=f"Slider '{s.id}' niet gevonden"
-            )
+            raise HTTPException(status_code=404, detail=f"Slider '{s.id}' niet gevonden")
         if not 0.0 <= s.value <= 1.0:
-            raise HTTPException(
-                status_code=422, detail=f"Slider value must be between 0 and 1"
-            )
+            raise HTTPException(status_code=422, detail="Slider value must be between 0 and 1")
         slider_values[s.id] = s.value
 
     # Get all edges as dicts for the slider engine
@@ -417,9 +409,7 @@ async def export_simulation_markdown(
     for s in request.sliders:
         slider_def = dag.get_slider(s.id)
         if not slider_def:
-            raise HTTPException(
-                status_code=404, detail=f"Slider '{s.id}' niet gevonden"
-            )
+            raise HTTPException(status_code=404, detail=f"Slider '{s.id}' niet gevonden")
         slider_values[s.id] = s.value
         slider_labels[s.id] = slider_def.get("label", s.id)
 
@@ -430,29 +420,33 @@ async def export_simulation_markdown(
     summary = dag.get_graph_summary()
     lines = [
         f"# Simulatierapport — {summary['name']}",
-        f"",
+        "",
         f"**Model:** {summary['name']} v{summary['version']}  ",
         f"**Factoren:** {summary['num_factors']} | **Relaties:** {summary['num_relations']}",
-        f"",
-        f"## Sliderinstellingen",
-        f"",
-        f"| Slider | Waarde |",
-        f"|--------|--------|",
+        "",
+        "## Sliderinstellingen",
+        "",
+        "| Slider | Waarde |",
+        "|--------|--------|",
     ]
     for sid, val in slider_values.items():
         lines.append(f"| {slider_labels.get(sid, sid)} | {val:.2f} |")
 
-    lines.extend([
-        f"",
-        f"## Beïnvloede relaties ({len(effects)})",
-        f"",
-    ])
+    lines.extend(
+        [
+            "",
+            f"## Beïnvloede relaties ({len(effects)})",
+            "",
+        ]
+    )
 
     if effects:
-        lines.extend([
-            f"| Relatie | Origineel | Aangepast | Verschil |",
-            f"|---------|-----------|-----------|----------|",
-        ])
+        lines.extend(
+            [
+                "| Relatie | Origineel | Aangepast | Verschil |",
+                "|---------|-----------|-----------|----------|",
+            ]
+        )
         for e in effects:
             label = e.get("label", f"{e.get('cause', '?')} → {e.get('effect', '?')}")
             orig = e.get("original_weight", 0)
@@ -463,11 +457,13 @@ async def export_simulation_markdown(
     else:
         lines.append("Geen relaties beïnvloed door deze sliderinstellingen.")
 
-    lines.extend([
-        f"",
-        f"---",
-        f"*Gegenereerd door Graaf Zeppelin Beleidsverkenner*",
-    ])
+    lines.extend(
+        [
+            "",
+            "---",
+            "*Gegenereerd door Graaf Zeppelin Beleidsverkenner*",
+        ]
+    )
 
     markdown = "\n".join(lines)
 
@@ -476,9 +472,7 @@ async def export_simulation_markdown(
     return PlainTextResponse(
         content=markdown,
         media_type="text/markdown",
-        headers={
-            "Content-Disposition": "attachment; filename=simulatierapport.md"
-        },
+        headers={"Content-Disposition": "attachment; filename=simulatierapport.md"},
     )
 
 
@@ -492,6 +486,6 @@ async def _check_license(user: User, db: AsyncSession) -> None:
     lm = LicenseManager(db)
     try:
         await lm.validate_license(user.license_key)
-    except Exception:
+    except Exception as exc:
         logger.exception("Licentievalidatie mislukt voor gebruiker %s", user.id)
-        raise HTTPException(status_code=403, detail="Licentie is ongeldig of verlopen")
+        raise HTTPException(status_code=403, detail="Licentie is ongeldig of verlopen") from exc

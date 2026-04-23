@@ -39,9 +39,11 @@ async def license_info(
     lm = LicenseManager(db)
     try:
         info = await lm.get_license_info(user.license_key)
-    except Exception:
+    except Exception as exc:
         logger.exception("Licentie-info ophalen mislukt voor gebruiker %s", user.id)
-        raise HTTPException(status_code=400, detail="Kon licentie-informatie niet ophalen")
+        raise HTTPException(
+            status_code=400, detail="Kon licentie-informatie niet ophalen"
+        ) from exc
 
     return info
 
@@ -233,9 +235,8 @@ async def topup_credits(
         )
 
     from app.models.license import License
-    result = await db.execute(
-        select(License).where(License.key == user.license_key)
-    )
+
+    result = await db.execute(select(License).where(License.key == user.license_key))
     license_obj = result.scalar_one_or_none()
     if not license_obj:
         raise HTTPException(status_code=404, detail="Licentie niet gevonden")
@@ -273,9 +274,9 @@ async def credits_status(
     lm = LicenseManager(db)
     try:
         info = await lm.get_license_info(user.license_key)
-    except Exception:
+    except Exception as exc:
         logger.exception("Credit-status ophalen mislukt voor gebruiker %s", user.id)
-        raise HTTPException(status_code=400, detail="Kon credit-status niet ophalen")
+        raise HTTPException(status_code=400, detail="Kon credit-status niet ophalen") from exc
 
     used = info["queries_used"]
     limit = info["queries_limit"]

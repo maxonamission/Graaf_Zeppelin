@@ -11,12 +11,17 @@ Supports both v1 schema (factors/relations) and v2 schema
 from __future__ import annotations
 
 import json
-import math
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
 import networkx as nx
+
+# Edge-types whose collective subgraph must remain acyclic. FEEDBACK and
+# SOCIAL_REGULATORY edges are semantically cyclic (feedback loops, social
+# regulation) and are excluded from the acyclicity constraint — see
+# stories/done/S14-01-cycle-check-per-edge-type.md.
+ACYCLIC_EDGE_TYPES: frozenset[str] = frozenset({"STRUCTURAL", "MEDIATING", "MODERATOR"})
 
 # Mapping from v2 polarity strings to v1 direction strings (NL + EN — S12-05)
 _POLARITY_MAP = {
@@ -37,6 +42,45 @@ _STRENGTH_MAP = {
     "medium": 0.5,
     "weak": 0.2,
 }
+
+
+def _acyclic_subgraph(graph: nx.DiGraph) -> nx.DiGraph:
+    """Return the subgraph induced by edges whose edge_type is acyclic.
+
+    Edges without an ``edge_type`` attribute are treated as acyclic-constrained
+    (this preserves v1-schema behaviour, where the concept does not exist).
+    """
+    sub: nx.DiGraph = nx.DiGraph()
+    sub.add_nodes_from(graph.nodes(data=True))
+    for u, v, data in graph.edges(data=True):
+        edge_type = data.get("edge_type")
+        if edge_type is None or edge_type in ACYCLIC_EDGE_TYPES:
+            sub.add_edge(u, v, **data)
+    return sub
+
+
+def _assert_acyclic(graph: nx.DiGraph) -> None:
+    """Raise ValueError if the acyclic subgraph contains a cycle.
+
+    The error message names the edges in the offending cycle and their
+    ``edge_type`` values, to make debugging quick.
+    """
+    sub = _acyclic_subgraph(graph)
+    if nx.is_directed_acyclic_graph(sub):
+        return
+    cycles = list(nx.simple_cycles(sub))
+    if not cycles:
+        return
+    first = cycles[0]
+    pieces = []
+    for i, u in enumerate(first):
+        v = first[(i + 1) % len(first)]
+        etype = sub.edges[u, v].get("edge_type", "<no edge_type>")
+        pieces.append(f"{u}→{v} [{etype}]")
+    raise ValueError(
+        "Cycle detected among acyclic edge types "
+        f"{sorted(ACYCLIC_EDGE_TYPES)}: " + " → ".join(pieces)
+    )
 
 
 class CausalDAG:
@@ -61,26 +105,26 @@ class CausalDAG:
     @property
     def domain_name(self) -> str:
         """Domain display name from metadata, fallback to project name."""
-        return self.metadata.get("domain_name", self.name)
+        return str(self.metadata.get("domain_name", self.name))
 
     @property
     def example_questions(self) -> dict[str, list[str]]:
         """Example questions per context (reasoning/wizard), or empty arrays."""
         eq = self.metadata.get("example_questions", {})
         return {
-            "reasoning": eq.get("reasoning", []),
-            "wizard": eq.get("wizard", []),
+            "reasoning": list(eq.get("reasoning", [])),
+            "wizard": list(eq.get("wizard", [])),
         }
 
     @property
     def persona(self) -> str:
         """AI persona from metadata, or generic fallback."""
-        return self.metadata.get("persona", "beleidsadviseur")
+        return str(self.metadata.get("persona", "beleidsadviseur"))
 
     @property
     def language(self) -> str:
         """Language code from metadata, default 'nl'."""
-        return self.metadata.get("language", "nl")
+        return str(self.metadata.get("language", "nl"))
 
     # ── Node operations ──────────────────────────────────────────────────
 
@@ -140,12 +184,16 @@ class CausalDAG:
             **attrs,
         )
 
-        # Validate DAG property (no cycles) — only for v1 models
-        if check_dag and not nx.is_directed_acyclic_graph(self.graph):
-            self.graph.remove_edge(cause, effect)
-            raise ValueError(
-                f"Adding relation {cause} → {effect} would create a cycle"
-            )
+        # Validate acyclicity on the subgraph of acyclic edge-types only.
+        # Edges without an edge_type (v1 schema) are treated as acyclic-constrained.
+        if check_dag:
+            try:
+                _assert_acyclic(self.graph)
+            except ValueError as exc:
+                self.graph.remove_edge(cause, effect)
+                raise ValueError(
+                    f"Adding relation {cause} → {effect} would create a cycle: {exc}"
+                ) from None
 
     def add_moderator(
         self,
@@ -154,10 +202,12 @@ class CausalDAG:
         **attrs: Any,
     ) -> None:
         """Register a moderator relationship (node → edge)."""
-        self.moderators[edge_id].append({
-            "moderator_node": moderator_node,
-            **attrs,
-        })
+        self.moderators[edge_id].append(
+            {
+                "moderator_node": moderator_node,
+                **attrs,
+            }
+        )
 
     # ── Query: nodes ─────────────────────────────────────────────────────
 
@@ -189,24 +239,20 @@ class CausalDAG:
             )
         return effects
 
-    def get_causal_paths(
-        self, source: str, target: str, max_length: int = 5
-    ) -> list[list[str]]:
+    def get_causal_paths(self, source: str, target: str, max_length: int = 5) -> list[list[str]]:
         """Find all causal paths from source to target."""
         try:
-            return list(
-                nx.all_simple_paths(self.graph, source, target, cutoff=max_length)
-            )
+            return list(nx.all_simple_paths(self.graph, source, target, cutoff=max_length))
         except nx.NetworkXError:
             return []
 
     def get_ancestors(self, factor_id: str) -> set[str]:
         """Get all upstream factors (transitive causes)."""
-        return nx.ancestors(self.graph, factor_id)
+        return set(nx.ancestors(self.graph, factor_id))
 
     def get_descendants(self, factor_id: str) -> set[str]:
         """Get all downstream factors (transitive effects)."""
-        return nx.descendants(self.graph, factor_id)
+        return set(nx.descendants(self.graph, factor_id))
 
     def get_factor_info(self, factor_id: str) -> dict[str, Any] | None:
         """Get full information about a factor including moderators."""
@@ -228,10 +274,12 @@ class CausalDAG:
             for edge_id, mods in self.moderators.items():
                 for mod in mods:
                     if mod["moderator_node"] == factor_id:
-                        moderated_edges.append({
-                            "edge_id": edge_id,
-                            **mod,
-                        })
+                        moderated_edges.append(
+                            {
+                                "edge_id": edge_id,
+                                **mod,
+                            }
+                        )
             if moderated_edges:
                 info["moderates_edges"] = moderated_edges
 
@@ -307,7 +355,8 @@ class CausalDAG:
         slider = self.get_slider(slider_id)
         if not slider:
             return None
-        return slider.get("qualifiers", [])
+        qualifiers = slider.get("qualifiers", [])
+        return list(qualifiers) if qualifiers else []
 
     def get_relevant_sliders(self, factor_ids: list[str]) -> list[dict[str, Any]]:
         """Find sliders that are relevant for the given factors.
@@ -352,9 +401,7 @@ class CausalDAG:
 
     # ── Simulation ───────────────────────────────────────────────────────
 
-    def simulate_intervention(
-        self, factor_id: str, change: float
-    ) -> list[dict[str, Any]]:
+    def simulate_intervention(self, factor_id: str, change: float) -> list[dict[str, Any]]:
         """Simulate what happens when a factor changes.
 
         Returns a list of affected factors with estimated impact,
@@ -380,7 +427,7 @@ class CausalDAG:
                     direction_multiplier = 1.0  # variable/unknown
                 impact = current_impact * strength * direction_multiplier
 
-                new_path = path + [successor]
+                new_path = [*path, successor]
                 affected.append(
                     {
                         "factor": successor,
@@ -401,9 +448,7 @@ class CausalDAG:
 
     # ── Factor search ─────────────────────────────────────────────────────
 
-    def find_relevant_factors(
-        self, query: str, max_results: int = 10
-    ) -> list[dict[str, Any]]:
+    def find_relevant_factors(self, query: str, max_results: int = 10) -> list[dict[str, Any]]:
         """Find factors relevant to a natural-language query.
 
         Uses keyword matching against factor labels, definitions, and domains.
@@ -419,19 +464,14 @@ class CausalDAG:
         for node_id in self.graph.nodes:
             attrs = self.graph.nodes[node_id]
             # S12-01: dynamically search all string-valued attributes
-            searchable = " ".join(
-                str(v) for v in attrs.values() if isinstance(v, str)
-            ).lower()
+            searchable = " ".join(str(v) for v in attrs.values() if isinstance(v, str)).lower()
 
             score = sum(1 for t in terms if t in searchable)
             if score > 0:
                 scored.append((score, node_id, attrs))
 
         scored.sort(key=lambda x: x[0], reverse=True)
-        return [
-            {"id": node_id, **attrs}
-            for _, node_id, attrs in scored[:max_results]
-        ]
+        return [{"id": node_id, **attrs} for _, node_id, attrs in scored[:max_results]]
 
     # ── Response validation ───────────────────────────────────────────────
 
@@ -446,11 +486,13 @@ class CausalDAG:
         for node_id in self.graph.nodes:
             label = self.graph.nodes[node_id].get("label", "")
             if label and label.lower() in text_lower:
-                recognized.append({
-                    "id": node_id,
-                    "label": label,
-                    "domain": self.graph.nodes[node_id].get("domain", ""),
-                })
+                recognized.append(
+                    {
+                        "id": node_id,
+                        "label": label,
+                        "domain": self.graph.nodes[node_id].get("domain", ""),
+                    }
+                )
         return {
             "recognized_factors": recognized,
             "recognized_count": len(recognized),
@@ -467,20 +509,14 @@ class CausalDAG:
             "description": self.description,
             "num_factors": self.graph.number_of_nodes(),
             "num_relations": self.graph.number_of_edges(),
-            "root_factors": [
-                n for n in self.graph.nodes if self.graph.in_degree(n) == 0
-            ],
-            "leaf_factors": [
-                n for n in self.graph.nodes if self.graph.out_degree(n) == 0
-            ],
+            "root_factors": [n for n in self.graph.nodes if self.graph.in_degree(n) == 0],
+            "leaf_factors": [n for n in self.graph.nodes if self.graph.out_degree(n) == 0],
         }
 
         if self._schema_version >= 2:
             summary["domains"] = self.get_domains()
             summary["num_sliders"] = len(self.sliders)
-            summary["num_moderators"] = sum(
-                len(mods) for mods in self.moderators.values()
-            )
+            summary["num_moderators"] = sum(len(mods) for mods in self.moderators.values())
             if self.metadata.get("graph_metrics"):
                 summary["graph_metrics"] = self.metadata["graph_metrics"]
 
@@ -494,26 +530,28 @@ class CausalDAG:
             "name": self.name,
             "version": self.version,
             "description": self.description,
-            "factors": [
-                {"id": n, **self.graph.nodes[n]} for n in self.graph.nodes
-            ],
+            "factors": [{"id": n, **self.graph.nodes[n]} for n in self.graph.nodes],
             "relations": [
-                {"cause": u, "effect": v, **d}
-                for u, v, d in self.graph.edges(data=True)
+                {"cause": u, "effect": v, **d} for u, v, d in self.graph.edges(data=True)
             ],
         }
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> CausalDAG:
-        """Deserialize a graph from a dictionary. Auto-detects v1 vs v2 schema."""
+    def from_dict(cls, data: dict[str, Any], *, strict: bool = True) -> CausalDAG:
+        """Deserialize a graph from a dictionary. Auto-detects v1 vs v2 schema.
+
+        When ``strict`` is False, acyclicity enforcement is skipped. Intended
+        for the validation module (S14-04) which wants to report all
+        invariant violations at once instead of aborting on the first cycle.
+        """
         is_v2 = "nodes" in data and "edges" in data
 
         if is_v2:
-            return cls._from_dict_v2(data)
-        return cls._from_dict_v1(data)
+            return cls._from_dict_v2(data, strict=strict)
+        return cls._from_dict_v1(data, strict=strict)
 
     @classmethod
-    def _from_dict_v1(cls, data: dict[str, Any]) -> CausalDAG:
+    def _from_dict_v1(cls, data: dict[str, Any], *, strict: bool = True) -> CausalDAG:
         """Load v1 schema (factors/relations)."""
         dag = cls(
             name=data["name"],
@@ -531,13 +569,21 @@ class CausalDAG:
             relation = dict(relation)
             cause = relation.pop("cause")
             effect = relation.pop("effect")
-            dag.add_relation(cause, effect, **relation)
+            dag.add_relation(cause, effect, check_dag=strict, **relation)
 
         return dag
 
     @classmethod
-    def _from_dict_v2(cls, data: dict[str, Any]) -> CausalDAG:
+    def _from_dict_v2(cls, data: dict[str, Any], *, strict: bool = True) -> CausalDAG:
         """Load v2 schema (nodes/edges/sliders with domains, moderators, etc.)."""
+        if strict:
+            # Pydantic validation catches enum, range and dangling-reference
+            # issues before we build the NetworkX graph. S14-02 introduces
+            # this; the model lives in app.core.graph_models.Graph.
+            from app.core.graph_models import Graph as _Graph
+
+            _Graph.model_validate(data)
+
         meta = data.get("metadata", {})
         summary = meta.get("summary", {})
 
@@ -569,19 +615,21 @@ class CausalDAG:
 
             if target_type == "edge":
                 # Moderator edge: store separately
-                dag.moderators[edge["target"]].append({
-                    "id": edge.get("id", ""),
-                    "moderator_node": edge["source"],
-                    "moderator_label": edge.get("source_label", ""),
-                    "target_edge": edge["target"],
-                    "target_label": edge.get("target_label", ""),
-                    "mechanism": edge.get("mechanism", ""),
-                    "strength": _STRENGTH_MAP.get(
-                        edge.get("strength", ""), edge.get("base_weight", 0.5)
-                    ),
-                    "polarity": edge.get("polarity", ""),
-                    "literature": edge.get("literature", []),
-                })
+                dag.moderators[edge["target"]].append(
+                    {
+                        "id": edge.get("id", ""),
+                        "moderator_node": edge["source"],
+                        "moderator_label": edge.get("source_label", ""),
+                        "target_edge": edge["target"],
+                        "target_label": edge.get("target_label", ""),
+                        "mechanism": edge.get("mechanism", ""),
+                        "strength": _STRENGTH_MAP.get(
+                            edge.get("strength", ""), edge.get("base_weight", 0.5)
+                        ),
+                        "polarity": edge.get("polarity", ""),
+                        "literature": edge.get("literature", []),
+                    }
+                )
                 continue
 
             source = edge.pop("source")
@@ -596,9 +644,13 @@ class CausalDAG:
             direction = _POLARITY_MAP.get(polarity, "positive")  # graceful fallback
 
             # Use base_weight as numeric strength, fall back to label mapping
-            strength = edge.get("base_weight", _STRENGTH_MAP.get(
-                edge.get("strength", ""), 0.5  # graceful fallback
-            ))
+            strength = edge.get(
+                "base_weight",
+                _STRENGTH_MAP.get(
+                    edge.get("strength", ""),
+                    0.5,  # graceful fallback
+                ),
+            )
 
             # Set computed fields, keep all original fields as-is
             edge["direction"] = direction
@@ -610,6 +662,11 @@ class CausalDAG:
 
         # Load sliders
         dag.sliders = data.get("sliders", [])
+
+        # Enforce acyclicity on the subgraph of acyclic edge-types.
+        # FEEDBACK and SOCIAL_REGULATORY edges may form cycles by design.
+        if strict:
+            _assert_acyclic(dag.graph)
 
         return dag
 

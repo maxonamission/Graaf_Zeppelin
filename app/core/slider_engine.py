@@ -130,26 +130,25 @@ def apply_slider(
 
         original_strength = edge.get("strength", 0.5)
         # Relative change from default position
-        if default_multiplier > 0:
-            relative_change = multiplier / default_multiplier
-        else:
-            relative_change = multiplier
+        relative_change = multiplier / default_multiplier if default_multiplier > 0 else multiplier
 
         # Blend: full sensitivity means full multiplier effect
         blended = 1.0 + sens_weight * (relative_change - 1.0)
         adjusted_strength = max(0.0, min(1.0, original_strength * blended))
 
-        results.append({
-            "edge_id": edge.get("id", ""),
-            "source": edge.get("cause", edge.get("source", "")),
-            "target": edge.get("effect", edge.get("target", "")),
-            "source_label": edge.get("source_label", ""),
-            "target_label": edge.get("target_label", ""),
-            "original_strength": original_strength,
-            "adjusted_strength": round(adjusted_strength, 4),
-            "sensitivity": sens_level,
-            "multiplier": round(blended, 4),
-        })
+        results.append(
+            {
+                "edge_id": edge.get("id", ""),
+                "source": edge.get("cause", edge.get("source", "")),
+                "target": edge.get("effect", edge.get("target", "")),
+                "source_label": edge.get("source_label", ""),
+                "target_label": edge.get("target_label", ""),
+                "original_strength": original_strength,
+                "adjusted_strength": round(adjusted_strength, 4),
+                "sensitivity": sens_level,
+                "multiplier": round(blended, 4),
+            }
+        )
 
     results.sort(key=lambda x: abs(x["adjusted_strength"] - x["original_strength"]), reverse=True)
     return results
@@ -191,17 +190,21 @@ def simulate_sliders(
             else:
                 # Multiply adjustments
                 prev = combined[eid]["adjusted_strength"]
-                ratio = result["adjusted_strength"] / result["original_strength"] if result["original_strength"] > 0 else 1.0
-                combined[eid]["adjusted_strength"] = round(
-                    max(0.0, min(1.0, prev * ratio)), 4
+                ratio = (
+                    result["adjusted_strength"] / result["original_strength"]
+                    if result["original_strength"] > 0
+                    else 1.0
                 )
+                combined[eid]["adjusted_strength"] = round(max(0.0, min(1.0, prev * ratio)), 4)
 
-            combined[eid]["applied_sliders"].append({
-                "slider_id": sid,
-                "slider_label": slider.get("label", ""),
-                "value": value,
-                "individual_multiplier": result["multiplier"],
-            })
+            combined[eid]["applied_sliders"].append(
+                {
+                    "slider_id": sid,
+                    "slider_label": slider.get("label", ""),
+                    "value": value,
+                    "individual_multiplier": result["multiplier"],
+                }
+            )
 
     results = list(combined.values())
     results.sort(key=lambda x: abs(x["adjusted_strength"] - x["original_strength"]), reverse=True)

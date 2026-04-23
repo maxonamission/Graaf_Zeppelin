@@ -11,7 +11,6 @@ from typing import Any
 
 from app.core.dag_engine import CausalDAG
 
-
 SYSTEM_PROMPT_TEMPLATE = """Je bent een {persona} en causale redeneerassistent voor het domein {domain_name}.
 Je redeneert UITSLUITEND op basis van het causale model dat je krijgt aangeleverd.
 Je verzint geen nieuwe causale relaties. Je geeft aan als het model onvoldoende
@@ -157,9 +156,10 @@ class PromptBuilder:
         if not slider:
             raise ValueError(f"Slider '{slider_id}' not found in the model")
 
-        evidence = "\n".join(
-            f"  - {e}" for e in slider.get("evidence", [])
-        ) or "  Geen bronnen beschikbaar."
+        evidence = (
+            "\n".join(f"  - {e}" for e in slider.get("evidence", []))
+            or "  Geen bronnen beschikbaar."
+        )
 
         return SLIDER_TEMPLATE.format(
             slider_label=slider.get("label", ""),
@@ -299,7 +299,9 @@ class PromptBuilder:
         if sliders:
             lines.append(f"\nBeleidsinstrumenten ({len(sliders)} sliders):")
             for s in sliders:
-                lines.append(f"  - {s.get('label', '')} ({s.get('id', '')}): {s.get('definition', '')[:80]}")
+                lines.append(
+                    f"  - {s.get('label', '')} ({s.get('id', '')}): {s.get('definition', '')[:80]}"
+                )
 
         return "\n".join(lines)
 

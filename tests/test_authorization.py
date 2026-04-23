@@ -2,17 +2,15 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import pytest
 from httpx import ASGITransport, AsyncClient
-from sqlalchemy import select
 
 from app.core.auth import create_access_token, hash_password
 from app.db import async_session, engine
 from app.main import app
 from app.models.base import Base
-from app.models.conversation import Conversation
 from app.models.license import License
 from app.models.user import User, UserRole
 
@@ -37,7 +35,7 @@ async def setup_db():
 
 async def _create_user(email: str, role: str = "user") -> str:
     """Create a user and return a JWT token."""
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     async with async_session() as session:
         lic = License(
             key=f"GZ-AUTH-{email[:5]}",
@@ -68,9 +66,7 @@ class TestRoleBasedAccess:
 
     async def test_switch_model_requires_admin(self):
         token = await _create_user("regular@test.nl", role="user")
-        async with AsyncClient(
-            transport=ASGITransport(app=app), base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             res = await client.post(
                 "/api/models/switch",
                 json={"model_id": "sportdeelname_graph"},
@@ -80,9 +76,7 @@ class TestRoleBasedAccess:
 
     async def test_switch_model_allowed_for_admin(self):
         token = await _create_user("admin@test.nl", role="admin")
-        async with AsyncClient(
-            transport=ASGITransport(app=app), base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             res = await client.post(
                 "/api/models/switch",
                 json={"model_id": "sportdeelname_graph"},
@@ -92,9 +86,7 @@ class TestRoleBasedAccess:
 
     async def test_credits_topup_requires_admin(self):
         token = await _create_user("user2@test.nl", role="user")
-        async with AsyncClient(
-            transport=ASGITransport(app=app), base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             res = await client.post(
                 "/api/license/credits/topup",
                 json={"amount": 10},
@@ -104,9 +96,7 @@ class TestRoleBasedAccess:
 
     async def test_credits_topup_allowed_for_admin(self):
         token = await _create_user("admin2@test.nl", role="admin")
-        async with AsyncClient(
-            transport=ASGITransport(app=app), base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             res = await client.post(
                 "/api/license/credits/topup",
                 json={"amount": 10},
@@ -123,9 +113,7 @@ class TestResourceIsolation:
         token_a = await _create_user("alice@test.nl")
         token_b = await _create_user("bob@test.nl")
 
-        async with AsyncClient(
-            transport=ASGITransport(app=app), base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             # Alice creates a conversation
             res = await client.post(
                 "/api/conversations",
@@ -146,9 +134,7 @@ class TestResourceIsolation:
         token_a = await _create_user("alice2@test.nl")
         token_b = await _create_user("bob2@test.nl")
 
-        async with AsyncClient(
-            transport=ASGITransport(app=app), base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             res = await client.post(
                 "/api/conversations",
                 json={"title": "Private"},
@@ -171,9 +157,7 @@ class TestConversationUUIDs:
         import uuid
 
         token = await _create_user("uuidtest@test.nl")
-        async with AsyncClient(
-            transport=ASGITransport(app=app), base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             res = await client.post(
                 "/api/conversations",
                 json={"title": "UUID test"},

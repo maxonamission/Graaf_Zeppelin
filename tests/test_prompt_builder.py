@@ -30,9 +30,7 @@ class TestPromptBuilder:
     def test_query_prompt_with_factors(self):
         dag = make_test_dag()
         builder = PromptBuilder(dag)
-        prompt = builder.build_query_prompt(
-            "Wat is de rol van coaching?", factor_ids=["coaching"]
-        )
+        prompt = builder.build_query_prompt("Wat is de rol van coaching?", factor_ids=["coaching"])
         assert "Coaching" in prompt
         assert "Motivatie" in prompt  # coaching affects motivatie
 

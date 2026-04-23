@@ -49,29 +49,33 @@ async def list_models(
 
             if is_v2:
                 summary = meta.get("summary", {})
-                models.append({
-                    "id": path.stem,
-                    "filename": path.name,
-                    "name": meta.get("project", path.stem),
-                    "version": meta.get("version", "?"),
-                    "description": summary.get("description", ""),
-                    "num_factors": len(data.get("nodes", [])),
-                    "num_relations": len(data.get("edges", [])),
-                    "num_sliders": len(data.get("sliders", [])),
-                    "schema": "v2",
-                })
+                models.append(
+                    {
+                        "id": path.stem,
+                        "filename": path.name,
+                        "name": meta.get("project", path.stem),
+                        "version": meta.get("version", "?"),
+                        "description": summary.get("description", ""),
+                        "num_factors": len(data.get("nodes", [])),
+                        "num_relations": len(data.get("edges", [])),
+                        "num_sliders": len(data.get("sliders", [])),
+                        "schema": "v2",
+                    }
+                )
             else:
-                models.append({
-                    "id": path.stem,
-                    "filename": path.name,
-                    "name": data.get("name", path.stem),
-                    "version": data.get("version", "?"),
-                    "description": data.get("description", ""),
-                    "num_factors": len(data.get("factors", [])),
-                    "num_relations": len(data.get("relations", [])),
-                    "num_sliders": 0,
-                    "schema": "v1",
-                })
+                models.append(
+                    {
+                        "id": path.stem,
+                        "filename": path.name,
+                        "name": data.get("name", path.stem),
+                        "version": data.get("version", "?"),
+                        "description": data.get("description", ""),
+                        "num_factors": len(data.get("factors", [])),
+                        "num_relations": len(data.get("relations", [])),
+                        "num_sliders": 0,
+                        "schema": "v1",
+                    }
+                )
         except (json.JSONDecodeError, KeyError):
             continue
 
@@ -83,10 +87,10 @@ async def current_model(
     user: User = Depends(get_current_user),
 ):
     """Get the currently active model ID and summary."""
-    from fastapi import Request
 
     # Get the DAG from app state
     from app.main import app
+
     dag: CausalDAG = getattr(app.state, "dag", None)
     if not dag:
         raise HTTPException(status_code=503, detail="Model niet geladen")
@@ -124,14 +128,15 @@ async def switch_model(
 
     try:
         new_dag = CausalDAG.load(str(model_path))
-    except Exception:
+    except Exception as exc:
         raise HTTPException(
             status_code=500,
             detail="Kon model niet laden",
-        )
+        ) from exc
 
     # Update app state
     from app.main import app
+
     app.state.dag = new_dag
 
     # Update config to reflect new active model

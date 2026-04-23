@@ -10,7 +10,7 @@ import hashlib
 import hmac
 import json
 import secrets
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import bcrypt
 
@@ -77,7 +77,7 @@ def _b64url_decode(s: str) -> bytes:
 def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
     """Create a JWT access token using HS256."""
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + (
+    expire = datetime.now(UTC) + (
         expires_delta or timedelta(minutes=settings.access_token_expire_minutes)
     )
     to_encode["exp"] = int(expire.timestamp())
@@ -126,7 +126,7 @@ def decode_access_token(token: str) -> dict | None:
 
         # Check expiration
         exp = payload.get("exp")
-        if exp and datetime.now(timezone.utc).timestamp() > exp:
+        if exp and datetime.now(UTC).timestamp() > exp:
             return None
 
         return payload

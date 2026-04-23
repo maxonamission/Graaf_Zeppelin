@@ -19,14 +19,20 @@ import asyncio
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from app.models.base import Base
-
 # Import all models to register metadata
 from app.models import DailyUsage, License, Release, User, UserApiKey  # noqa: F401
+from app.models.base import Base
 from app.models.conversation import Conversation, Message  # noqa: F401
 
-TABLES = ["licenses", "users", "releases", "conversations", "messages",
-          "daily_usage", "user_api_keys"]
+TABLES = [
+    "licenses",
+    "users",
+    "releases",
+    "conversations",
+    "messages",
+    "daily_usage",
+    "user_api_keys",
+]
 
 
 async def migrate(sqlite_url: str, pg_url: str) -> None:

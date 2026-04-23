@@ -1,6 +1,6 @@
 """Tests for the LicenseManager — license creation, validation, and quota enforcement."""
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -12,7 +12,6 @@ from app.core.license_manager import (
     LicenseTier,
 )
 from app.models.base import Base
-from app.models.license import License
 from app.models.user import User
 
 
@@ -103,7 +102,7 @@ class TestLicenseValidation:
         lm = LicenseManager(db_session)
         lic = await lm.create_license("Org", LicenseTier.BASIS, valid_days=0)
         # Force expiry in the past
-        lic.expires_at = datetime.now(timezone.utc) - timedelta(days=1)
+        lic.expires_at = datetime.now(UTC) - timedelta(days=1)
         await db_session.commit()
 
         with pytest.raises(LicenseError, match="verlopen"):

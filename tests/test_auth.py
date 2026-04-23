@@ -2,8 +2,6 @@
 
 import time
 
-import pytest
-
 from app.core.auth import (
     create_access_token,
     decode_access_token,

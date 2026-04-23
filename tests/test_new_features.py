@@ -1,6 +1,6 @@
 """Tests for new features: factor search, response validation, conversations, export."""
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -34,7 +34,7 @@ async def _create_auth_cookies():
     """Helper: create license + user + stored key, return auth cookies."""
     stored_key_id = None
     async with async_session() as session:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         lic = License(
             key="GZ-FEAT-TEST",
             organization="Feature Org",
@@ -82,7 +82,7 @@ class TestFactorSearch:
         assert len(results) > 0
         # Should find factors with "deelname" in label or definition
         labels = [r["label"].lower() for r in results]
-        assert any("deelname" in l for l in labels)
+        assert any("deelname" in label for label in labels)
 
     def test_find_factors_no_match(self):
         dag = app.state.dag
@@ -109,21 +109,15 @@ class TestFactorSearchAPI:
             base_url="http://test",
             cookies=cookies,
         ) as client:
-            response = await client.get(
-                "/api/graph/factors/search", params={"q": "deelname"}
-            )
+            response = await client.get("/api/graph/factors/search", params={"q": "deelname"})
             assert response.status_code == 200
             data = response.json()
             assert "factors" in data
             assert data["count"] > 0
 
     async def test_search_requires_auth(self):
-        async with AsyncClient(
-            transport=ASGITransport(app=app), base_url="http://test"
-        ) as client:
-            response = await client.get(
-                "/api/graph/factors/search", params={"q": "test"}
-            )
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            response = await client.get("/api/graph/factors/search", params={"q": "test"})
             assert response.status_code == 401
 
 
@@ -136,9 +130,7 @@ class TestResponseValidation:
         # Get some actual factor labels
         factors = dag.get_all_factors()
         label = factors[0]["label"]
-        result = dag.validate_response_factors(
-            f"De factor {label} heeft een groot effect."
-        )
+        result = dag.validate_response_factors(f"De factor {label} heeft een groot effect.")
         assert result["recognized_count"] >= 1
         assert any(f["label"] == label for f in result["recognized_factors"])
 
@@ -204,7 +196,7 @@ class TestConversations:
                 json={"title": "Testgesprek"},
             )
             assert res.status_code == 200
-            conv_id = res.json()["id"]
+            assert "id" in res.json()
 
             # List
             list_res = await client.get("/api/conversations")
@@ -277,9 +269,7 @@ class TestConversations:
             assert res.status_code == 404
 
     async def test_conversations_require_auth(self):
-        async with AsyncClient(
-            transport=ASGITransport(app=app), base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             res = await client.get("/api/conversations")
             assert res.status_code == 401
 
@@ -314,9 +304,7 @@ class TestExport:
             assert "Sliderinstellingen" in body
 
     async def test_export_requires_auth(self):
-        async with AsyncClient(
-            transport=ASGITransport(app=app), base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.post(
                 "/api/graph/export/markdown",
                 json={"sliders": [{"id": "test", "value": 0.5}]},

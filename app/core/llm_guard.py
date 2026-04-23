@@ -24,7 +24,9 @@ _logger = logging.getLogger(__name__)
 
 # ── Pattern loading ──────────────────────────────────────────────────────
 
-_DEFAULT_PATTERNS_PATH = Path(__file__).resolve().parent.parent.parent / "data" / "llm_guard_patterns.json"
+_DEFAULT_PATTERNS_PATH = (
+    Path(__file__).resolve().parent.parent.parent / "data" / "llm_guard_patterns.json"
+)
 
 # Built-in fallback — used only when the JSON file cannot be loaded.
 _FALLBACK_INJECTION = [
@@ -69,7 +71,9 @@ def _compile_patterns(raw: list[str]) -> list[re.Pattern[str]]:
     return compiled
 
 
-def _load_patterns(path: Path | None = None) -> tuple[list[re.Pattern[str]], list[re.Pattern[str]], dict[str, Any]]:
+def _load_patterns(
+    path: Path | None = None,
+) -> tuple[list[re.Pattern[str]], list[re.Pattern[str]], dict[str, Any]]:
     """Load patterns from JSON, returning (injection, leakage, raw_data).
 
     Falls back to built-in patterns on any error.
@@ -81,13 +85,16 @@ def _load_patterns(path: Path | None = None) -> tuple[list[re.Pattern[str]], lis
         leakage_raw = [p["pattern"] for p in data.get("leakage_patterns", [])]
         _logger.info(
             "LLM Guard: %d injection + %d leakage patronen geladen uit %s",
-            len(injection_raw), len(leakage_raw), path,
+            len(injection_raw),
+            len(leakage_raw),
+            path,
         )
         return _compile_patterns(injection_raw), _compile_patterns(leakage_raw), data
     except Exception as exc:
         _logger.warning(
             "LLM Guard: kan %s niet laden (%s), fallback naar ingebouwde patronen",
-            path, exc,
+            path,
+            exc,
         )
         return (
             _compile_patterns(_FALLBACK_INJECTION),
@@ -105,7 +112,7 @@ _INJECTION_PATTERNS, _LEAKAGE_PATTERNS, _PATTERNS_DATA = _load_patterns()
 
 def reload_patterns(path: Path | None = None) -> dict[str, int]:
     """Reload patterns from disk.  Returns counts for confirmation."""
-    global _INJECTION_PATTERNS, _LEAKAGE_PATTERNS, _PATTERNS_DATA  # noqa: PLW0603
+    global _INJECTION_PATTERNS, _LEAKAGE_PATTERNS, _PATTERNS_DATA
     _INJECTION_PATTERNS, _LEAKAGE_PATTERNS, _PATTERNS_DATA = _load_patterns(path)
     return {
         "injection_patterns": len(_INJECTION_PATTERNS),

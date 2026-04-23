@@ -1,0 +1,48 @@
+# Pre-commit hooks voor Graaf Zeppelin (S14-06).
+# Installeer met:  pip install -e ".[dev]" && pre-commit install
+# Handmatig:       pre-commit run --all-files
+
+repos:
+  # Generieke file-hygiene hooks.
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: '\.md$'  # Markdown mag trailing whitespace voor line-breaks
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+        exclude: '^data/'  # graph-JSONs zijn groot; valideren elders
+      - id: check-added-large-files
+        args: ['--maxkb=2000']
+      - id: detect-private-key
+      - id: check-merge-conflict
+
+  # Ruff: lint + format. Config komt uit pyproject.toml.
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.0
+    hooks:
+      - id: ruff-check
+        args: ['--fix']
+      - id: ruff-format
+
+  # Mypy + story-status: local hooks zodat ze de project-venv gebruiken.
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy (strict op app/core/)
+        # Narrow scope naar de EPIC-14-modules zolang de oudere code (auth,
+        # audit, slider_engine, llm_connector, license_manager) nog niet
+        # strict-compliant is. Zie S14-06 "Vervolg" in de done-story.
+        entry: mypy app/core/dag_engine.py app/core/id_schema.py app/core/validation.py app/core/graph_models.py app/core/graph_io.py
+        language: system
+        pass_filenames: false
+        types: [python]
+
+      - id: story-status
+        name: stories/-consistentie (staged)
+        entry: python scripts/check_story_status.py --mode=staged
+        language: system
+        pass_filenames: false
+        files: ^stories/

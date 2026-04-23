@@ -197,8 +197,66 @@ penetratietests, en een doorlopend review-proces.
 | Story | Status | Prioriteit | Beschrijving |
 |-------|--------|------------|-------------|
 | [S13-01](done/S13-01-threat-model.md) | ✅ Done | HOOG | Threat model opstellen (STRIDE, actoren, vertrouwensgrenzen) |
-| [S13-02](backlog/S13-02-incident-response-plan.md) | 🔲 Backlog | HOOG | Incident response plan (classificatie, escalatie, communicatie) |
-| [S13-03](backlog/S13-03-penetratietest.md) | 🔲 Backlog | HOOG | Penetratietest plannen en uitvoeren (onafhankelijke validatie) |
-| [S13-04](backlog/S13-04-dependency-lifecycle.md) | 🔲 Backlog | GEMIDDELD | Dependency lifecycle management (Dependabot, SLA, lock-file) |
-| [S13-05](backlog/S13-05-keyvault-hardening.md) | 🔲 Backlog | GEMIDDELD | KeyVault en cryptografie hardening (PBKDF2, database-SSL) |
-| [S13-06](backlog/S13-06-security-review-proces.md) | 🔲 Backlog | GEMIDDELD | Structureel security review proces (checklist, jaarplanning, champion) |
+| [S13-02](done/S13-02-incident-response-plan.md) | ✅ Done | HOOG | Incident response plan (classificatie, escalatie, communicatie) |
+| [S13-03](done/S13-03-penetratietest.md) | ✅ Done | HOOG | Penetratietest plannen en uitvoeren (onafhankelijke validatie) |
+| [S13-04](done/S13-04-dependency-lifecycle.md) | ✅ Done | GEMIDDELD | Dependency lifecycle management (Dependabot, SLA, lock-file) |
+| [S13-05](done/S13-05-keyvault-hardening.md) | ✅ Done | GEMIDDELD | KeyVault en cryptografie hardening (PBKDF2, database-SSL) |
+| [S13-06](done/S13-06-security-review-proces.md) | ✅ Done | GEMIDDELD | Structureel security review proces (checklist, jaarplanning, champion) |
+
+---
+
+### EPIC-14: Graph-methodologie afstemming (OS-actieplan) ✅
+
+Afstemmen van Graaf Zeppelin op de gedeelde graph-methodologie (acht conventies +
+appendix tijdsdimensie) vanuit Codebase-Olympus. Repareert twee structurele
+inconsistenties (FEEDBACK-edges vs. globale acyclic-check, `time_lag` als dead field),
+introduceert Pydantic-modellen, een invarianten-catalogus, leesbare IDs, en tilt de
+ontwikkelstraat op Olympus-niveau.
+
+Bron: `docs/actieplan-os.md` (overgenomen vanuit `maxonamission/Codebase-Olympus`).
+
+**Genomen beleidskeuzes (zie actieplan §"Open beleidskeuzes"):**
+1. **`time_lag`** — Pad B (schrappen) nu, Pad A (iteratieve-tikken-simulatie) op roadmap als eigen epic
+2. **ID-schema** — direct integraal migreren naar leesbaar schema (Vorm A: `{DOMEIN-AFK}-{NIVEAU}-{VOLGNR}`); geen externe consumenten, dus geen compatibiliteitslaag nodig; volledige per-node-review van de mapping. Afkortingen-tabel en L12-conventie vastgelegd in S14-05.
+3. **`knowledge_graph.py`** — consolideren met Pydantic-`Graph`-model in `app/core/`; standalone module verwijderd of dunne wrapper
+
+**Follow-up buiten deze epic:** uniforme kenmerken-taxonomie voor graph-objecten
+(nodes én edges), cross-project met Codebase-Olympus. Vastgelegd als wens in
+[`docs/uniforme-kenmerken-taxonomie.md`](../docs/uniforme-kenmerken-taxonomie.md).
+Niet blokkerend voor uitvoering van S14-01..S14-07; hoort thuis in een
+Olympus-conversatie en uiteindelijk in `docs/graph-methodology.md` bij Olympus.
+
+**Epic afgesloten:** S14-01 ✅ → S14-04 ✅ → S14-02 ✅ → S14-03 ✅ →
+S14-05 ✅ → S14-06 ✅ → S14-07 ✅. Alle stories uit `docs/actieplan-os.md`
+zijn verwerkt. Cross-reference-patch naar Codebase-Olympus
+(`docs/graph-methodology.md` §3) is losgekoppeld en wordt in de Olympus-
+conversatie opgepakt.
+
+| Story | Status | Prioriteit | Beschrijving |
+|-------|--------|------------|-------------|
+| [S14-01](done/S14-01-cycle-check-per-edge-type.md) | ✅ Done | HOOG | Cycle-check per edge-type (GZ-01) — FEEDBACK-edges mogen cyclisch zijn |
+| [S14-02](done/S14-02-pydantic-graph-models.md) | ✅ Done | HOOG | Pydantic-modellen voor Node en Edge + consolidatie `knowledge_graph.py` (GZ-02) |
+| [S14-03](done/S14-03-time-lag-beslissing.md) | ✅ Done | GEMIDDELD | `time_lag` schrappen (Pad B); Pad A op roadmap (GZ-03) |
+| [S14-04](done/S14-04-invarianten-catalogus.md) | ✅ Done | HOOG | Invarianten-catalogus: cycle/orphan/duplicate/dangling + CLI (GZ-04) |
+| [S14-05](done/S14-05-id-schema-herontwerp.md) | ✅ Done | GEMIDDELD | ID-schema integrale migratie (GZ-05) |
+| [S14-06](done/S14-06-ontwikkelstraat.md) | ✅ Done | GEMIDDELD | Ontwikkelstraat parallel aan Olympus: ruff, mypy, pre-commit, CI, hooks, stories (GZ-06) |
+| [S14-07](done/S14-07-schema-evolutie-doc.md) | ✅ Done | LAAG | Schema-evolutie v1→v2 documenteren als methodologie-bijdrage (GZ-07) |
+
+---
+
+### EPIC-15: Testsuite-rehabilitatie 🔲
+
+Gevonden tijdens S14-01-validatie (2026-04-23): de testsuite heeft
+**één kernoorzaak** (`pytest-asyncio` niet geïnstalleerd) die ~80 errors +
+failures over 8 testbestanden verklaart, plus twee kleine nevenproblemen
+(een renderfout in vijf template-pagina's, en een ontbrekende
+`email-validator`-dependency). Dit staat volledig los van EPIC-14; S14-01
+raakt alleen `dag_engine.py` en `test_dag_engine.py`, en daar is alles
+groen. Maar zolang EPIC-15 niet loopt, geeft een volle `pytest`-run een
+misleidend rood beeld en is CI niet betrouwbaar.
+
+| Story | Status | Prioriteit | Beschrijving |
+|-------|--------|------------|-------------|
+| [S15-01](backlog/S15-01-async-testing-plugin.md) | 🔲 Backlog | HOOG | `pytest-asyncio` installeren; lost ~80 async-gerelateerde test-errors op |
+| [S15-02](backlog/S15-02-jinja2-template-render.md) | 🔲 Backlog | GEMIDDELD | Jinja2 `unhashable type: 'dict'` in 5 pagina-render-tests — mogelijk ook productie-impact |
+| [S15-03](done/S15-03-email-validator-dep.md) | ✅ Done (S14-02) | LAAG | `email-validator` toevoegen als dep (gedekt door `pydantic[email]` in S14-02) |

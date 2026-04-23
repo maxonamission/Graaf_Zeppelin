@@ -23,7 +23,7 @@ sportbeleid en onderbouwde antwoorden krijgen.
 |-----------|-----|-------------|
 | **App** (`app/`) | Het product | Webapplicatie met API en frontend |
 | **Causaal model** (`data/models/`) | Externe input | Wordt separaat ontwikkeld; de app laadt het model as-is |
-| **Conversie-tools** (`graaf_zeppelin/`) | Developer tooling | Hulpmiddelen voor de modelontwikkelaar |
+| **Conversie-tools** (`scripts/convert_graph.py`) | Developer tooling | JSON ↔ GEXF ↔ Markdown voor de modelontwikkelaar |
 
 ## Installatie
 
@@ -84,6 +84,30 @@ Open `http://localhost:8000` in je browser. API-documentatie: `http://localhost:
 5. **Eenvoud voor de gebruiker** — geen technische kennis nodig
 6. **LLM-beveiliging** — OWASP LLM Top 10 mitigaties (prompt injection guard, output sanitisatie, leakage-detectie)
 
+### Edge-types en cycli
+
+Het v2-schema onderscheidt vijf edge-types. De cycle-detectie werkt **per
+edge-type**, niet over de hele graph:
+
+- **`STRUCTURAL`, `MEDIATING`, `MODERATOR`** — deze edges vormen samen een echte
+  DAG; cycli worden geweigerd bij het laden (`ACYCLIC_EDGE_TYPES` in
+  `app/core/dag_engine.py`).
+- **`FEEDBACK`, `SOCIAL_REGULATORY`** — semantisch cyclisch (terugkoppeling,
+  sociale regulatie) en daarom uitgesloten van de acycliciteit-constraint; A↔B
+  is toegestaan.
+
+Deze splitsing houdt het schema en het runtime-gedrag consistent: een
+`FEEDBACK`-edge in de data werkt ook echt als feedback, in plaats van door de
+globale DAG-check te worden afgewezen.
+
+### `time_lag` uit het schema (v2.X)
+
+Het edge-veld `time_lag` is in v2.X verwijderd omdat de simulatie het niet
+gebruikte — het was een dead-field anti-pattern. Her-activeren (iteratieve
+tik-simulatie met `short`/`medium`/`long`) is geparkeerd als
+dynamiek-epic; zie `PLAN.md` onder "Toekomstige uitbreiding" voor de
+blueprint en trigger.
+
 ## Projectstructuur
 
 ```
@@ -97,6 +121,9 @@ app/
     deps.py               # Gedeelde dependencies (auth, graph)
   core/
     dag_engine.py         # CausalDAG — NetworkX-based graph engine
+    graph_models.py       # Pydantic-modellen voor v2-schema (S14-02)
+    validation.py         # Graph-invarianten catalog + ValidationReport (S14-04)
+    graph_io.py           # JSON ↔ GEXF ↔ Markdown converters (generic)
     slider_engine.py      # Curve-functies en slider-simulatie
     prompt_builder.py     # DAG → gestructureerde LLM-prompts
     llm_connector.py      # Multi-provider LLM client
@@ -134,14 +161,15 @@ De test suite dekt:
 - **API endpoints** — publieke pagina's, auth, graph, sliders
 - **Integratietests** — registratie → login → verken → simuleer → AI-vraag
 
-## CLI Tool (developer tooling)
+## Developer tooling
 
 ```bash
-# JSON naar GEXF
-python -m graaf_zeppelin.cli convert examples/knowledge_graph.json output.gexf
+# Graph-validatie (cycles, orphans, duplicates, dangling refs, ...)
+python scripts/validate_graph.py data/models/sportdeelname_graph.json
 
-# JSON naar Markdown
-python -m graaf_zeppelin.cli convert examples/knowledge_graph.json output.md
+# Conversie tussen JSON ↔ GEXF ↔ Markdown
+python scripts/convert_graph.py data/models/sportdeelname_graph.json output.gexf
+python scripts/convert_graph.py data/models/sportdeelname_graph.json output.md
 ```
 
 ## Licentie

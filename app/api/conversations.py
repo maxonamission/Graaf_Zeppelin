@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
@@ -60,7 +60,7 @@ async def create_conversation(
     db: AsyncSession = Depends(get_db),
 ):
     """Create a new conversation."""
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     conv = Conversation(
         user_email=user.email,
         title=request.title,
@@ -139,7 +139,7 @@ async def add_message(
     db.add(msg)
 
     # Update conversation timestamp
-    conv.updated_at = datetime.now(timezone.utc)
+    conv.updated_at = datetime.now(UTC)
     await db.commit()
     await db.refresh(msg)
 
