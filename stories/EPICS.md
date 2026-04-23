@@ -241,6 +241,7 @@ conversatie opgepakt.
 | [S14-05](done/S14-05-id-schema-herontwerp.md) | ✅ Done | GEMIDDELD | ID-schema integrale migratie (GZ-05) |
 | [S14-06](done/S14-06-ontwikkelstraat.md) | ✅ Done | GEMIDDELD | Ontwikkelstraat parallel aan Olympus: ruff, mypy, pre-commit, CI, hooks, stories (GZ-06) |
 | [S14-07](done/S14-07-schema-evolutie-doc.md) | ✅ Done | LAAG | Schema-evolutie v1→v2 documenteren als methodologie-bijdrage (GZ-07) |
+| [S14-06a](done/S14-06a-mypy-scope-uitbreiden.md) | ✅ Done | GEMIDDELD | Mypy-strict volledige `app/core/`-laag (14 → 0 violations) |
 
 ---
 

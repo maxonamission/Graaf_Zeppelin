@@ -9,6 +9,7 @@ from __future__ import annotations
 import secrets
 from datetime import UTC, datetime, timedelta
 from enum import StrEnum
+from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -103,7 +104,7 @@ class LicenseManager:
             license_obj.queries_used += 1
             await self.db.commit()
 
-    async def get_license_info(self, license_key: str) -> dict:
+    async def get_license_info(self, license_key: str) -> dict[str, Any]:
         """Get detailed license information."""
         license_obj = await self.validate_license(license_key)
         tier = LicenseTier(license_obj.tier)
@@ -130,7 +131,7 @@ class LicenseManager:
         current_users = len(result.scalars().all())
         return current_users < limits["users"]
 
-    async def get_daily_usage(self, user_id: int) -> dict:
+    async def get_daily_usage(self, user_id: int) -> dict[str, Any]:
         """Get daily free-question usage for a user (S07-01).
 
         Returns usage info including remaining free questions for today.

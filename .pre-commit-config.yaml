@@ -32,10 +32,10 @@ repos:
     hooks:
       - id: mypy
         name: mypy (strict op app/core/)
-        # Narrow scope naar de EPIC-14-modules zolang de oudere code (auth,
-        # audit, slider_engine, llm_connector, license_manager) nog niet
-        # strict-compliant is. Zie S14-06 "Vervolg" in de done-story.
-        entry: mypy app/core/dag_engine.py app/core/id_schema.py app/core/validation.py app/core/graph_models.py app/core/graph_io.py
+        # S14-06a breidde scope uit van hand-picked EPIC-14-modules naar
+        # de volledige app/core/-laag. app/api/ + app/main.py + app/models/
+        # blijven buiten scope (85+ FastAPI/SQLAlchemy-violations).
+        entry: mypy app/core/
         language: system
         pass_filenames: false
         types: [python]

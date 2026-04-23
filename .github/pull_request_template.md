@@ -16,7 +16,7 @@ Zie CLAUDE.md § "Review-skills" voor wanneer welke skill draaien.
 <!-- Hoe is deze wijziging geverifieerd? -->
 
 - [ ] `ruff check .` en `ruff format --check .` groen
-- [ ] `mypy app/core/dag_engine.py app/core/id_schema.py app/core/validation.py app/core/graph_models.py app/core/graph_io.py` groen
+- [ ] `mypy app/core/` groen
 - [ ] `pytest -q tests/test_dag_engine.py tests/test_id_schema.py tests/test_validation.py tests/test_graph_models.py tests/test_conversions.py tests/test_slider_engine.py tests/test_prompt_builder.py` groen
 - [ ] `python scripts/validate_graph.py data/models/sportdeelname_graph.json` geeft `is_valid=True`
 - [ ] `python scripts/check_story_status.py --mode=full` groen
