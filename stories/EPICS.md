@@ -257,6 +257,6 @@ misleidend rood beeld en is CI niet betrouwbaar.
 
 | Story | Status | Prioriteit | Beschrijving |
 |-------|--------|------------|-------------|
-| [S15-01](backlog/S15-01-async-testing-plugin.md) | 🔲 Backlog | HOOG | `pytest-asyncio` installeren; lost ~80 async-gerelateerde test-errors op |
+| [S15-01](done/S15-01-async-testing-plugin.md) | ✅ Done | HOOG | `pytest-asyncio` werkend; suite 357/365 groen, rest = S15-02 |
 | [S15-02](backlog/S15-02-jinja2-template-render.md) | 🔲 Backlog | GEMIDDELD | Jinja2 `unhashable type: 'dict'` in 5 pagina-render-tests — mogelijk ook productie-impact |
 | [S15-03](done/S15-03-email-validator-dep.md) | ✅ Done (S14-02) | LAAG | `email-validator` toevoegen als dep (gedekt door `pydantic[email]` in S14-02) |
