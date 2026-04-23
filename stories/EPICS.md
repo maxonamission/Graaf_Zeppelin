@@ -217,8 +217,14 @@ Bron: `docs/actieplan-os.md` (overgenomen vanuit `maxonamission/Codebase-Olympus
 
 **Genomen beleidskeuzes (zie actieplan §"Open beleidskeuzes"):**
 1. **`time_lag`** — Pad B (schrappen) nu, Pad A (iteratieve-tikken-simulatie) op roadmap als eigen epic
-2. **ID-schema** — direct integraal migreren naar leesbaar schema; geen externe consumenten, dus geen compatibiliteitslaag nodig; volledige per-node-review van de mapping
+2. **ID-schema** — direct integraal migreren naar leesbaar schema (Vorm A: `{DOMEIN-AFK}-{NIVEAU}-{VOLGNR}`); geen externe consumenten, dus geen compatibiliteitslaag nodig; volledige per-node-review van de mapping. Afkortingen-tabel en L12-conventie vastgelegd in S14-05.
 3. **`knowledge_graph.py`** — consolideren met Pydantic-`Graph`-model in `app/core/`; standalone module verwijderd of dunne wrapper
+
+**Follow-up buiten deze epic:** uniforme kenmerken-taxonomie voor graph-objecten
+(nodes én edges), cross-project met Codebase-Olympus. Vastgelegd als wens in
+[`docs/uniforme-kenmerken-taxonomie.md`](../docs/uniforme-kenmerken-taxonomie.md).
+Niet blokkerend voor uitvoering van S14-01..S14-07; hoort thuis in een
+Olympus-conversatie en uiteindelijk in `docs/graph-methodology.md` bij Olympus.
 
 **Kritisch pad:** S14-01 → S14-02 → S14-04 → S14-05. S14-03 is triviaal (~1u) zodra
 S14-02 staat. S14-07 kan parallel (alleen docs).

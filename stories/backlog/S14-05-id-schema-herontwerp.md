@@ -15,55 +15,85 @@ diffs, discussies en exports begrijpelijk zonder naar de datatabel te hoeven kij
 De rijke node-metadata (`domain`, `level`, `disciplines`) staat nu los van de ID. In
 een leesbaar ID hoort die informatie in de ID zelf te zitten, als primaire ordening.
 
-## Voorbeeld-schema (voorstel, te bediscussiëren)
+## Vastgelegd ID-schema (Vorm A)
+
+**De data heeft geen `category`-veld** — 9 domeinen × 5 levels = 45 buckets voor
+69 knopen, ruim voldoende. ID-vorm is dus `{DOMEIN-AFK}-{NIVEAU}-{VOLGNR}`, geen
+categorie-segment, geen overkoepelend prefix (de hele graph is één onderwerp).
 
 ```
-Nodes:  {DOMEIN}-{CATEGORIE}-{NIVEAU}-{VOLGNR}
-        SPORT-UIT-L0-001   (domein: Sport, categorie: UITkomsten, niveau: L0, volgnr: 001)
-        SPORT-REG-L2-012   (domein: Sport, categorie: REGels & administratie, niveau: L2, volgnr: 012)
+Nodes:  {DOMEIN-AFK}-{NIVEAU}-{VOLGNR}
+        UIT-L0-001     (Uitkomsten, L0, volgnr 001)
+        REG-L2-004     (Regels & Administratie, L2, volgnr 004)
+        TRP-L1-012     (Training & Prestatie, L1, volgnr 012)
 
 Edges:  E-{EDGE_TYPE_AFK}-{VOLGNR}
-        E-MED-014          (MEDIATING, volgnr 014)
-        E-FBK-007          (FEEDBACK, volgnr 007)
+        E-MED-014      (MEDIATING, volgnr 014)
+        E-FBK-007      (FEEDBACK, volgnr 007)
 ```
 
-Alternatief, meer Olympus-achtig (eerst domein, dan type): `SPORT-UIT-ADULTSP-001`
-(meer expressief, langer).
+### Domein-afkortingen (bindend voor deze story)
 
-## Beslissing
+| Domein                  | Afk.  |
+|-------------------------|-------|
+| Uitkomsten              | `UIT` |
+| Regels & Administratie  | `REG` |
+| Sociaal                 | `SOC` |
+| Psychologisch           | `PSY` |
+| Middelen & Logistiek    | `MDL` |
+| Organisatie & Aanbod    | `ORG` |
+| Training & Prestatie    | `TRP` |
+| Macro-context           | `MAC` |
+| Discipline-specifiek    | `DIS` |
 
-**Direct integraal migreren, geen externe consumenten.** Alle `N###`/`E###`-IDs
-worden in één ronde omgezet naar het hiërarchisch leesbare schema. Geen
-mapping-compatibiliteitslaag nodig (er zijn nog geen rapporten/exports in omloop
-die oude IDs bevatten). "Goed controleren" is expliciet onderdeel van de
-acceptatiecriteria: per-node review van de mapping + audit-artefact.
+Alle afkortingen zijn 3 letters (fixed-width, prettig sorteerbaar).
 
-Niet gekoppeld aan een toekomstige v3-schema-release — de migratie gaat los.
+### Edge-afkortingen (uit bestaande EN `edge_type`-enum)
 
-### Nog te bevestigen bij story-kickoff
+`STR` (STRUCTURAL), `MED` (MEDIATING), `MOD` (MODERATOR), `FBK` (FEEDBACK),
+`SREG` (SOCIAL_REGULATORY). Edge-IDs blijven EN om spiegel te houden met de
+enum die al in de code staat; node-IDs zijn NL omdat domein-namen NL zijn. Die
+asymmetrie is verdedigbaar: edges zijn een technisch begrip, knopen zijn
+domein-inhoud.
 
-- **Taal in ID-segmenten.** Default: **NL** voor `{DOMEIN}-{CATEGORIE}-{NIVEAU}`
-  (bv. `SPORT-UIT-L0-001` met `UIT` = UITkomsten), consistent met de
-  product-taal en bestaande `domain`/`level`-waardes. Edge-afkortingen volgen
-  de bestaande EN `edge_type`-enum: `STR`, `MED`, `MOD`, `FBK`, `SREG`. Max te
-  bevestigen voordat de validator wordt geschreven.
-- **Categorie-afkortingen-tabel.** Eerst op papier vastleggen (bv. UIT, GED, REG,
-  INF, ...) vóór migratiescript draait, anders drift tussen run en documentatie.
+### Niveau-normalisatie
+
+`L1/L2` wordt genormaliseerd naar `L12` in de ID (fixed-width segment). Andere
+niveaus blijven `L0`, `L1`, `L2`, `L3`. Het oorspronkelijke `level`-veld op de
+node blijft ongewijzigd (dus nog `L1/L2` in de JSON) — de ID is een *afgeleide*
+weergave, geen vervanger van het veld zelf.
+
+## Beslissing: direct integraal migreren
+
+Geen externe consumenten, dus geen mapping-compatibiliteitslaag nodig. "Goed
+controleren" is expliciet onderdeel van de acceptatiecriteria: per-node review
+van de mapping + audit-artefact in `data/migrations/old_to_new_ids.json`. Niet
+gekoppeld aan een toekomstige v3-schema-release — migratie gaat los.
+
+## Bredere context
+
+Dit ID-schema is het eerste concrete experiment met uniforme graph-object-
+taxonomie. Zie `docs/uniforme-kenmerken-taxonomie.md` voor de wens om op
+cross-project-niveau (Zeppelin + Olympus + toekomstige graph-projecten) te
+werken aan een gedeelde set kenmerken voor nodes én edges. Als dat cross-project
+gesprek leidt tot aanpassingen in de `domain`- of `edge_type`-taxonomie, moet
+het ID-schema eventueel meebewegen. Daarom wordt de mapping-file bewaard.
 
 ## Input
 
-- Huidige 69 nodes en 108 edges in `sportdeelname_graph.json`
+- Huidige 69 nodes en 114 edges in `sportdeelname_graph.json`
 - Bestaande `domain`, `level`, `edge_type`-waardes als bron voor segmenten
 
 ## Acceptatiecriteria
 
-- [ ] ID-patroon vastgelegd in `docs/id-schema.md` met voorbeelden én de categorie-afkortingen-tabel
+- [ ] `docs/id-schema.md` aangemaakt met het volledige schema (vorm, tabel, edge-afkortingen, L12-conventie) — gebruik het "Vastgelegd ID-schema"-blok hierboven als baseline
 - [ ] `validate_node_id(id: str) -> bool` en `parse_node_id(id: str) -> ParsedId` in `app/core/id_schema.py`
 - [ ] Zelfde voor edges: `validate_edge_id`, `parse_edge_id`
 - [ ] Pydantic-`Node` en `Edge` krijgen `@field_validator` die de ID tegen het schema checkt
 - [ ] Migratiescript `scripts/migrate_ids.py` dat:
-  - per bestaande node een nieuw ID afleidt uit `domain` + `level` + volgnr (+ categorie-mapping)
+  - per bestaande node een nieuw ID afleidt uit `domain` + `level` (→ afkortingen-tabel + L12-normalisatie) + volgnr
   - alle `source`/`target`-referenties in edges bijwerkt
+  - edge-IDs afleidt uit `edge_type` + volgnr
   - een mapping-file `data/migrations/old_to_new_ids.json` achterlaat voor audit
   - idempotent is (tweede run = geen wijzigingen)
 - [ ] **Review-stap**: mapping-file door Max gereviewd op alle 69 knopen (niet alleen steekproef) vóór commit van de gemigreerde JSON; afwijkingen gelogd met motivatie
@@ -74,7 +104,7 @@ Niet gekoppeld aan een toekomstige v3-schema-release — de migratie gaat los.
 
 ## Aanpak
 
-1. Ontwerp schema op papier + categorie-afkortingen-tabel; laat Max bevestigen
+1. `docs/id-schema.md` aanmaken met het vastgelegde schema als baseline
 2. Schrijf validator + parser (~50 regels)
 3. Migratiescript met idempotentie en mapping-export
 4. Droog-draai op kopie van JSON; review mapping-file **per knoop** (69 stuks, overzichtelijk)
@@ -93,12 +123,14 @@ Niet gekoppeld aan een toekomstige v3-schema-release — de migratie gaat los.
 
 ## Risico's
 
-- ID-collision bij latere uitbreiding met nieuwe domeinen. Mitigatie: reserveer
-  `VOLGNR` ≥ 100 voor later toegevoegde items binnen een
-  `{DOMEIN}-{CATEGORIE}-{NIVEAU}`-bucket.
-- Categorie-afkortingen blijken bij review te grofmazig of dubbelzinnig →
-  terug naar stap 1. Mitigatie: lijst eerst valideren tegen alle 69 bestaande
-  node-labels voordat code geschreven wordt.
-- Externe consumenten duiken alsnog op. Niet verwacht (bevestigd door Max), maar
-  mitigatie is triviaal: mapping-file staat in `data/migrations/` en kan op verzoek
-  gedeeld worden.
+- ID-collision bij latere uitbreiding. Mitigatie: reserveer `VOLGNR` ≥ 100 voor
+  later toegevoegde items binnen een `{DOMEIN-AFK}-{NIVEAU}`-bucket.
+- De huidige afkortingen-tabel blijkt bij review te grofmazig of dubbelzinnig
+  (bv. `REG` voor "Regels" verwarrend met generieke "regel"). Mitigatie: valideer
+  de tabel tegen alle 69 bestaande node-labels **voordat** de code geschreven wordt.
+  Bij serieuze twijfel: tabel herzien in overleg met Max, nooit eenzijdig.
+- Cross-project-taxonomie-gesprek (zie `docs/uniforme-kenmerken-taxonomie.md`)
+  leidt later tot andere `domain`-naamgeving → ID-schema moet meebewegen. Laag
+  risico: mapping-file is er juist voor, en de tabel staat op één plek.
+- Externe consumenten duiken alsnog op. Niet verwacht (bevestigd door Max),
+  maar mitigatie is triviaal: mapping-file staat in `data/migrations/`.

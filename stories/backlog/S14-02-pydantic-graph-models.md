@@ -29,6 +29,25 @@ is de canonieke bron; de converters worden losse functies die op dat model werke
 wrapper die dezelfde functies aanroept), omdat het niet als losse package door
 derden wordt gebruikt.
 
+## Bredere context
+
+Deze story legt de **structuur** vast (expliciete models, enums, validators).
+De **inhoud** — welke kenmerken horen in de kern van een causale DAG en welke zijn
+project-specifiek — is een cross-project-gesprek dat niet in deze story hoort. Zie
+`docs/uniforme-kenmerken-taxonomie.md` voor de wens om dat op Olympus-niveau op te
+pakken. Praktisch betekent dat voor S14-02:
+
+- Volg binnen deze story de bestaande Zeppelin-veldenlijst (12 edge-velden zoals
+  in het v2-schema); verzin geen nieuwe veldnamen vooruitlopend op het
+  cross-project-gesprek.
+- Maak de `Edge`- en `Node`-modellen zó opgebouwd dat een latere splitsing in
+  "kern" vs. "project-specifiek" eenvoudig door te voeren is — bv. velden die
+  evident project-specifiek zijn (`bond_influence`, `slider_sensitivity`,
+  `disciplines`) blijven bij elkaar, duidelijk van de graph-agnostische velden
+  (`source`, `target`, `polarity`, `strength`, `edge_type`, `base_weight`)
+  gescheiden in de modeldefinitie (bv. met comment-blokken of sub-groeperingen).
+  Dit is een vormkeuze in deze story, geen nieuwe structuur.
+
 ## Acceptatiecriteria
 
 - [ ] `app/core/graph_models.py` met:
