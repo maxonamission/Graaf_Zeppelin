@@ -71,13 +71,13 @@ async def reason_query(
         response = await connector.generate(messages)
     except LLMProviderError as e:
         logger.warning("LLM provider error (query, user=%s): %s", user.id, e)
-        raise HTTPException(status_code=502, detail=_format_llm_error(str(e)))
-    except Exception:
+        raise HTTPException(status_code=502, detail=_format_llm_error(str(e))) from e
+    except Exception as e:
         logger.exception("Unexpected LLM error (query, user=%s)", user.id)
         raise HTTPException(
             status_code=502,
             detail="De AI-service is tijdelijk niet bereikbaar. Probeer het later opnieuw.",
-        )
+        ) from e
 
     # LLM05: Sanitize LLM output before returning to client
     response = sanitize_llm_output(response)
@@ -129,13 +129,13 @@ async def reason_intervention(
         response = await connector.generate(messages)
     except LLMProviderError as e:
         logger.warning("LLM provider error (intervene, user=%s): %s", user.id, e)
-        raise HTTPException(status_code=502, detail=_format_llm_error(str(e)))
-    except Exception:
+        raise HTTPException(status_code=502, detail=_format_llm_error(str(e))) from e
+    except Exception as e:
         logger.exception("Unexpected LLM error (intervene, user=%s)", user.id)
         raise HTTPException(
             status_code=502,
             detail="De AI-service is tijdelijk niet bereikbaar. Probeer het later opnieuw.",
-        )
+        ) from e
 
     # LLM05: Sanitize LLM output
     response = sanitize_llm_output(response)
@@ -199,13 +199,13 @@ async def reason_query_validated(
         response = await connector.generate(messages)
     except LLMProviderError as e:
         logger.warning("LLM provider error (validated, user=%s): %s", user.id, e)
-        raise HTTPException(status_code=502, detail=_format_llm_error(str(e)))
-    except Exception:
+        raise HTTPException(status_code=502, detail=_format_llm_error(str(e))) from e
+    except Exception as e:
         logger.exception("Unexpected LLM error (validated, user=%s)", user.id)
         raise HTTPException(
             status_code=502,
             detail="De AI-service is tijdelijk niet bereikbaar. Probeer het later opnieuw.",
-        )
+        ) from e
 
     # LLM05: Sanitize LLM output
     response = sanitize_llm_output(response)
@@ -269,8 +269,8 @@ async def _check_license_and_quota(user: User, db: AsyncSession) -> None:
                 )
     except HTTPException:
         raise
-    except Exception:
-        raise HTTPException(status_code=403, detail="Licentie is ongeldig of verlopen")
+    except Exception as exc:
+        raise HTTPException(status_code=403, detail="Licentie is ongeldig of verlopen") from exc
 
 
 async def _record_usage(user: User, db: AsyncSession) -> None:

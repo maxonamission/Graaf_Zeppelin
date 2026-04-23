@@ -14,7 +14,6 @@ from app.core.llm_guard import (
     sanitize_llm_output,
 )
 
-
 # ── LLM01: Prompt Injection Detection ───────────────────────────────────
 
 
@@ -174,13 +173,18 @@ class TestPatternLoading:
 
     def test_custom_patterns_from_json(self, tmp_path: Path) -> None:
         custom = tmp_path / "custom.json"
-        custom.write_text(json.dumps({
-            "version": "test",
-            "injection_patterns": [
-                {"pattern": "custom_attack_pattern", "category": "test"}
-            ],
-            "leakage_patterns": [],
-        }), encoding="utf-8")
+        custom.write_text(
+            json.dumps(
+                {
+                    "version": "test",
+                    "injection_patterns": [
+                        {"pattern": "custom_attack_pattern", "category": "test"}
+                    ],
+                    "leakage_patterns": [],
+                }
+            ),
+            encoding="utf-8",
+        )
 
         result = reload_patterns(custom)
         assert result["injection_patterns"] == 1
@@ -194,14 +198,19 @@ class TestPatternLoading:
 
     def test_invalid_regex_skipped(self, tmp_path: Path) -> None:
         custom = tmp_path / "bad_regex.json"
-        custom.write_text(json.dumps({
-            "version": "test",
-            "injection_patterns": [
-                {"pattern": "[invalid regex ("},  # bad regex
-                {"pattern": "valid_pattern"},
-            ],
-            "leakage_patterns": [],
-        }), encoding="utf-8")
+        custom.write_text(
+            json.dumps(
+                {
+                    "version": "test",
+                    "injection_patterns": [
+                        {"pattern": "[invalid regex ("},  # bad regex
+                        {"pattern": "valid_pattern"},
+                    ],
+                    "leakage_patterns": [],
+                }
+            ),
+            encoding="utf-8",
+        )
 
         result = reload_patterns(custom)
         assert result["injection_patterns"] == 1  # only valid one loaded
@@ -308,10 +317,15 @@ class TestGuardAnalyst:
 
         # Create a minimal patterns file
         patterns_file = tmp_path / "patterns.json"
-        patterns_file.write_text(json.dumps({
-            "injection_patterns": [{"pattern": "existing_pattern"}],
-            "leakage_patterns": [],
-        }), encoding="utf-8")
+        patterns_file.write_text(
+            json.dumps(
+                {
+                    "injection_patterns": [{"pattern": "existing_pattern"}],
+                    "leakage_patterns": [],
+                }
+            ),
+            encoding="utf-8",
+        )
 
         analysis = [
             {
@@ -349,12 +363,17 @@ class TestGuardAnalyst:
         from app.core.guard_analyst import append_patterns_to_file
 
         patterns_file = tmp_path / "patterns.json"
-        patterns_file.write_text(json.dumps({
-            "version": "1.0.0",
-            "updated": "2026-03-01",
-            "injection_patterns": [{"pattern": "existing"}],
-            "leakage_patterns": [],
-        }), encoding="utf-8")
+        patterns_file.write_text(
+            json.dumps(
+                {
+                    "version": "1.0.0",
+                    "updated": "2026-03-01",
+                    "injection_patterns": [{"pattern": "existing"}],
+                    "leakage_patterns": [],
+                }
+            ),
+            encoding="utf-8",
+        )
 
         new_patterns = [
             {

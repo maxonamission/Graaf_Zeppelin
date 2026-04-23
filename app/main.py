@@ -9,8 +9,19 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
+from starlette.middleware.base import BaseHTTPMiddleware
 
-from app.api import auth, conversations, explorations, graph, license, models, reasoning, releases, wizard
+from app.api import (
+    auth,
+    conversations,
+    explorations,
+    graph,
+    license,
+    models,
+    reasoning,
+    releases,
+    wizard,
+)
 from app.config import settings
 from app.core.auth import decode_access_token
 from app.core.dag_engine import CausalDAG
@@ -42,7 +53,6 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
 # ── Security headers middleware (S11-02) ──────────────────────────────
-from starlette.middleware.base import BaseHTTPMiddleware
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
@@ -60,9 +70,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "frame-ancestors 'none'"
         )
         if settings.environment == "production":
-            response.headers["Strict-Transport-Security"] = (
-                "max-age=31536000; includeSubDomains"
-            )
+            response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         return response
 
 
@@ -96,6 +104,7 @@ class CSRFMiddleware(BaseHTTPMiddleware):
                 has_body = content_length != "0" and content_type != ""
                 if has_body and "application/json" not in content_type:
                     from fastapi.responses import JSONResponse
+
                     return JSONResponse(
                         status_code=415,
                         content={"detail": "Content-Type moet application/json zijn"},
@@ -112,9 +121,13 @@ templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 def _tpl_ctx(request: Request, **extra) -> dict:
     """Build template context with domain_name injected."""
-    ctx = {"request": request, "domain_name": getattr(request.app.state, "domain_display_name", "Graaf Zeppelin")}
+    ctx = {
+        "request": request,
+        "domain_name": getattr(request.app.state, "domain_display_name", "Graaf Zeppelin"),
+    }
     ctx.update(extra)
     return ctx
+
 
 # Register API routers
 app.include_router(auth.router)
@@ -162,9 +175,7 @@ async def dashboard(request: Request):
     user = _get_user_from_cookie(request)
     if not user:
         return RedirectResponse(url="/login")
-    return templates.TemplateResponse(
-        "dashboard.html", _tpl_ctx(request, user=user)
-    )
+    return templates.TemplateResponse("dashboard.html", _tpl_ctx(request, user=user))
 
 
 @app.get("/graph", response_class=HTMLResponse)
@@ -172,9 +183,7 @@ async def graph_page(request: Request):
     user = _get_user_from_cookie(request)
     if not user:
         return RedirectResponse(url="/login")
-    return templates.TemplateResponse(
-        "graph_viewer.html", _tpl_ctx(request, user=user)
-    )
+    return templates.TemplateResponse("graph_viewer.html", _tpl_ctx(request, user=user))
 
 
 @app.get("/reasoning", response_class=HTMLResponse)
@@ -182,9 +191,7 @@ async def reasoning_page(request: Request):
     user = _get_user_from_cookie(request)
     if not user:
         return RedirectResponse(url="/login")
-    return templates.TemplateResponse(
-        "reasoning.html", _tpl_ctx(request, user=user)
-    )
+    return templates.TemplateResponse("reasoning.html", _tpl_ctx(request, user=user))
 
 
 @app.get("/releases", response_class=HTMLResponse)
@@ -192,9 +199,7 @@ async def releases_page(request: Request):
     user = _get_user_from_cookie(request)
     if not user:
         return RedirectResponse(url="/login")
-    return templates.TemplateResponse(
-        "releases.html", _tpl_ctx(request, user=user)
-    )
+    return templates.TemplateResponse("releases.html", _tpl_ctx(request, user=user))
 
 
 @app.get("/verkenner", response_class=HTMLResponse)
@@ -202,9 +207,7 @@ async def wizard_page(request: Request):
     user = _get_user_from_cookie(request)
     if not user:
         return RedirectResponse(url="/login")
-    return templates.TemplateResponse(
-        "wizard.html", _tpl_ctx(request, user=user)
-    )
+    return templates.TemplateResponse("wizard.html", _tpl_ctx(request, user=user))
 
 
 @app.get("/license", response_class=HTMLResponse)
@@ -212,6 +215,4 @@ async def license_page(request: Request):
     user = _get_user_from_cookie(request)
     if not user:
         return RedirectResponse(url="/login")
-    return templates.TemplateResponse(
-        "license.html", _tpl_ctx(request, user=user)
-    )
+    return templates.TemplateResponse("license.html", _tpl_ctx(request, user=user))

@@ -1,16 +1,16 @@
 """Tests for the FastAPI application and API endpoints."""
 
+from datetime import UTC, datetime, timedelta
+
 import pytest
 from httpx import ASGITransport, AsyncClient
 
 from app.core.auth import create_access_token, hash_password
-from app.db import engine, init_db
+from app.db import engine
 from app.main import app
 from app.models.base import Base
 from app.models.license import License
 from app.models.user import User
-
-from datetime import datetime, timedelta, timezone
 
 
 @pytest.fixture(autouse=True)
@@ -38,12 +38,11 @@ def auth_cookie() -> dict:
 
 async def _create_licensed_user(db_session):
     """Helper: create a license and user in the database, return auth cookie dict."""
-    from sqlalchemy.ext.asyncio import AsyncSession
     from app.db import async_session
 
     async with async_session() as session:
         # Create license
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         lic = License(
             key="GZ-TEST-0001",
             organization="Test Org",
@@ -74,25 +73,19 @@ async def _create_licensed_user(db_session):
 @pytest.mark.asyncio
 class TestPublicPages:
     async def test_home_page(self):
-        async with AsyncClient(
-            transport=ASGITransport(app=app), base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.get("/")
             assert response.status_code == 200
             assert "Graaf Zeppelin" in response.text
 
     async def test_login_page(self):
-        async with AsyncClient(
-            transport=ASGITransport(app=app), base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.get("/login")
             assert response.status_code == 200
             assert "Inloggen" in response.text
 
     async def test_register_page(self):
-        async with AsyncClient(
-            transport=ASGITransport(app=app), base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.get("/register")
             assert response.status_code == 200
             assert "Registreren" in response.text
@@ -131,23 +124,17 @@ class TestProtectedPages:
 @pytest.mark.asyncio
 class TestGraphAPI:
     async def test_graph_summary_requires_auth(self):
-        async with AsyncClient(
-            transport=ASGITransport(app=app), base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.get("/api/graph/summary")
             assert response.status_code == 401
 
     async def test_graph_factors_requires_auth(self):
-        async with AsyncClient(
-            transport=ASGITransport(app=app), base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.get("/api/graph/factors")
             assert response.status_code == 401
 
     async def test_graph_sliders_requires_auth(self):
-        async with AsyncClient(
-            transport=ASGITransport(app=app), base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.get("/api/graph/sliders")
             assert response.status_code == 401
 
@@ -273,9 +260,7 @@ class TestSliderAPI:
 @pytest.mark.asyncio
 class TestAuthAPI:
     async def test_login_invalid_credentials(self):
-        async with AsyncClient(
-            transport=ASGITransport(app=app), base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.post(
                 "/api/auth/login",
                 json={"email": "nobody@example.com", "password": "wrong"},
@@ -284,9 +269,7 @@ class TestAuthAPI:
 
     async def test_login_valid_credentials(self):
         await _create_licensed_user(None)
-        async with AsyncClient(
-            transport=ASGITransport(app=app), base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.post(
                 "/api/auth/login",
                 json={"email": "test@example.com", "password": "StrongPass123!"},
@@ -301,9 +284,7 @@ class TestAuthAPI:
 @pytest.mark.asyncio
 class TestReasoningAPI:
     async def test_reasoning_requires_auth(self):
-        async with AsyncClient(
-            transport=ASGITransport(app=app), base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.post(
                 "/api/reasoning/query",
                 json={
@@ -315,9 +296,7 @@ class TestReasoningAPI:
             assert response.status_code == 401
 
     async def test_intervene_requires_auth(self):
-        async with AsyncClient(
-            transport=ASGITransport(app=app), base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.post(
                 "/api/reasoning/intervene",
                 json={

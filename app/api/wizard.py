@@ -12,9 +12,8 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user, get_dag
 from app.core.audit import audit_log
@@ -92,14 +91,16 @@ async def analyse_question(
     slider_info = []
     for slider in relevant_sliders:
         qualifiers = slider.get("qualifiers", [])
-        slider_info.append({
-            "id": slider["id"],
-            "label": slider.get("label", ""),
-            "description": slider.get("description", ""),
-            "default": slider.get("default", 0.5),
-            "qualifiers": qualifiers,
-            "qualifier_count": len(qualifiers),
-        })
+        slider_info.append(
+            {
+                "id": slider["id"],
+                "label": slider.get("label", ""),
+                "description": slider.get("description", ""),
+                "default": slider.get("default", 0.5),
+                "qualifiers": qualifiers,
+                "qualifier_count": len(qualifiers),
+            }
+        )
 
     return {
         "question": request.question,
@@ -146,9 +147,7 @@ async def resolve_qualifiers(
                     detail="Antwoordwaarden moeten tussen 0 en 1 liggen",
                 )
         if answer.answers:
-            slider_values[answer.slider_id] = round(
-                sum(answer.answers) / len(answer.answers), 4
-            )
+            slider_values[answer.slider_id] = round(sum(answer.answers) / len(answer.answers), 4)
         else:
             slider_values[answer.slider_id] = slider.get("default", 0.5)
 
@@ -195,15 +194,17 @@ async def simulate_qualified(
         diff = adj - orig
         direction = "versterkt" if diff > 0 else "verzwakt" if diff < 0 else "onveranderd"
 
-        top_effects.append({
-            "source": source_label,
-            "target": target_label,
-            "original": round(orig, 3),
-            "adjusted": round(adj, 3),
-            "change": round(diff, 3),
-            "direction_nl": direction,
-            "sliders": e.get("applied_sliders", []),
-        })
+        top_effects.append(
+            {
+                "source": source_label,
+                "target": target_label,
+                "original": round(orig, 3),
+                "adjusted": round(adj, 3),
+                "change": round(diff, 3),
+                "direction_nl": direction,
+                "sliders": e.get("applied_sliders", []),
+            }
+        )
 
     return {
         "question": request.question,
@@ -248,9 +249,7 @@ async def generate_advice(
             lines.append(f"- {src} beïnvloedt {tgt} ({direction}, verandering: {change:+.3f})")
         effects_text = "\n".join(lines)
 
-    slider_text = "\n".join(
-        f"- {sid}: {val:.2f}" for sid, val in request.slider_values.items()
-    )
+    slider_text = "\n".join(f"- {sid}: {val:.2f}" for sid, val in request.slider_values.items())
 
     domain = dag.domain_name
     prompt = f"""Je bent een {dag.persona} voor {domain}. Een beleidsmedewerker heeft
@@ -277,23 +276,26 @@ Geef concreet en praktisch advies. Gebruik de volgende regels:
 Schrijf in het Nederlands."""
 
     messages = [
-        {"role": "system", "content": f"Je bent een vriendelijke maar professionele {dag.persona}. Je geeft helder advies op basis van wetenschappelijk onderbouwde causale modellen."},
+        {
+            "role": "system",
+            "content": f"Je bent een vriendelijke maar professionele {dag.persona}. Je geeft helder advies op basis van wetenschappelijk onderbouwde causale modellen.",
+        },
         {"role": "user", "content": prompt},
     ]
 
     connector = LLMConnector(request.provider, api_key, request.model)
     try:
         response = await connector.generate(messages)
-    except LLMProviderError:
+    except LLMProviderError as exc:
         raise HTTPException(
             status_code=502,
             detail="De AI-service kon het verzoek niet verwerken. Probeer het later opnieuw.",
-        )
-    except Exception:
+        ) from exc
+    except Exception as exc:
         raise HTTPException(
             status_code=502,
             detail="De AI-service is tijdelijk niet bereikbaar.",
-        )
+        ) from exc
 
     # Record additional query
     lm = LicenseManager(db)
@@ -359,8 +361,8 @@ async def _check_license(user: User, db: AsyncSession) -> None:
                 )
     except HTTPException:
         raise
-    except Exception:
-        raise HTTPException(status_code=403, detail="Licentie is ongeldig of verlopen")
+    except Exception as exc:
+        raise HTTPException(status_code=403, detail="Licentie is ongeldig of verlopen") from exc
 
 
 async def _resolve_stored_key(

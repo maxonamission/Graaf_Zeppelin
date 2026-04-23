@@ -56,9 +56,7 @@ _LEVEL_PATTERN = r"L(?:0|1|12|2|3)"
 _NODE_ID_RE = re.compile(
     rf"^(?P<domain>{_DOMAIN_PATTERN})-(?P<level>{_LEVEL_PATTERN})-(?P<seq>\d{{3,}})$"
 )
-_EDGE_ID_RE = re.compile(
-    rf"^E-(?P<edge_type>{_EDGE_TYPE_PATTERN})-(?P<seq>\d{{3,}})$"
-)
+_EDGE_ID_RE = re.compile(rf"^E-(?P<edge_type>{_EDGE_TYPE_PATTERN})-(?P<seq>\d{{3,}})$")
 
 
 # ── Parse-result-containers ──────────────────────────────────────────
@@ -131,13 +129,17 @@ def derive_edge_id(edge_type: str, seq: int) -> str:
 def validate_node_id(id: str) -> bool:
     """Return True iff ``id`` matches the node-ID pattern with known parts."""
     m = _NODE_ID_RE.match(id)
-    return bool(m) and m.group("domain") in _ABBR_TO_DOMAIN
+    if m is None:
+        return False
+    return m.group("domain") in _ABBR_TO_DOMAIN
 
 
 def validate_edge_id(id: str) -> bool:
     """Return True iff ``id`` matches the edge-ID pattern with a known type."""
     m = _EDGE_ID_RE.match(id)
-    return bool(m) and m.group("edge_type") in _ABBR_TO_EDGE_TYPE
+    if m is None:
+        return False
+    return m.group("edge_type") in _ABBR_TO_EDGE_TYPE
 
 
 def parse_node_id(id: str) -> NodeIdParts:
@@ -167,8 +169,7 @@ def parse_edge_id(id: str) -> EdgeIdParts:
     m = _EDGE_ID_RE.match(id)
     if not m:
         raise ValueError(
-            f"Edge ID {id!r} does not match pattern 'E-{{TYPE-AFK}}-{{VOLGNR}}' "
-            "(e.g. 'E-MED-014')"
+            f"Edge ID {id!r} does not match pattern 'E-{{TYPE-AFK}}-{{VOLGNR}}' (e.g. 'E-MED-014')"
         )
     abbr = m.group("edge_type")
     if abbr not in _ABBR_TO_EDGE_TYPE:

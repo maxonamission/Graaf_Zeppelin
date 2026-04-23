@@ -36,7 +36,7 @@ _REPO_ROOT = Path(__file__).resolve().parent.parent
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-from app.core.id_schema import (  # noqa: E402
+from app.core.id_schema import (
     derive_edge_id,
     derive_node_id,
     validate_edge_id,

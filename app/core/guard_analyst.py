@@ -15,7 +15,7 @@ import json
 import logging
 import re
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -118,7 +118,7 @@ def build_analysis_prompt(entries: list[dict[str, Any]], max_items: int = 50) ->
         matched = entry.get("extra", {}).get("matched", "")
         if matched and matched not in seen:
             seen.add(matched)
-            items.append(f"- \"{matched}\"")
+            items.append(f'- "{matched}"')
 
     if not items:
         return ""
@@ -182,15 +182,17 @@ def extract_new_patterns(
         except re.error:
             _logger.warning("Voorgesteld patroon compileert niet: %r", suggested)
             continue
-        new_patterns.append({
-            "pattern": suggested,
-            "category": item.get("category", "unknown"),
-            "lang": item.get("lang", "en"),
-            "severity": item.get("severity", "medium"),
-            "description": item.get("reasoning", "Discovered via post-hoc analysis"),
-            "source": "guard_analyst",
-            "discovered": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
-        })
+        new_patterns.append(
+            {
+                "pattern": suggested,
+                "category": item.get("category", "unknown"),
+                "lang": item.get("lang", "en"),
+                "severity": item.get("severity", "medium"),
+                "description": item.get("reasoning", "Discovered via post-hoc analysis"),
+                "source": "guard_analyst",
+                "discovered": datetime.now(UTC).strftime("%Y-%m-%d"),
+            }
+        )
         existing_regexes.add(suggested)  # deduplicate within batch
 
     return new_patterns
@@ -219,7 +221,7 @@ def append_patterns_to_file(
         added += 1
 
     if added:
-        data["updated"] = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        data["updated"] = datetime.now(UTC).strftime("%Y-%m-%d")
         path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         _logger.info("LLM Guard: %d nieuwe patronen toegevoegd aan %s", added, path)
 
@@ -227,6 +229,7 @@ def append_patterns_to_file(
 
 
 # ── CLI ──────────────────────────────────────────────────────────────────
+
 
 def _cli_summary(args: list[str]) -> None:
     """CLI: summarize blocked attempts from audit log."""

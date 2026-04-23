@@ -18,7 +18,6 @@ from app.core.id_schema import (
     validate_node_id,
 )
 
-
 # ── Tables are the source of truth ──────────────────────────────────
 
 
@@ -105,13 +104,13 @@ class TestValidateNodeId:
     @pytest.mark.parametrize(
         "id",
         [
-            "N001",              # legacy
-            "XYZ-L0-001",        # unknown domain abbreviation
-            "UIT-L4-001",        # unknown level
-            "UIT-l0-001",        # lowercase level
-            "uit-L0-001",        # lowercase domain
-            "UIT-L0-1",          # seq not zero-padded
-            "UIT-L0",            # missing seq
+            "N001",  # legacy
+            "XYZ-L0-001",  # unknown domain abbreviation
+            "UIT-L4-001",  # unknown level
+            "UIT-l0-001",  # lowercase level
+            "uit-L0-001",  # lowercase domain
+            "UIT-L0-1",  # seq not zero-padded
+            "UIT-L0",  # missing seq
             "UIT-L0-001-extra",  # trailing junk
             "",
         ],
@@ -149,9 +148,7 @@ class TestValidateEdgeId:
 class TestParseNodeId:
     def test_parse_round_trip(self):
         parts = parse_node_id("UIT-L0-001")
-        assert parts == NodeIdParts(
-            domain_abbr="UIT", domain="Uitkomsten", level="L0", seq=1
-        )
+        assert parts == NodeIdParts(domain_abbr="UIT", domain="Uitkomsten", level="L0", seq=1)
 
     def test_parse_normalised_level(self):
         parts = parse_node_id("SOC-L12-005")
@@ -174,9 +171,7 @@ class TestParseNodeId:
 class TestParseEdgeId:
     def test_parse_round_trip(self):
         parts = parse_edge_id("E-MED-014")
-        assert parts == EdgeIdParts(
-            edge_type_abbr="MED", edge_type="MEDIATING", seq=14
-        )
+        assert parts == EdgeIdParts(edge_type_abbr="MED", edge_type="MEDIATING", seq=14)
 
     def test_parse_feedback(self):
         parts = parse_edge_id("E-FBK-007")

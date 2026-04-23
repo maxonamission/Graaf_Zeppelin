@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 _logger = logging.getLogger("audit")
@@ -33,7 +33,7 @@ def audit_log(
 ) -> None:
     """Write a structured audit log entry as JSON."""
     entry = {
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "event": event_type,
         "user_id": user_id,
         "ip": ip,

@@ -42,9 +42,7 @@ def save_graph_json(data: dict[str, Any], path: PathLike, indent: int = 2) -> No
 def _normalize_shape(data: Any) -> dict[str, Any]:
     """Ensure ``data`` is a dict with list-valued ``nodes`` and ``edges``."""
     if not isinstance(data, dict):
-        raise ValueError(
-            f"Expected a dict at the top level, got {type(data).__name__}"
-        )
+        raise ValueError(f"Expected a dict at the top level, got {type(data).__name__}")
     data.setdefault("nodes", [])
     data.setdefault("edges", [])
     if not isinstance(data["nodes"], list):
@@ -109,9 +107,7 @@ def gexf_to_json(gexf_path: PathLike, json_path: PathLike) -> None:
 
     nodes_elem = root.find(".//gexf:nodes", ns) or root.find(".//nodes")
     if nodes_elem is not None:
-        iter_nodes = nodes_elem.findall(".//gexf:node", ns) or nodes_elem.findall(
-            ".//node"
-        )
+        iter_nodes = nodes_elem.findall(".//gexf:node", ns) or nodes_elem.findall(".//node")
         for node in iter_nodes:
             entry: dict[str, Any] = {
                 "id": node.get("id"),
@@ -124,9 +120,7 @@ def gexf_to_json(gexf_path: PathLike, json_path: PathLike) -> None:
 
     edges_elem = root.find(".//gexf:edges", ns) or root.find(".//edges")
     if edges_elem is not None:
-        iter_edges = edges_elem.findall(".//gexf:edge", ns) or edges_elem.findall(
-            ".//edge"
-        )
+        iter_edges = edges_elem.findall(".//gexf:edge", ns) or edges_elem.findall(".//edge")
         for edge in iter_edges:
             entry = {
                 "source": edge.get("source"),
@@ -165,9 +159,7 @@ def _read_attvalues(elem: ET.Element, ns: dict[str, str]) -> dict[str, str]:
     if attvalues is None:
         return {}
     props: dict[str, str] = {}
-    iter_av = attvalues.findall(".//gexf:attvalue", ns) or attvalues.findall(
-        ".//attvalue"
-    )
+    iter_av = attvalues.findall(".//gexf:attvalue", ns) or attvalues.findall(".//attvalue")
     for av in iter_av:
         key = av.get("for")
         value = av.get("value")
@@ -191,9 +183,7 @@ def json_to_markdown(json_path: PathLike, md_path: PathLike) -> None:
         lines.append(f"### {label}\n")
         lines.append(f"- **ID**: {node.get('id', '')}\n")
         props = node.get("properties") if isinstance(node.get("properties"), dict) else None
-        extra = props or {
-            k: v for k, v in node.items() if k not in {"id", "label"}
-        }
+        extra = props or {k: v for k, v in node.items() if k not in {"id", "label"}}
         if extra:
             lines.append("- **Properties**:\n")
             for k, v in extra.items():
@@ -208,9 +198,7 @@ def json_to_markdown(json_path: PathLike, md_path: PathLike) -> None:
         lines.append(f"- **{src}** {relation} **{tgt}**\n")
         props = edge.get("properties") if isinstance(edge.get("properties"), dict) else None
         extra = props or {
-            k: v
-            for k, v in edge.items()
-            if k not in {"source", "target", "label", "mechanism"}
+            k: v for k, v in edge.items() if k not in {"source", "target", "label", "mechanism"}
         }
         for k, v in extra.items():
             lines.append(f"  - {k}: {v}\n")
@@ -256,9 +244,7 @@ def markdown_to_json(md_path: PathLike, json_path: PathLike) -> None:
         if in_nodes:
             if line.startswith("### "):
                 if current_id is not None:
-                    nodes.append(
-                        {"id": current_id, "label": current_label or current_id}
-                    )
+                    nodes.append({"id": current_id, "label": current_label or current_id})
                 current_label = line[4:].strip()
                 current_id = current_label.lower().replace(" ", "_")
             elif line.startswith("- **ID**: "):

@@ -3,14 +3,14 @@ Onboarding (S09-06), PostgreSQL (S10-02), Multi-model (S10-05)."""
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import pytest
 from httpx import ASGITransport, AsyncClient
 
 from app.config import settings
 from app.core.dag_engine import CausalDAG
-from app.core.license_manager import LicenseTier, TIER_LIMITS
+from app.core.license_manager import TIER_LIMITS, LicenseTier
 from app.main import app
 
 
@@ -33,10 +33,10 @@ async def client():
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as c:
+        from app.core.auth import create_access_token, hash_password
         from app.db import async_session
         from app.models.license import License
         from app.models.user import User
-        from app.core.auth import hash_password, create_access_token
 
         async with async_session() as session:
             lic = License(
@@ -44,8 +44,8 @@ async def client():
                 organization="Sprint4 Org",
                 tier="basis",
                 is_active=True,
-                created_at=datetime.now(timezone.utc),
-                expires_at=datetime.now(timezone.utc) + timedelta(days=365),
+                created_at=datetime.now(UTC),
+                expires_at=datetime.now(UTC) + timedelta(days=365),
                 queries_used=0,
             )
             session.add(lic)
@@ -132,9 +132,8 @@ async def test_credits_status_endpoint(client):
 @pytest.mark.anyio
 async def test_credits_topup_endpoint(client):
     """S07-03: Top-up should add credits to the license."""
-    # First use some queries
-    res = await client.get("/api/license/credits/status")
-    initial = res.json()
+    # First use some queries (precondition for the top-up path)
+    await client.get("/api/license/credits/status")
 
     # Top up
     res = await client.post(
@@ -212,6 +211,7 @@ class TestPostgreSQLConfig:
 def test_alembic_ini_exists():
     """S10-02: Alembic config should exist."""
     from pathlib import Path
+
     assert Path("alembic.ini").exists()
     assert Path("alembic/env.py").exists()
 
@@ -219,6 +219,7 @@ def test_alembic_ini_exists():
 def test_migration_script_exists():
     """S10-02: SQLite to PostgreSQL migration script should exist."""
     from pathlib import Path
+
     assert Path("scripts/migrate_sqlite_to_pg.py").exists()
 
 

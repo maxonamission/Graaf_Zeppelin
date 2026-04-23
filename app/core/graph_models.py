@@ -267,17 +267,11 @@ class Graph(BaseModel):
             who = f"Edge {e.id!r}" if e.id else f"Edge {e.source}→{e.target}"
 
             if e.source not in node_ids:
-                raise ValueError(
-                    f"{who}: source {e.source!r} not found in nodes"
-                )
+                raise ValueError(f"{who}: source {e.source!r} not found in nodes")
 
             if e.target_type == TargetType.EDGE:
                 if e.target not in edge_ids:
-                    raise ValueError(
-                        f"{who}: moderator target {e.target!r} not found in edges"
-                    )
+                    raise ValueError(f"{who}: moderator target {e.target!r} not found in edges")
             elif e.target not in node_ids:
-                raise ValueError(
-                    f"{who}: target {e.target!r} not found in nodes"
-                )
+                raise ValueError(f"{who}: target {e.target!r} not found in nodes")
         return self

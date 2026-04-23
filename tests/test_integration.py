@@ -3,7 +3,7 @@
 Tests the complete user journey: register → login → explore → simulate → reason.
 """
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -27,6 +27,7 @@ async def setup_db():
 
     # Reset rate limiter between tests to prevent cross-test 429s
     from app.core.rate_limit import limiter
+
     limiter.reset()
 
     async with engine.begin() as conn:
@@ -41,7 +42,7 @@ async def setup_db():
 async def _seed_license():
     """Create a test license in the database."""
     async with async_session() as session:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         lic = License(
             key="GZ-INTEG-TEST",
             organization="Integration Org",
@@ -62,9 +63,7 @@ class TestRegistrationLoginFlow:
     async def test_register_and_login(self):
         await _seed_license()
 
-        async with AsyncClient(
-            transport=ASGITransport(app=app), base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             # Register
             reg_response = await client.post(
                 "/api/auth/register",
@@ -103,9 +102,7 @@ class TestRegistrationLoginFlow:
     async def test_register_duplicate_email(self):
         await _seed_license()
 
-        async with AsyncClient(
-            transport=ASGITransport(app=app), base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             payload = {
                 "email": "dupe@example.com",
                 "password": "StrongPass123!",
@@ -118,9 +115,7 @@ class TestRegistrationLoginFlow:
             assert response.status_code == 400
 
     async def test_register_invalid_license(self):
-        async with AsyncClient(
-            transport=ASGITransport(app=app), base_url="http://test"
-        ) as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.post(
                 "/api/auth/register",
                 json={
@@ -252,11 +247,7 @@ class TestSliderSimulationFlow:
             answers = [0.5] * len(qualifiers)
             qualify_res = await client.post(
                 "/api/graph/sliders/qualify",
-                json={
-                    "responses": [
-                        {"slider_id": slider_id, "answers": answers}
-                    ]
-                },
+                json={"responses": [{"slider_id": slider_id, "answers": answers}]},
             )
             assert qualify_res.status_code == 200
             slider_values = qualify_res.json()["slider_values"]
@@ -265,11 +256,7 @@ class TestSliderSimulationFlow:
             # 4. Run simulation with computed slider values
             sim_res = await client.post(
                 "/api/graph/simulate",
-                json={
-                    "sliders": [
-                        {"id": slider_id, "value": slider_values[slider_id]}
-                    ]
-                },
+                json={"sliders": [{"id": slider_id, "value": slider_values[slider_id]}]},
             )
             assert sim_res.status_code == 200
             assert "affected_edges" in sim_res.json()

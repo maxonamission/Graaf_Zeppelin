@@ -188,9 +188,7 @@ def find_dangling_refs(raw_data: dict[str, Any]) -> list[dict[str, str]]:
         target_type = e.get("target_type", "node")
 
         if source is not None and source not in node_ids:
-            dangling.append(
-                {"edge_id": edge_id, "field": "source", "invalid_id": source}
-            )
+            dangling.append({"edge_id": edge_id, "field": "source", "invalid_id": source})
 
         if target is None:
             continue
@@ -201,9 +199,7 @@ def find_dangling_refs(raw_data: dict[str, Any]) -> list[dict[str, str]]:
                     {"edge_id": edge_id, "field": "target(edge)", "invalid_id": target}
                 )
         elif target not in node_ids:
-            dangling.append(
-                {"edge_id": edge_id, "field": "target", "invalid_id": target}
-            )
+            dangling.append({"edge_id": edge_id, "field": "target", "invalid_id": target})
     return dangling
 
 
@@ -211,7 +207,7 @@ def check_connectivity(graph: nx.DiGraph) -> int:
     """Number of weakly connected components (0 for an empty graph)."""
     if graph.number_of_nodes() == 0:
         return 0
-    return nx.number_weakly_connected_components(graph)
+    return int(nx.number_weakly_connected_components(graph))
 
 
 def validate_edge_weights(graph: nx.DiGraph) -> list[dict[str, Any]]:
@@ -227,16 +223,15 @@ def validate_edge_weights(graph: nx.DiGraph) -> list[dict[str, Any]]:
         edge_id = data.get("id", f"{u}->{v}")
 
         bw = data.get("base_weight")
-        if bw is not None and isinstance(bw, (int, float)):
-            if not (0.0 <= bw <= 1.0):
-                violations.append(
-                    {
-                        "edge_id": edge_id,
-                        "field": "base_weight",
-                        "value": bw,
-                        "reason": "must be in [0.0, 1.0]",
-                    }
-                )
+        if bw is not None and isinstance(bw, int | float) and not (0.0 <= bw <= 1.0):
+            violations.append(
+                {
+                    "edge_id": edge_id,
+                    "field": "base_weight",
+                    "value": bw,
+                    "reason": "must be in [0.0, 1.0]",
+                }
+            )
 
         strength = data.get("strength")
         if isinstance(strength, str) and strength not in _VALID_STRENGTH_ENUM:
@@ -246,8 +241,7 @@ def validate_edge_weights(graph: nx.DiGraph) -> list[dict[str, Any]]:
                     "field": "strength",
                     "value": strength,
                     "reason": (
-                        "not numeric and not in enum "
-                        f"{sorted(_VALID_STRENGTH_ENUM - {''})}"
+                        f"not numeric and not in enum {sorted(_VALID_STRENGTH_ENUM - {''})}"
                     ),
                 }
             )
@@ -273,15 +267,11 @@ def validate_graph(raw_data: dict[str, Any]) -> ValidationReport:
     if node_dupes:
         preview = ", ".join(node_dupes[:5])
         suffix = ", ..." if len(node_dupes) > 5 else ""
-        report.errors.append(
-            f"{len(node_dupes)} duplicate node ID(s): {preview}{suffix}"
-        )
+        report.errors.append(f"{len(node_dupes)} duplicate node ID(s): {preview}{suffix}")
     if edge_dupes:
         preview = ", ".join(edge_dupes[:5])
         suffix = ", ..." if len(edge_dupes) > 5 else ""
-        report.errors.append(
-            f"{len(edge_dupes)} duplicate edge ID(s): {preview}{suffix}"
-        )
+        report.errors.append(f"{len(edge_dupes)} duplicate edge ID(s): {preview}{suffix}")
 
     report.dangling_refs = find_dangling_refs(raw_data)
     if report.dangling_refs:
@@ -307,10 +297,10 @@ def validate_graph(raw_data: dict[str, Any]) -> ValidationReport:
     # 3. Graph-level checks
     report.cycles = detect_cycles(g)
     if report.cycles:
-        first = report.cycles[0]
+        first_cycle = report.cycles[0]
         report.errors.append(
             f"{len(report.cycles)} cycle(s) in acyclic subgraph; "
-            f"first: {' → '.join(first)} → {first[0]}"
+            f"first: {' → '.join(first_cycle)} → {first_cycle[0]}"
         )
 
     # Moderator sources participate in the model even though their edges
@@ -321,21 +311,15 @@ def validate_graph(raw_data: dict[str, Any]) -> ValidationReport:
         for mod in mods
         if mod.get("moderator_node")
     )
-    report.orphan_nodes = find_orphan_nodes(
-        g, extra_participating_ids=moderator_sources
-    )
+    report.orphan_nodes = find_orphan_nodes(g, extra_participating_ids=moderator_sources)
     if report.orphan_nodes:
         preview = ", ".join(report.orphan_nodes[:5])
         suffix = ", ..." if len(report.orphan_nodes) > 5 else ""
-        report.warnings.append(
-            f"{len(report.orphan_nodes)} orphan node(s): {preview}{suffix}"
-        )
+        report.warnings.append(f"{len(report.orphan_nodes)} orphan node(s): {preview}{suffix}")
 
     report.edge_weight_violations = validate_edge_weights(g)
     if report.edge_weight_violations:
-        report.errors.append(
-            f"{len(report.edge_weight_violations)} edge-weight violation(s)"
-        )
+        report.errors.append(f"{len(report.edge_weight_violations)} edge-weight violation(s)")
 
     if report.weakly_connected_components > 1:
         report.warnings.append(

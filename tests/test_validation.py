@@ -374,6 +374,4 @@ class TestRealData:
         report = validate_graph(data)
         # Expectation: the shipped model is valid. If this fails, the message
         # will show the actual errors — update the model or the checks.
-        assert report.is_valid, (
-            f"sportdeelname_graph.json no longer valid:\n{report.summary()}"
-        )
+        assert report.is_valid, f"sportdeelname_graph.json no longer valid:\n{report.summary()}"

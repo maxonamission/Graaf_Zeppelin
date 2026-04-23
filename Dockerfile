@@ -9,8 +9,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY app/ app/
 COPY data/ data/
-COPY graaf_zeppelin/ graaf_zeppelin/
-COPY setup.py .
+COPY scripts/ scripts/
+COPY alembic/ alembic/
+COPY alembic.ini pyproject.toml ./
 
 # Create non-root user
 RUN useradd --create-home appuser

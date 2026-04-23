@@ -5,11 +5,13 @@ from pydantic_settings import BaseSettings
 
 _logger = logging.getLogger(__name__)
 
-_INSECURE_DEFAULTS = frozenset({
-    "dev-secret-key-change-in-production",
-    "secret",
-    "changeme",
-})
+_INSECURE_DEFAULTS = frozenset(
+    {
+        "dev-secret-key-change-in-production",
+        "secret",
+        "changeme",
+    }
+)
 
 
 class Settings(BaseSettings):

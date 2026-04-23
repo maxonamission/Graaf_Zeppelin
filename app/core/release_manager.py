@@ -10,7 +10,7 @@ Prevents trend breaks by treating major releases differently:
 from __future__ import annotations
 
 import re
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -47,7 +47,7 @@ class ReleaseManager:
             description=description,
             is_major=is_major,
             migration_guide=migration_guide,
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
         )
         self.db.add(release)
         await self.db.commit()
@@ -63,9 +63,7 @@ class ReleaseManager:
 
     async def get_release(self, version: str) -> Release | None:
         """Get a specific release by version."""
-        result = await self.db.execute(
-            select(Release).where(Release.version == version)
-        )
+        result = await self.db.execute(select(Release).where(Release.version == version))
         return result.scalar_one_or_none()
 
     async def get_latest_version(self) -> str | None:

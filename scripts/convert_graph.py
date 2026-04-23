@@ -53,8 +53,7 @@ def main(argv: list[str] | None = None) -> int:
     fn = routes.get((src, dst))
     if fn is None:
         print(
-            f"error: unsupported conversion {src} → {dst}. Supported: "
-            ".json↔.gexf, .json↔.md",
+            f"error: unsupported conversion {src} → {dst}. Supported: .json↔.gexf, .json↔.md",
             file=sys.stderr,
         )
         return 2

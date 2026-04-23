@@ -1,7 +1,5 @@
 """Tests for the slider simulation engine."""
 
-import pytest
-
 from app.core.slider_engine import (
     apply_slider,
     compute_slider_multiplier,

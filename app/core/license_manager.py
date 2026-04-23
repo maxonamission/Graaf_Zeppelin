@@ -7,8 +7,8 @@ Licenses are tied to organizations and checked on every session.
 from __future__ import annotations
 
 import secrets
-from datetime import datetime, timedelta, timezone
-from enum import Enum
+from datetime import UTC, datetime, timedelta
+from enum import StrEnum
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -17,7 +17,7 @@ from app.models.license import License
 from app.models.user import User
 
 
-class LicenseTier(str, Enum):
+class LicenseTier(StrEnum):
     FREE = "free"
     BASIS = "basis"
     PROFESSIONAL = "professional"
@@ -55,7 +55,7 @@ class LicenseManager:
     ) -> License:
         """Create a new license for an organization."""
         license_key = self._generate_key()
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
 
         license_obj = License(
             key=license_key,
@@ -73,9 +73,7 @@ class LicenseManager:
 
     async def validate_license(self, license_key: str) -> License:
         """Validate a license key and return the license if valid."""
-        result = await self.db.execute(
-            select(License).where(License.key == license_key)
-        )
+        result = await self.db.execute(select(License).where(License.key == license_key))
         license_obj = result.scalar_one_or_none()
 
         if not license_obj:
@@ -84,10 +82,10 @@ class LicenseManager:
         if not license_obj.is_active:
             raise LicenseError("Licentie is gedeactiveerd")
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         expires_at = license_obj.expires_at
         if expires_at.tzinfo is None:
-            expires_at = expires_at.replace(tzinfo=timezone.utc)
+            expires_at = expires_at.replace(tzinfo=UTC)
         if expires_at < now:
             raise LicenseError("Licentie is verlopen")
 
@@ -99,9 +97,7 @@ class LicenseManager:
 
     async def record_query(self, license_key: str) -> None:
         """Record a query against a license's usage counter."""
-        result = await self.db.execute(
-            select(License).where(License.key == license_key)
-        )
+        result = await self.db.execute(select(License).where(License.key == license_key))
         license_obj = result.scalar_one_or_none()
         if license_obj:
             license_obj.queries_used += 1
@@ -130,9 +126,7 @@ class LicenseManager:
         tier = LicenseTier(license_obj.tier)
         limits = TIER_LIMITS[tier]
 
-        result = await self.db.execute(
-            select(User).where(User.license_key == license_key)
-        )
+        result = await self.db.execute(select(User).where(User.license_key == license_key))
         current_users = len(result.scalars().all())
         return current_users < limits["users"]
 
@@ -143,7 +137,7 @@ class LicenseManager:
         """
         from app.models.daily_usage import DailyUsage
 
-        today = datetime.now(timezone.utc).date()
+        today = datetime.now(UTC).date()
         result = await self.db.execute(
             select(DailyUsage).where(
                 DailyUsage.user_id == user_id,
@@ -166,7 +160,7 @@ class LicenseManager:
         """Record a free query and return True if allowed, False if limit reached."""
         from app.models.daily_usage import DailyUsage
 
-        today = datetime.now(timezone.utc).date()
+        today = datetime.now(UTC).date()
         result = await self.db.execute(
             select(DailyUsage).where(
                 DailyUsage.user_id == user_id,
@@ -192,9 +186,7 @@ class LicenseManager:
 
     async def is_byok_tier(self, license_key: str) -> bool:
         """Check if a license uses the BYOK (Bring Your Own Key) tier."""
-        result = await self.db.execute(
-            select(License).where(License.key == license_key)
-        )
+        result = await self.db.execute(select(License).where(License.key == license_key))
         license_obj = result.scalar_one_or_none()
         return license_obj is not None and license_obj.tier == LicenseTier.BYOK.value
 

@@ -3,19 +3,14 @@ Free quota (S07-01), and BYOK (S07-04)."""
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
-from unittest.mock import AsyncMock, patch
+from datetime import UTC, datetime, timedelta
 
 import pytest
 from httpx import ASGITransport, AsyncClient
-from sqlalchemy import select
 
 from app.core.key_vault import KeyVault
-from app.core.license_manager import FREE_DAILY_LIMIT, LicenseManager, LicenseTier
+from app.core.license_manager import FREE_DAILY_LIMIT, LicenseTier
 from app.main import app
-from app.models.daily_usage import DailyUsage
-from app.models.user_api_key import UserApiKey
-
 
 # ── Fixtures ──────────────────────────────────────────────────────────
 
@@ -62,12 +57,14 @@ class TestLicenseTiers:
 
     def test_free_tier_has_daily_limit(self):
         from app.core.license_manager import TIER_LIMITS
+
         limits = TIER_LIMITS[LicenseTier.FREE]
         assert "daily_limit" in limits
         assert limits["daily_limit"] == FREE_DAILY_LIMIT
 
     def test_byok_tier_has_high_query_limit(self):
         from app.core.license_manager import TIER_LIMITS
+
         limits = TIER_LIMITS[LicenseTier.BYOK]
         assert limits["queries_per_month"] >= 100000
 
@@ -80,7 +77,7 @@ async def authenticated_client(tmp_path):
     """Create an authenticated client with a test user and license."""
     from app.config import settings
     from app.core.dag_engine import CausalDAG
-    from app.db import init_db, engine
+    from app.db import engine
     from app.models.base import Base
 
     async with engine.begin() as conn:
@@ -93,10 +90,10 @@ async def authenticated_client(tmp_path):
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         # Create license
+        from app.core.auth import create_access_token, hash_password
         from app.db import async_session
         from app.models.license import License
         from app.models.user import User
-        from app.core.auth import hash_password, create_access_token
 
         async with async_session() as session:
             lic = License(
@@ -104,8 +101,8 @@ async def authenticated_client(tmp_path):
                 organization="Test Org",
                 tier="basis",
                 is_active=True,
-                created_at=datetime.now(timezone.utc),
-                expires_at=datetime.now(timezone.utc) + timedelta(days=365),
+                created_at=datetime.now(UTC),
+                expires_at=datetime.now(UTC) + timedelta(days=365),
                 queries_used=0,
             )
             session.add(lic)
@@ -160,15 +157,19 @@ async def test_wizard_qualify_endpoint(authenticated_client):
     for s in sliders[:2]:
         qualifiers = s.get("qualifiers", [])
         if qualifiers:
-            answers.append({
-                "slider_id": s["id"],
-                "answers": [0.5] * len(qualifiers),
-            })
+            answers.append(
+                {
+                    "slider_id": s["id"],
+                    "answers": [0.5] * len(qualifiers),
+                }
+            )
         else:
-            answers.append({
-                "slider_id": s["id"],
-                "answers": [0.5],
-            })
+            answers.append(
+                {
+                    "slider_id": s["id"],
+                    "answers": [0.5],
+                }
+            )
 
     if not answers:
         pytest.skip("No qualifiable sliders")
@@ -265,10 +266,10 @@ async def byok_client(tmp_path):
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
+        from app.core.auth import create_access_token, hash_password
         from app.db import async_session
         from app.models.license import License
         from app.models.user import User
-        from app.core.auth import hash_password, create_access_token
 
         async with async_session() as session:
             lic = License(
@@ -276,8 +277,8 @@ async def byok_client(tmp_path):
                 organization="BYOK Org",
                 tier="byok",
                 is_active=True,
-                created_at=datetime.now(timezone.utc),
-                expires_at=datetime.now(timezone.utc) + timedelta(days=365),
+                created_at=datetime.now(UTC),
+                expires_at=datetime.now(UTC) + timedelta(days=365),
                 queries_used=0,
             )
             session.add(lic)

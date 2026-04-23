@@ -7,7 +7,7 @@ Users connect their own API keys.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, ClassVar
 
 import httpx
 
@@ -19,7 +19,7 @@ class LLMProviderError(Exception):
 class LLMConnector:
     """Connects to LLM providers using user-supplied API keys."""
 
-    PROVIDERS = {
+    PROVIDERS: ClassVar[dict[str, dict[str, Any]]] = {
         "openai": {
             "base_url": "https://api.openai.com/v1/chat/completions",
             "default_model": "gpt-4o",
@@ -37,8 +37,7 @@ class LLMConnector:
     def __init__(self, provider: str, api_key: str, model: str | None = None):
         if provider not in self.PROVIDERS:
             raise ValueError(
-                f"Unknown provider '{provider}'. "
-                f"Supported: {', '.join(self.PROVIDERS.keys())}"
+                f"Unknown provider '{provider}'. Supported: {', '.join(self.PROVIDERS.keys())}"
             )
         self.provider = provider
         self.api_key = api_key
@@ -79,14 +78,10 @@ class LLMConnector:
         }
 
         async with httpx.AsyncClient(timeout=60.0) as client:
-            response = await client.post(
-                self.config["base_url"], json=payload, headers=headers
-            )
+            response = await client.post(self.config["base_url"], json=payload, headers=headers)
 
         if response.status_code != 200:
-            raise LLMProviderError(
-                f"OpenAI API error {response.status_code}: {response.text}"
-            )
+            raise LLMProviderError(f"OpenAI API error {response.status_code}: {response.text}")
 
         data = response.json()
         return data["choices"][0]["message"]["content"]
@@ -121,14 +116,10 @@ class LLMConnector:
             payload["system"] = system_msg
 
         async with httpx.AsyncClient(timeout=60.0) as client:
-            response = await client.post(
-                self.config["base_url"], json=payload, headers=headers
-            )
+            response = await client.post(self.config["base_url"], json=payload, headers=headers)
 
         if response.status_code != 200:
-            raise LLMProviderError(
-                f"Anthropic API error {response.status_code}: {response.text}"
-            )
+            raise LLMProviderError(f"Anthropic API error {response.status_code}: {response.text}")
 
         data = response.json()
         return data["content"][0]["text"]

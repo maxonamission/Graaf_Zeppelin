@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json as _json
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Request, Response
 from pydantic import BaseModel, EmailStr, Field, field_validator
@@ -21,7 +21,6 @@ from app.core.auth import (
     hash_password,
     needs_rehash,
     verify_password,
-    verify_refresh_token,
 )
 from app.core.license_manager import LicenseManager
 from app.core.rate_limit import limiter
@@ -107,7 +106,7 @@ async def _issue_tokens(user: User, db: AsyncSession, response: Response) -> Non
     rt = RefreshToken(
         user_id=user.id,
         token_hash=token_hash,
-        expires_at=datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_DAYS),
+        expires_at=datetime.now(UTC) + timedelta(days=REFRESH_TOKEN_DAYS),
     )
     db.add(rt)
     await db.commit()
@@ -122,8 +121,8 @@ async def register(request: Request, data: RegisterRequest, db: AsyncSession = D
     lm = LicenseManager(db)
     try:
         await lm.validate_license(data.license_key)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Ongeldige licentie")
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail="Ongeldige licentie") from exc
 
     # Check user limit for license
     if not await lm.check_user_count(data.license_key):
@@ -190,16 +189,18 @@ async def login(request: Request, data: LoginRequest, db: AsyncSession = Depends
         lm = LicenseManager(db)
         try:
             await lm.validate_license(user.license_key)
-        except Exception:
+        except Exception as exc:
             audit_log("license_validation_failed", user_id=user.id, ip=client_ip)
-            raise HTTPException(status_code=403, detail="Licentieprobleem")
+            raise HTTPException(status_code=403, detail="Licentieprobleem") from exc
 
     audit_log("login_success", user_id=user.id, ip=client_ip)
 
-    body = _json.dumps({
-        "token_type": "bearer",
-        "needs_onboarding": not user.has_completed_onboarding,
-    })
+    body = _json.dumps(
+        {
+            "token_type": "bearer",
+            "needs_onboarding": not user.has_completed_onboarding,
+        }
+    )
     response = Response(content=body, media_type="application/json")
     await _issue_tokens(user, db, response)
     return response
@@ -220,19 +221,16 @@ async def refresh(
         raise HTTPException(status_code=401, detail="Geen refresh token")
 
     import hashlib
+
     token_hash = hashlib.sha256(refresh_token.encode()).hexdigest()
 
-    result = await db.execute(
-        select(RefreshToken).where(RefreshToken.token_hash == token_hash)
-    )
+    result = await db.execute(select(RefreshToken).where(RefreshToken.token_hash == token_hash))
     stored = result.scalar_one_or_none()
 
-    if not stored or stored.expires_at < datetime.now(timezone.utc):
+    if not stored or stored.expires_at < datetime.now(UTC):
         if stored:
             # Possible token reuse — revoke all tokens for this user
-            await db.execute(
-                delete(RefreshToken).where(RefreshToken.user_id == stored.user_id)
-            )
+            await db.execute(delete(RefreshToken).where(RefreshToken.user_id == stored.user_id))
             await db.commit()
             logger.warning("Refresh token reuse detected for user %s", stored.user_id)
         raise HTTPException(status_code=401, detail="Ongeldige of verlopen refresh token")
@@ -250,7 +248,9 @@ async def refresh(
     response = Response(content=body, media_type="application/json")
     await _issue_tokens(user, db, response)
 
-    audit_log("token_refreshed", user_id=user.id, ip=request.client.host if request.client else None)
+    audit_log(
+        "token_refreshed", user_id=user.id, ip=request.client.host if request.client else None
+    )
 
     return response
 
@@ -263,10 +263,9 @@ async def logout(
     """Clear access + refresh token cookies and revoke the refresh token."""
     if refresh_token:
         import hashlib
+
         token_hash = hashlib.sha256(refresh_token.encode()).hexdigest()
-        await db.execute(
-            delete(RefreshToken).where(RefreshToken.token_hash == token_hash)
-        )
+        await db.execute(delete(RefreshToken).where(RefreshToken.token_hash == token_hash))
         await db.commit()
 
     response = Response(content='{"logged_out":true}', media_type="application/json")

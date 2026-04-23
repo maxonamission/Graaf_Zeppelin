@@ -1,6 +1,5 @@
 """Tests for the LLMConnector — provider configuration and API call formatting."""
 
-import json
 from unittest.mock import AsyncMock, patch
 
 import httpx
@@ -44,17 +43,11 @@ class TestOpenAICalls:
         conn = LLMConnector("openai", "sk-test")
         mock_response = httpx.Response(
             200,
-            json={
-                "choices": [
-                    {"message": {"content": "Test antwoord"}}
-                ]
-            },
+            json={"choices": [{"message": {"content": "Test antwoord"}}]},
         )
 
         with patch("httpx.AsyncClient.post", new_callable=AsyncMock, return_value=mock_response):
-            result = await conn.generate(
-                [{"role": "user", "content": "Hallo"}]
-            )
+            result = await conn.generate([{"role": "user", "content": "Hallo"}])
             assert result == "Test antwoord"
 
     async def test_openai_api_error(self):
@@ -64,11 +57,11 @@ class TestOpenAICalls:
             json={"error": {"message": "Invalid API key"}},
         )
 
-        with patch("httpx.AsyncClient.post", new_callable=AsyncMock, return_value=mock_response):
-            with pytest.raises(LLMProviderError, match="OpenAI API error 401"):
-                await conn.generate(
-                    [{"role": "user", "content": "test"}]
-                )
+        with (
+            patch("httpx.AsyncClient.post", new_callable=AsyncMock, return_value=mock_response),
+            pytest.raises(LLMProviderError, match="OpenAI API error 401"),
+        ):
+            await conn.generate([{"role": "user", "content": "test"}])
 
     async def test_openai_rate_limit(self):
         conn = LLMConnector("openai", "sk-test")
@@ -77,11 +70,11 @@ class TestOpenAICalls:
             json={"error": {"message": "Rate limit exceeded"}},
         )
 
-        with patch("httpx.AsyncClient.post", new_callable=AsyncMock, return_value=mock_response):
-            with pytest.raises(LLMProviderError, match="429"):
-                await conn.generate(
-                    [{"role": "user", "content": "test"}]
-                )
+        with (
+            patch("httpx.AsyncClient.post", new_callable=AsyncMock, return_value=mock_response),
+            pytest.raises(LLMProviderError, match="429"),
+        ):
+            await conn.generate([{"role": "user", "content": "test"}])
 
 
 @pytest.mark.asyncio
@@ -90,9 +83,7 @@ class TestAnthropicCalls:
         conn = LLMConnector("anthropic", "ant-test")
         mock_response = httpx.Response(
             200,
-            json={
-                "content": [{"text": "Anthropic antwoord"}]
-            },
+            json={"content": [{"text": "Anthropic antwoord"}]},
         )
 
         with patch("httpx.AsyncClient.post", new_callable=AsyncMock, return_value=mock_response):
@@ -135,11 +126,11 @@ class TestAnthropicCalls:
             json={"error": {"message": "Invalid API key"}},
         )
 
-        with patch("httpx.AsyncClient.post", new_callable=AsyncMock, return_value=mock_response):
-            with pytest.raises(LLMProviderError, match="Anthropic API error 401"):
-                await conn.generate(
-                    [{"role": "user", "content": "test"}]
-                )
+        with (
+            patch("httpx.AsyncClient.post", new_callable=AsyncMock, return_value=mock_response),
+            pytest.raises(LLMProviderError, match="Anthropic API error 401"),
+        ):
+            await conn.generate([{"role": "user", "content": "test"}])
 
 
 @pytest.mark.asyncio

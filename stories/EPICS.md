@@ -197,11 +197,11 @@ penetratietests, en een doorlopend review-proces.
 | Story | Status | Prioriteit | Beschrijving |
 |-------|--------|------------|-------------|
 | [S13-01](done/S13-01-threat-model.md) | ✅ Done | HOOG | Threat model opstellen (STRIDE, actoren, vertrouwensgrenzen) |
-| [S13-02](backlog/S13-02-incident-response-plan.md) | 🔲 Backlog | HOOG | Incident response plan (classificatie, escalatie, communicatie) |
-| [S13-03](backlog/S13-03-penetratietest.md) | 🔲 Backlog | HOOG | Penetratietest plannen en uitvoeren (onafhankelijke validatie) |
-| [S13-04](backlog/S13-04-dependency-lifecycle.md) | 🔲 Backlog | GEMIDDELD | Dependency lifecycle management (Dependabot, SLA, lock-file) |
-| [S13-05](backlog/S13-05-keyvault-hardening.md) | 🔲 Backlog | GEMIDDELD | KeyVault en cryptografie hardening (PBKDF2, database-SSL) |
-| [S13-06](backlog/S13-06-security-review-proces.md) | 🔲 Backlog | GEMIDDELD | Structureel security review proces (checklist, jaarplanning, champion) |
+| [S13-02](done/S13-02-incident-response-plan.md) | ✅ Done | HOOG | Incident response plan (classificatie, escalatie, communicatie) |
+| [S13-03](done/S13-03-penetratietest.md) | ✅ Done | HOOG | Penetratietest plannen en uitvoeren (onafhankelijke validatie) |
+| [S13-04](done/S13-04-dependency-lifecycle.md) | ✅ Done | GEMIDDELD | Dependency lifecycle management (Dependabot, SLA, lock-file) |
+| [S13-05](done/S13-05-keyvault-hardening.md) | ✅ Done | GEMIDDELD | KeyVault en cryptografie hardening (PBKDF2, database-SSL) |
+| [S13-06](done/S13-06-security-review-proces.md) | ✅ Done | GEMIDDELD | Structureel security review proces (checklist, jaarplanning, champion) |
 
 ---
 
@@ -227,8 +227,8 @@ Niet blokkerend voor uitvoering van S14-01..S14-07; hoort thuis in een
 Olympus-conversatie en uiteindelijk in `docs/graph-methodology.md` bij Olympus.
 
 **Kritisch pad:** S14-01 ✅ → S14-04 ✅ → S14-02 ✅ → S14-03 ✅ →
-S14-05 ✅ → **S14-06**. S14-07 kan parallel (alleen docs). S14-06
-sluit de epic af met de ontwikkelstraat.
+S14-05 ✅ → S14-06 ✅. Alleen **S14-07** (schema-evolutie-doc, 2-3u)
+rest; kan parallel, alleen docs.
 
 | Story | Status | Prioriteit | Beschrijving |
 |-------|--------|------------|-------------|
@@ -237,7 +237,7 @@ sluit de epic af met de ontwikkelstraat.
 | [S14-03](done/S14-03-time-lag-beslissing.md) | ✅ Done | GEMIDDELD | `time_lag` schrappen (Pad B); Pad A op roadmap (GZ-03) |
 | [S14-04](done/S14-04-invarianten-catalogus.md) | ✅ Done | HOOG | Invarianten-catalogus: cycle/orphan/duplicate/dangling + CLI (GZ-04) |
 | [S14-05](done/S14-05-id-schema-herontwerp.md) | ✅ Done | GEMIDDELD | ID-schema integrale migratie (GZ-05) |
-| [S14-06](backlog/S14-06-ontwikkelstraat.md) | 🔲 Backlog | GEMIDDELD | Ontwikkelstraat parallel aan Olympus: ruff, mypy, pre-commit, CI, hooks, stories (GZ-06) |
+| [S14-06](done/S14-06-ontwikkelstraat.md) | ✅ Done | GEMIDDELD | Ontwikkelstraat parallel aan Olympus: ruff, mypy, pre-commit, CI, hooks, stories (GZ-06) |
 | [S14-07](backlog/S14-07-schema-evolutie-doc.md) | 🔲 Backlog | LAAG | Schema-evolutie v1→v2 documenteren als methodologie-bijdrage (GZ-07) |
 
 ---
@@ -257,4 +257,4 @@ misleidend rood beeld en is CI niet betrouwbaar.
 |-------|--------|------------|-------------|
 | [S15-01](backlog/S15-01-async-testing-plugin.md) | 🔲 Backlog | HOOG | `pytest-asyncio` installeren; lost ~80 async-gerelateerde test-errors op |
 | [S15-02](backlog/S15-02-jinja2-template-render.md) | 🔲 Backlog | GEMIDDELD | Jinja2 `unhashable type: 'dict'` in 5 pagina-render-tests — mogelijk ook productie-impact |
-| [S15-03](backlog/S15-03-email-validator-dep.md) | ✅ Done (S14-02) | LAAG | `email-validator` toevoegen als dep (gedekt door `pydantic[email]` in S14-02) |
+| [S15-03](done/S15-03-email-validator-dep.md) | ✅ Done (S14-02) | LAAG | `email-validator` toevoegen als dep (gedekt door `pydantic[email]` in S14-02) |
