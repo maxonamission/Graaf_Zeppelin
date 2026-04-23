@@ -20,6 +20,12 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any
 
+# defusedxml's parse() is XXE/billion-laughs-veilig. We gebruiken de
+# stdlib `xml.etree.ElementTree` alleen voor het construeren en
+# serialiseren van XML (Element/SubElement/ElementTree) — niet voor het
+# parsen van input.
+from defusedxml.ElementTree import parse as _safe_xml_parse
+
 PathLike = str | Path
 
 
@@ -98,7 +104,7 @@ def json_to_gexf(json_path: PathLike, gexf_path: PathLike) -> None:
 
 def gexf_to_json(gexf_path: PathLike, json_path: PathLike) -> None:
     """Convert a GEXF graph back to our JSON shape."""
-    tree = ET.parse(str(gexf_path))
+    tree = _safe_xml_parse(str(gexf_path))
     root = tree.getroot()
     ns = {"gexf": "http://www.gexf.net/1.2draft"}
 
