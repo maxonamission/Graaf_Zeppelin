@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from app.core.dag_engine import CausalDAG
+from app.core.dag_engine import ACYCLIC_EDGE_TYPES, CausalDAG
 
 
 def make_simple_dag() -> CausalDAG:
@@ -508,3 +508,81 @@ class TestCausalDAGv2:
                 assert "question" in q
                 assert "options" in q
                 assert len(q["options"]) >= 3
+
+
+# ── S14-01: cycle-check per edge-type ────────────────────────────────────
+
+
+def _v2_cycle_fixture(edge_type: str) -> dict:
+    """Minimal v2 fixture with a 2-node cycle A↔B of a given edge_type."""
+    return {
+        "metadata": {"project": "cycle-fixture", "version": "0.0.0"},
+        "nodes": [
+            {"id": "A", "label": "A", "domain": "x", "level": "L0"},
+            {"id": "B", "label": "B", "domain": "x", "level": "L0"},
+        ],
+        "edges": [
+            {
+                "id": "E1",
+                "source": "A",
+                "target": "B",
+                "target_type": "node",
+                "polarity": "positief",
+                "base_weight": 0.5,
+                "edge_type": edge_type,
+            },
+            {
+                "id": "E2",
+                "source": "B",
+                "target": "A",
+                "target_type": "node",
+                "polarity": "positief",
+                "base_weight": 0.5,
+                "edge_type": edge_type,
+            },
+        ],
+    }
+
+
+class TestAcyclicEdgeTypes:
+    def test_acyclic_edge_types_constant(self):
+        """STRUCTURAL/MEDIATING/MODERATOR are acyclic; FEEDBACK/SOCIAL_REGULATORY are not."""
+        assert "STRUCTURAL" in ACYCLIC_EDGE_TYPES
+        assert "MEDIATING" in ACYCLIC_EDGE_TYPES
+        assert "MODERATOR" in ACYCLIC_EDGE_TYPES
+        assert "FEEDBACK" not in ACYCLIC_EDGE_TYPES
+        assert "SOCIAL_REGULATORY" not in ACYCLIC_EDGE_TYPES
+
+    def test_feedback_edges_may_form_cycles(self):
+        """Two FEEDBACK edges A↔B are accepted (not a DAG in the acyclic-type sense)."""
+        dag = CausalDAG.from_dict(_v2_cycle_fixture("FEEDBACK"))
+        assert dag.graph.number_of_nodes() == 2
+        assert dag.graph.number_of_edges() == 2
+
+    def test_social_regulatory_edges_may_form_cycles(self):
+        """SOCIAL_REGULATORY is also exempt from the acyclicity constraint."""
+        dag = CausalDAG.from_dict(_v2_cycle_fixture("SOCIAL_REGULATORY"))
+        assert dag.graph.number_of_edges() == 2
+
+    def test_structural_cycle_still_blocked(self):
+        """STRUCTURAL cycles must still raise, with edge_type in the message."""
+        with pytest.raises(ValueError) as exc:
+            CausalDAG.from_dict(_v2_cycle_fixture("STRUCTURAL"))
+        msg = str(exc.value)
+        assert "STRUCTURAL" in msg
+        # Error message names the offending edges
+        assert "A→B" in msg or "B→A" in msg
+
+    def test_mediating_cycle_blocked(self):
+        """MEDIATING cycles are likewise blocked."""
+        with pytest.raises(ValueError, match="MEDIATING"):
+            CausalDAG.from_dict(_v2_cycle_fixture("MEDIATING"))
+
+    def test_mixed_feedback_and_structural_cycle(self):
+        """A STRUCTURAL edge cycling through a FEEDBACK edge is still blocked
+        only if the STRUCTURAL subgraph itself is cyclic — here it isn't."""
+        data = _v2_cycle_fixture("FEEDBACK")
+        # Swap one FEEDBACK → STRUCTURAL; remaining structural is a single A→B edge.
+        data["edges"][0]["edge_type"] = "STRUCTURAL"
+        dag = CausalDAG.from_dict(data)
+        assert dag.graph.number_of_edges() == 2  # no cycle in STRUCTURAL subgraph alone

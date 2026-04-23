@@ -1,9 +1,23 @@
 # S14-01: Cycle-check per edge-type (GZ-01)
 
 **Epic:** EPIC-14 Graph-methodologie afstemming
-**Status:** 🔲 Backlog
+**Status:** ✅ Done
 **Prioriteit:** Hoog
 **Bron:** `docs/actieplan-os.md` §GZ-01
+
+## Resultaat
+
+- `ACYCLIC_EDGE_TYPES = frozenset({"STRUCTURAL", "MEDIATING", "MODERATOR"})` +
+  `_acyclic_subgraph()` + `_assert_acyclic()` helpers in `app/core/dag_engine.py`
+- Cycle-check loopt nu op de acyclic-subgraph — niet langer op de hele graph
+- Check wordt aangeroepen in `add_relation` (v1 pad) én aan het eind van
+  `_from_dict_v2` (v2 pad); daarvóór liep de v2-check **helemaal niet**
+- Foutmelding noemt de edges in de cyclus én hun `edge_type`
+- Nieuwe `TestAcyclicEdgeTypes`-klasse met 6 tests; alle 78 graph-gerelateerde
+  tests blijven groen
+- README-sectie "Edge-types en cycli" toegevoegd
+- Echte `sportdeelname_graph.json` (69 nodes, 108 edges) bevat geen
+  STRUCTURAL/MEDIATING/MODERATOR-cycli — geen data-migratie nodig
 
 ## Doel
 

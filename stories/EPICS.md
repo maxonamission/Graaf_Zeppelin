@@ -231,7 +231,7 @@ S14-02 staat. S14-07 kan parallel (alleen docs).
 
 | Story | Status | Prioriteit | Beschrijving |
 |-------|--------|------------|-------------|
-| [S14-01](backlog/S14-01-cycle-check-per-edge-type.md) | 🔲 Backlog | HOOG | Cycle-check per edge-type (GZ-01) — FEEDBACK-edges mogen cyclisch zijn |
+| [S14-01](done/S14-01-cycle-check-per-edge-type.md) | ✅ Done | HOOG | Cycle-check per edge-type (GZ-01) — FEEDBACK-edges mogen cyclisch zijn |
 | [S14-02](backlog/S14-02-pydantic-graph-models.md) | 🔲 Backlog | HOOG | Pydantic-modellen voor Node en Edge + consolidatie `knowledge_graph.py` (GZ-02) |
 | [S14-03](backlog/S14-03-time-lag-beslissing.md) | 🔲 Backlog | GEMIDDELD | `time_lag` schrappen (Pad B); Pad A op roadmap (GZ-03) |
 | [S14-04](backlog/S14-04-invarianten-catalogus.md) | 🔲 Backlog | HOOG | Invarianten-catalogus: cycle/orphan/duplicate/dangling + CLI (GZ-04) |

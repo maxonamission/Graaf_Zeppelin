@@ -18,6 +18,14 @@ from typing import Any
 
 import networkx as nx
 
+# Edge-types whose collective subgraph must remain acyclic. FEEDBACK and
+# SOCIAL_REGULATORY edges are semantically cyclic (feedback loops, social
+# regulation) and are excluded from the acyclicity constraint — see
+# stories/done/S14-01-cycle-check-per-edge-type.md.
+ACYCLIC_EDGE_TYPES: frozenset[str] = frozenset(
+    {"STRUCTURAL", "MEDIATING", "MODERATOR"}
+)
+
 # Mapping from v2 polarity strings to v1 direction strings (NL + EN — S12-05)
 _POLARITY_MAP = {
     "positief": "positive",
@@ -37,6 +45,45 @@ _STRENGTH_MAP = {
     "medium": 0.5,
     "weak": 0.2,
 }
+
+
+def _acyclic_subgraph(graph: nx.DiGraph) -> nx.DiGraph:
+    """Return the subgraph induced by edges whose edge_type is acyclic.
+
+    Edges without an ``edge_type`` attribute are treated as acyclic-constrained
+    (this preserves v1-schema behaviour, where the concept does not exist).
+    """
+    sub: nx.DiGraph = nx.DiGraph()
+    sub.add_nodes_from(graph.nodes(data=True))
+    for u, v, data in graph.edges(data=True):
+        edge_type = data.get("edge_type")
+        if edge_type is None or edge_type in ACYCLIC_EDGE_TYPES:
+            sub.add_edge(u, v, **data)
+    return sub
+
+
+def _assert_acyclic(graph: nx.DiGraph) -> None:
+    """Raise ValueError if the acyclic subgraph contains a cycle.
+
+    The error message names the edges in the offending cycle and their
+    ``edge_type`` values, to make debugging quick.
+    """
+    sub = _acyclic_subgraph(graph)
+    if nx.is_directed_acyclic_graph(sub):
+        return
+    cycles = list(nx.simple_cycles(sub))
+    if not cycles:
+        return
+    first = cycles[0]
+    pieces = []
+    for i, u in enumerate(first):
+        v = first[(i + 1) % len(first)]
+        etype = sub.edges[u, v].get("edge_type", "<no edge_type>")
+        pieces.append(f"{u}→{v} [{etype}]")
+    raise ValueError(
+        "Cycle detected among acyclic edge types "
+        f"{sorted(ACYCLIC_EDGE_TYPES)}: " + " → ".join(pieces)
+    )
 
 
 class CausalDAG:
@@ -140,12 +187,17 @@ class CausalDAG:
             **attrs,
         )
 
-        # Validate DAG property (no cycles) — only for v1 models
-        if check_dag and not nx.is_directed_acyclic_graph(self.graph):
-            self.graph.remove_edge(cause, effect)
-            raise ValueError(
-                f"Adding relation {cause} → {effect} would create a cycle"
-            )
+        # Validate acyclicity on the subgraph of acyclic edge-types only.
+        # Edges without an edge_type (v1 schema) are treated as acyclic-constrained.
+        if check_dag:
+            try:
+                _assert_acyclic(self.graph)
+            except ValueError as exc:
+                self.graph.remove_edge(cause, effect)
+                raise ValueError(
+                    f"Adding relation {cause} → {effect} would create a cycle: "
+                    f"{exc}"
+                ) from None
 
     def add_moderator(
         self,
@@ -610,6 +662,10 @@ class CausalDAG:
 
         # Load sliders
         dag.sliders = data.get("sliders", [])
+
+        # Enforce acyclicity on the subgraph of acyclic edge-types.
+        # FEEDBACK and SOCIAL_REGULATORY edges may form cycles by design.
+        _assert_acyclic(dag.graph)
 
         return dag
 
