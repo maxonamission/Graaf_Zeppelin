@@ -57,17 +57,11 @@ class CurveType(StrEnum):
     THRESHOLD_LOGISTIC = "THRESHOLD_LOGISTIC"
 
 
-class TimeLag(StrEnum):
-    """Retained for compatibility with the current v2 schema.
-
-    S14-03 (Pad B) will remove ``time_lag`` from the schema and this
-    enum. Until then we carry it as an Optional field so existing data
-    loads cleanly.
-    """
-
-    SHORT = "short"
-    MEDIUM = "medium"
-    LONG = "long"
+# Note — the ``TimeLag`` enum was removed in S14-03 (Pad B). The field
+# was never read by the simulation, which made it a dead-field
+# anti-pattern. Reactivation (Pad A, iterative-tick simulation) is
+# parked as a dynamiek-epic in PLAN.md; re-introducing the enum then is
+# one commit.
 
 
 class BondInfluence(StrEnum):
@@ -109,9 +103,9 @@ def _empty_to_none(v: Any) -> Any:
     """Treat the empty string as "field absent" for optional enum fields.
 
     The v2 dataset carries empty strings for unset optional enum values
-    (e.g. ``"time_lag": ""``); Pydantic would reject those against a
+    (e.g. ``"curve_type": ""``); Pydantic would reject those against a
     strict enum. Normalising to ``None`` here keeps the schema strict
-    without forcing a data migration before this story lands.
+    without requiring a data migration for every such field.
     """
     if isinstance(v, str) and v == "":
         return None
@@ -179,7 +173,6 @@ class Edge(BaseModel):
     bond_influence: BondInfluence | None = None
     disciplines: list[str] = Field(default_factory=list)
     slider_sensitivity: dict[str, Any] = Field(default_factory=dict)
-    time_lag: TimeLag | None = None  # scheduled for removal in S14-03 (Pad B)
     status: NodeStatus | None = None
 
     @field_validator(
@@ -187,7 +180,6 @@ class Edge(BaseModel):
         "strength",
         "edge_type",
         "curve_type",
-        "time_lag",
         "bond_influence",
         "status",
         mode="before",

@@ -100,6 +100,14 @@ Deze splitsing houdt het schema en het runtime-gedrag consistent: een
 `FEEDBACK`-edge in de data werkt ook echt als feedback, in plaats van door de
 globale DAG-check te worden afgewezen.
 
+### `time_lag` uit het schema (v2.X)
+
+Het edge-veld `time_lag` is in v2.X verwijderd omdat de simulatie het niet
+gebruikte — het was een dead-field anti-pattern. Her-activeren (iteratieve
+tik-simulatie met `short`/`medium`/`long`) is geparkeerd als
+dynamiek-epic; zie `PLAN.md` onder "Toekomstige uitbreiding" voor de
+blueprint en trigger.
+
 ## Projectstructuur
 
 ```

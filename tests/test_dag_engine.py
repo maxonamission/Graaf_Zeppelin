@@ -85,7 +85,6 @@ def make_v2_data() -> dict:
                 "slider_sensitivity": {"sens_test": "high"},
                 "disciplines": ["Univ"],
                 "bond_influence": "medium",
-                "time_lag": "",
                 "status": "A",
             },
             {
@@ -107,7 +106,6 @@ def make_v2_data() -> dict:
                 "slider_sensitivity": {"sens_test": "medium"},
                 "disciplines": ["Univ"],
                 "bond_influence": "high",
-                "time_lag": "",
                 "status": "-",
             },
             {
@@ -129,7 +127,6 @@ def make_v2_data() -> dict:
                 "slider_sensitivity": {},
                 "disciplines": ["Univ"],
                 "bond_influence": "none",
-                "time_lag": "",
                 "status": "-",
             },
         ],

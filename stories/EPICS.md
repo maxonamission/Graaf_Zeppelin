@@ -226,15 +226,15 @@ Bron: `docs/actieplan-os.md` (overgenomen vanuit `maxonamission/Codebase-Olympus
 Niet blokkerend voor uitvoering van S14-01..S14-07; hoort thuis in een
 Olympus-conversatie en uiteindelijk in `docs/graph-methodology.md` bij Olympus.
 
-**Kritisch pad:** S14-01 ✅ → S14-04 ✅ → S14-02 ✅ → **S14-05**. S14-03
-is triviaal (~1u) en bouwt op S14-02 (nu klaar). S14-07 kan parallel
-(alleen docs). S14-06 sluit de epic af met de ontwikkelstraat.
+**Kritisch pad:** S14-01 ✅ → S14-04 ✅ → S14-02 ✅ → S14-03 ✅ →
+**S14-05**. S14-07 kan parallel (alleen docs). S14-06 sluit de epic af
+met de ontwikkelstraat.
 
 | Story | Status | Prioriteit | Beschrijving |
 |-------|--------|------------|-------------|
 | [S14-01](done/S14-01-cycle-check-per-edge-type.md) | ✅ Done | HOOG | Cycle-check per edge-type (GZ-01) — FEEDBACK-edges mogen cyclisch zijn |
 | [S14-02](done/S14-02-pydantic-graph-models.md) | ✅ Done | HOOG | Pydantic-modellen voor Node en Edge + consolidatie `knowledge_graph.py` (GZ-02) |
-| [S14-03](backlog/S14-03-time-lag-beslissing.md) | 🔲 Backlog | GEMIDDELD | `time_lag` schrappen (Pad B); Pad A op roadmap (GZ-03) |
+| [S14-03](done/S14-03-time-lag-beslissing.md) | ✅ Done | GEMIDDELD | `time_lag` schrappen (Pad B); Pad A op roadmap (GZ-03) |
 | [S14-04](done/S14-04-invarianten-catalogus.md) | ✅ Done | HOOG | Invarianten-catalogus: cycle/orphan/duplicate/dangling + CLI (GZ-04) |
 | [S14-05](backlog/S14-05-id-schema-herontwerp.md) | 🔲 Backlog | GEMIDDELD | ID-schema integrale migratie (GZ-05) |
 | [S14-06](backlog/S14-06-ontwikkelstraat.md) | 🔲 Backlog | GEMIDDELD | Ontwikkelstraat parallel aan Olympus: ruff, mypy, pre-commit, CI, hooks, stories (GZ-06) |

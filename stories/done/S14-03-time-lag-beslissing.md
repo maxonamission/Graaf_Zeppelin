@@ -1,9 +1,43 @@
 # S14-03: `time_lag` schrappen (Pad B), Pad A op roadmap (GZ-03)
 
 **Epic:** EPIC-14 Graph-methodologie afstemming
-**Status:** 🔲 Backlog
+**Status:** ✅ Done
 **Prioriteit:** Gemiddeld
 **Bron:** `docs/actieplan-os.md` §GZ-03
+
+## Resultaat
+
+- **`scripts/strip_time_lag.py`** — idempotent migratiescript met
+  `--dry-run` en `--indent`; draaien op `data/models/sportdeelname_graph.json`
+  verwijderde het veld uit **114/114 edges**. Tweede run: no-op. JSON-
+  indentatie (3 spaties) bewaard.
+- **`TimeLag` StrEnum verwijderd** uit `app/core/graph_models.py`; korte
+  comment op die plek die expliciet naar PLAN.md verwijst voor Pad A.
+- **`time_lag` veld verwijderd** uit `Edge`-model en uit de validator-
+  lijst. Docstring bij `_empty_to_none` bijgewerkt met ander voorbeeld.
+- **Test fixtures**: `"time_lag": ""` uit de v2-fixture in
+  `tests/test_dag_engine.py` (drie edges) gehaald. In
+  `tests/test_graph_models.py`: `TimeLag`-import weg, enum-assertie
+  weg, `test_empty_string_becomes_none` gebruikt nu `curve_type` en
+  `edge_type` i.p.v. `time_lag`. Nieuwe regressietest
+  `test_time_lag_removed` borgt dat noch de enum noch het veld
+  terugkruipt.
+- **`PLAN.md`**: nieuwe sectie "Toekomstige uitbreiding — dynamiek-epic
+  (`time_lag`, Pad A)" onder Fase 4, met blueprint (tik-dynamiek,
+  FEEDBACK-demping, frontend-tijdslider) en expliciete trigger.
+- **`README.md`**: korte alinea "`time_lag` uit het schema (v2.X)" met
+  verwijzing naar de roadmap-regel.
+- **Tests**: 119 graph-gerelateerde tests groen.
+- **Validator op echte data**: `scripts/validate_graph.py` rapporteert
+  nog steeds `is_valid=True` (enige warning is de ongewijzigde
+  weakly-connected-components bevinding van S14-04).
+
+## Dataformat-impact
+
+Het v2-schema kent nu 11 edge-velden in plaats van 12. Geen andere
+wijzigingen aan data-structuren. De `slider_engine.py`-propagatie werkt
+nog altijd in één stap — geen codewijzigingen daar nodig omdat de code
+`time_lag` sowieso al negeerde.
 
 ## Beslissing
 

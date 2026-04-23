@@ -147,3 +147,25 @@ De LLM-integratie moet naadloos werken voor niet-technische gebruikers.
 - [ ] Monitoring & logging
 - [ ] Interventie-rapportage: PDF/Markdown export van simulatieresultaten
 - [ ] Meerdere modellen ondersteunen (niet alleen sportdeelname)
+
+### Toekomstige uitbreiding — dynamiek-epic (`time_lag`, Pad A)
+
+Het veld `time_lag` is in S14-03 (Pad B) uit het schema verwijderd omdat
+de simulatie er niets mee deed. Een toekomstige dynamiek-epic kan het
+opnieuw introduceren en activeren:
+
+- `simulate_intervention(factor, value, steps)` iteratief over "tikken";
+  effect van een edge met `time_lag=short` werkt in 1 tik door,
+  `medium` in 3, `long` in 10 (parametriseerbaar)
+- Return-payload wordt een traject `[(tick, node_values), ...]` in
+  plaats van alleen een eindtoestand
+- Frontend krijgt een tijdslider om door het traject te scrubben
+- FEEDBACK-demping vereist: per-node-saturatie (zie
+  `slider_engine.py`-curves) of max-delta-per-tik, anders oneindige
+  groei in positieve feedback-lussen
+- README moet expliciet documenteren wat één "tik" betekent (seizoen,
+  jaar, …)
+
+**Trigger**: de eerste concrete klantvraag naar trajecten over tijd —
+bijvoorbeeld "hoe werkt een investering in U8-coaching over zes jaar
+door in seniorsdeelname". Tot die tijd staat het in de backlog.

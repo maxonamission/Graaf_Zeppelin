@@ -24,7 +24,6 @@ from app.core.graph_models import (
     Polarity,
     Strength,
     TargetType,
-    TimeLag,
 )
 
 
@@ -83,9 +82,9 @@ class TestEnums:
 
     def test_empty_string_becomes_none(self):
         """The data uses "" for unset optional enums; Pydantic normalises."""
-        e = Edge(source="A", target="B", time_lag="", curve_type="")
-        assert e.time_lag is None
+        e = Edge(source="A", target="B", curve_type="", edge_type="")
         assert e.curve_type is None
+        assert e.edge_type is None
 
     def test_unknown_polarity_rejected(self):
         with pytest.raises(ValidationError, match="polarity"):
@@ -215,7 +214,14 @@ class TestEnumExports:
         assert Strength.STERK == "sterk"
         assert EdgeType.FEEDBACK == "FEEDBACK"
         assert CurveType.LINEAR == "LINEAR"
-        assert TimeLag.SHORT == "short"
         assert BondInfluence.HIGH == "high"
         assert NodeStatus.A == "A"
         assert TargetType.EDGE == "edge"
+
+    def test_time_lag_removed(self):
+        """S14-03 Pad B: the TimeLag enum is no longer exported."""
+        import app.core.graph_models as gm
+
+        assert not hasattr(gm, "TimeLag")
+        # The Edge model no longer carries a time_lag field either
+        assert "time_lag" not in Edge.model_fields
