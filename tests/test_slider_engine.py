@@ -95,14 +95,14 @@ class TestApplySlider:
         }
         edges = [
             {
-                "id": "E001",
+                "id": "E-MED-001",
                 "cause": "A",
                 "effect": "B",
                 "strength": 0.8,
                 "slider_sensitivity": {"sens_eco": "high"},
             },
             {
-                "id": "E002",
+                "id": "E-STR-001",
                 "cause": "C",
                 "effect": "D",
                 "strength": 0.5,
@@ -112,7 +112,7 @@ class TestApplySlider:
         results = apply_slider(slider, 0.8, edges)
         # Only E001 should be affected (E002 has sensitivity "none")
         assert len(results) == 1
-        assert results[0]["edge_id"] == "E001"
+        assert results[0]["edge_id"] == "E-MED-001"
         # Slider > default → strength should increase
         assert results[0]["adjusted_strength"] > 0.8
 
@@ -126,7 +126,7 @@ class TestApplySlider:
         }
         edges = [
             {
-                "id": "E001",
+                "id": "E-MED-001",
                 "strength": 0.6,
                 "slider_sensitivity": {"sens_test": "high"},
             },
@@ -159,7 +159,7 @@ class TestSimulateSliders:
         ]
         edges = [
             {
-                "id": "E001",
+                "id": "E-MED-001",
                 "strength": 0.6,
                 "slider_sensitivity": {"sens_a": "high", "sens_b": "medium"},
             },
@@ -180,7 +180,7 @@ class TestSimulateSliders:
         ]
         edges = [
             {
-                "id": "E001",
+                "id": "E-MED-001",
                 "strength": 0.6,
                 "slider_sensitivity": {"sens_a": "none"},
             },

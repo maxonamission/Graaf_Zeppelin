@@ -121,7 +121,7 @@ De technische infrastructuur is gebouwd:
 
 ```
 GET  /api/graph/sliders/{id}/qualify      → Vragen voor één slider
-GET  /api/graph/sliders/qualify/relevant?factor_ids=N018,N033  → Alleen relevante vragen
+GET  /api/graph/sliders/qualify/relevant?factor_ids=PSY-L1-001,MDL-L1-005  → Alleen relevante vragen
 POST /api/graph/sliders/qualify           → Antwoorden → sliderwaarden
 POST /api/graph/simulate                  → Sliderwaarden → effecten
 ```
@@ -131,9 +131,9 @@ POST /api/graph/simulate                  → Sliderwaarden → effecten
 ```
 Gebruiker: "Wat gebeurt er als we meer investeren in coaching?"
     ↓
-Agent: bepaalt relevante factoren (N045, N046, N027)
+Agent: bepaalt relevante factoren (MAC-L3-001, MAC-L3-002, SOC-L2-001)
     ↓
-Agent: GET /sliders/qualify/relevant?factor_ids=N045,N046,N027
+Agent: GET /sliders/qualify/relevant?factor_ids=MAC-L3-001,MAC-L3-002,SOC-L2-001
     → Krijgt alleen S05 (clubklimaat) en S06 (vrijwilligers) terug
     ↓
 Agent: stelt 4 vragen (2 per relevante slider)

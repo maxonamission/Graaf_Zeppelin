@@ -22,7 +22,10 @@ def make_simple_dag() -> CausalDAG:
 
 
 def make_v2_data() -> dict:
-    """Create minimal v2 schema data for testing."""
+    """Create minimal v2 schema data for testing.
+
+    Uses S14-05 Vorm A IDs and matching canonical domain names.
+    """
     return {
         "metadata": {
             "project": "Test Model v2",
@@ -32,7 +35,7 @@ def make_v2_data() -> dict:
         },
         "nodes": [
             {
-                "id": "N001",
+                "id": "UIT-L0-001",
                 "label": "Uitkomst",
                 "domain": "Uitkomsten",
                 "level": "L0",
@@ -45,7 +48,7 @@ def make_v2_data() -> dict:
                 "out_degree": 1,
             },
             {
-                "id": "N002",
+                "id": "PSY-L1-001",
                 "label": "Motivatie",
                 "domain": "Psychologisch",
                 "level": "L1",
@@ -55,9 +58,9 @@ def make_v2_data() -> dict:
                 "definition": "Intrinsieke motivatie",
             },
             {
-                "id": "N003",
+                "id": "MDL-L1-001",
                 "label": "Kosten",
-                "domain": "Middelen",
+                "domain": "Middelen & Logistiek",
                 "level": "L1",
                 "bond_influence": "high",
                 "disciplines": ["Univ"],
@@ -67,9 +70,9 @@ def make_v2_data() -> dict:
         ],
         "edges": [
             {
-                "id": "E001",
-                "source": "N002",
-                "target": "N001",
+                "id": "E-MED-001",
+                "source": "PSY-L1-001",
+                "target": "UIT-L0-001",
                 "target_type": "node",
                 "source_label": "Motivatie",
                 "target_label": "Uitkomst",
@@ -88,9 +91,9 @@ def make_v2_data() -> dict:
                 "status": "A",
             },
             {
-                "id": "E002",
-                "source": "N003",
-                "target": "N001",
+                "id": "E-STR-001",
+                "source": "MDL-L1-001",
+                "target": "UIT-L0-001",
                 "target_type": "node",
                 "source_label": "Kosten",
                 "target_label": "Uitkomst",
@@ -109,9 +112,9 @@ def make_v2_data() -> dict:
                 "status": "-",
             },
             {
-                "id": "E003",
-                "source": "N003",
-                "target": "E002",
+                "id": "E-MOD-001",
+                "source": "MDL-L1-001",
+                "target": "E-STR-001",
                 "target_type": "edge",
                 "source_label": "Kosten",
                 "target_label": "Kosten → Uitkomst",
@@ -143,7 +146,7 @@ def make_v2_data() -> dict:
                 "sensitivity_key": "sens_test",
                 "definition": "Test slider definitie",
                 "mechanism": "Lineaire versterking",
-                "related_nodes": ["N002"],
+                "related_nodes": ["PSY-L1-001"],
                 "primary_clusters": ["Psychologisch"],
                 "evidence": ["Test (2024): test evidence"],
                 "qualifiers": [
@@ -301,7 +304,7 @@ class TestCausalDAGv2:
     def test_v2_nodes_loaded(self):
         dag = CausalDAG.from_dict(make_v2_data())
         assert dag.graph.number_of_nodes() == 3
-        node = dag.graph.nodes["N002"]
+        node = dag.graph.nodes["PSY-L1-001"]
         assert node["label"] == "Motivatie"
         assert node["domain"] == "Psychologisch"
         assert node["definition"] == "Intrinsieke motivatie"
@@ -309,9 +312,9 @@ class TestCausalDAGv2:
     def test_v2_regular_edges_loaded(self):
         """Regular edges (target_type=node) become NetworkX edges."""
         dag = CausalDAG.from_dict(make_v2_data())
-        # 2 regular edges (E001, E002), E003 is moderator
+        # 2 regular edges (E-MED-001, E-STR-001), E-MOD-001 is moderator
         assert dag.graph.number_of_edges() == 2
-        edge = dag.graph.edges["N002", "N001"]
+        edge = dag.graph.edges["PSY-L1-001", "UIT-L0-001"]
         assert edge["direction"] == "positive"
         assert edge["strength"] == 0.8
         assert edge["mechanism"] == "Motivatie drijft deelname"
@@ -319,27 +322,27 @@ class TestCausalDAGv2:
     def test_v2_moderator_edges_stored_separately(self):
         """Moderator edges (target_type=edge) are NOT in NetworkX graph."""
         dag = CausalDAG.from_dict(make_v2_data())
-        # E003 is a moderator targeting E002
-        assert "E002" in dag.moderators
-        mods = dag.moderators["E002"]
+        # E-MOD-001 is a moderator targeting E-STR-001
+        assert "E-STR-001" in dag.moderators
+        mods = dag.moderators["E-STR-001"]
         assert len(mods) == 1
-        assert mods[0]["moderator_node"] == "N003"
+        assert mods[0]["moderator_node"] == "MDL-L1-001"
         assert mods[0]["mechanism"] == "Kosten modereren eigen effect"
 
     def test_v2_polarity_mapping(self):
         """Polarity 'positief'→'positive', 'negatief'→'negative'."""
         dag = CausalDAG.from_dict(make_v2_data())
-        e1 = dag.graph.edges["N002", "N001"]
+        e1 = dag.graph.edges["PSY-L1-001", "UIT-L0-001"]
         assert e1["direction"] == "positive"
         assert e1["polarity"] == "positief"
-        e2 = dag.graph.edges["N003", "N001"]
+        e2 = dag.graph.edges["MDL-L1-001", "UIT-L0-001"]
         assert e2["direction"] == "negative"
         assert e2["polarity"] == "negatief"
 
     def test_v2_base_weight_as_strength(self):
         """base_weight is used as numeric strength, not the string field."""
         dag = CausalDAG.from_dict(make_v2_data())
-        e1 = dag.graph.edges["N002", "N001"]
+        e1 = dag.graph.edges["PSY-L1-001", "UIT-L0-001"]
         assert e1["strength"] == 0.8  # base_weight, not "sterk"
 
     def test_v2_sliders_loaded(self):
@@ -368,7 +371,7 @@ class TestCausalDAGv2:
         dag = CausalDAG.from_dict(make_v2_data())
         psych = dag.get_nodes_by_domain("Psychologisch")
         assert len(psych) == 1
-        assert psych[0]["id"] == "N002"
+        assert psych[0]["id"] == "PSY-L1-001"
 
     def test_v2_filter_factors(self):
         dag = CausalDAG.from_dict(make_v2_data())
@@ -388,9 +391,9 @@ class TestCausalDAGv2:
 
     def test_v2_edge_moderators(self):
         dag = CausalDAG.from_dict(make_v2_data())
-        mods = dag.get_edge_moderators("E002")
+        mods = dag.get_edge_moderators("E-STR-001")
         assert len(mods) == 1
-        assert mods[0]["moderator_node"] == "N003"
+        assert mods[0]["moderator_node"] == "MDL-L1-001"
         assert dag.get_edge_moderators("NONEXISTENT") == []
 
     def test_v2_summary_includes_domains(self):
@@ -410,18 +413,18 @@ class TestCausalDAGv2:
     def test_v2_factor_info_includes_moderates(self):
         """Factor info for a moderator node includes moderated edges."""
         dag = CausalDAG.from_dict(make_v2_data())
-        info = dag.get_factor_info("N003")
+        info = dag.get_factor_info("MDL-L1-001")
         assert info is not None
         assert "moderates_edges" in info
         assert len(info["moderates_edges"]) == 1
-        assert info["moderates_edges"][0]["edge_id"] == "E002"
+        assert info["moderates_edges"][0]["edge_id"] == "E-STR-001"
 
     def test_v2_simulate_intervention(self):
         dag = CausalDAG.from_dict(make_v2_data())
-        effects = dag.simulate_intervention("N002", 0.5)
+        effects = dag.simulate_intervention("PSY-L1-001", 0.5)
         assert len(effects) > 0
         affected_ids = {e["factor"] for e in effects}
-        assert "N001" in affected_ids
+        assert "UIT-L0-001" in affected_ids
 
     def test_load_v2_from_file(self):
         """Test v2 schema loads from file."""
@@ -450,27 +453,27 @@ class TestCausalDAGv2:
     def test_v2_get_relevant_sliders_by_node(self):
         """Slider is relevant when factor_id is in related_nodes."""
         dag = CausalDAG.from_dict(make_v2_data())
-        relevant = dag.get_relevant_sliders(["N002"])
+        relevant = dag.get_relevant_sliders(["PSY-L1-001"])
         assert len(relevant) == 1
         assert relevant[0]["id"] == "S01"
 
     def test_v2_get_relevant_sliders_by_cluster(self):
         """Slider is relevant when factor's cluster matches primary_clusters."""
         data = make_v2_data()
-        # N002 has domain "Psychologisch" but we need cluster attribute
+        # PSY-L1-001 has domain "Psychologisch" but we need cluster attribute
         data["nodes"][1]["cluster"] = "Psychologisch"
         dag = CausalDAG.from_dict(data)
-        # Use N001 which is NOT in related_nodes but check cluster match
-        # N002 is in related_nodes, so use a node whose cluster matches
-        relevant = dag.get_relevant_sliders(["N002"])
+        # Use UIT-L0-001 which is NOT in related_nodes but check cluster match
+        # PSY-L1-001 is in related_nodes, so use a node whose cluster matches
+        relevant = dag.get_relevant_sliders(["PSY-L1-001"])
         assert len(relevant) == 1
 
     def test_v2_get_relevant_sliders_no_match(self):
         """No relevant sliders when factors don't overlap."""
         dag = CausalDAG.from_dict(make_v2_data())
-        # N001 is not in related_nodes and its domain/cluster doesn't match
-        relevant = dag.get_relevant_sliders(["N001"])
-        # N001 domain is "Uitkomsten", slider primary_clusters is ["Psychologisch"]
+        # UIT-L0-001 is not in related_nodes and its domain/cluster doesn't match
+        relevant = dag.get_relevant_sliders(["UIT-L0-001"])
+        # UIT-L0-001 domain is "Uitkomsten", slider primary_clusters is ["Psychologisch"]
         assert len(relevant) == 0
 
     def test_v2_get_relevant_sliders_empty_factors(self):
@@ -491,7 +494,7 @@ class TestCausalDAGv2:
         assert summary["num_moderators"] == 4
         assert len(summary["domains"]) >= 7
         # Check a known node
-        info = dag.get_factor_info("N018")
+        info = dag.get_factor_info("PSY-L1-001")
         assert info is not None
         assert info["label"] == "Intrinsieke motivatie"
 
@@ -511,27 +514,34 @@ class TestCausalDAGv2:
 
 
 def _v2_cycle_fixture(edge_type: str) -> dict:
-    """Minimal v2 fixture with a 2-node cycle A↔B of a given edge_type."""
+    """Minimal v2 fixture with a 2-node cycle between two nodes of a given edge_type."""
+    # Uses S14-05 Vorm A IDs. Edge IDs depend on edge_type — we can't pick
+    # those statically because E-STR-001 and E-FBK-001 both use seq 001.
+    # Derive them dynamically below.
+    from app.core.id_schema import derive_edge_id
+
+    e1 = derive_edge_id(edge_type, 1)
+    e2 = derive_edge_id(edge_type, 2)
     return {
         "metadata": {"project": "cycle-fixture", "version": "0.0.0"},
         "nodes": [
-            {"id": "A", "label": "A", "domain": "x", "level": "L0"},
-            {"id": "B", "label": "B", "domain": "x", "level": "L0"},
+            {"id": "UIT-L0-001", "label": "A", "domain": "Uitkomsten", "level": "L0"},
+            {"id": "UIT-L0-002", "label": "B", "domain": "Uitkomsten", "level": "L0"},
         ],
         "edges": [
             {
-                "id": "E1",
-                "source": "A",
-                "target": "B",
+                "id": e1,
+                "source": "UIT-L0-001",
+                "target": "UIT-L0-002",
                 "target_type": "node",
                 "polarity": "positief",
                 "base_weight": 0.5,
                 "edge_type": edge_type,
             },
             {
-                "id": "E2",
-                "source": "B",
-                "target": "A",
+                "id": e2,
+                "source": "UIT-L0-002",
+                "target": "UIT-L0-001",
                 "target_type": "node",
                 "polarity": "positief",
                 "base_weight": 0.5,
@@ -568,7 +578,7 @@ class TestAcyclicEdgeTypes:
         msg = str(exc.value)
         assert "STRUCTURAL" in msg
         # Error message names the offending edges
-        assert "A→B" in msg or "B→A" in msg
+        assert "UIT-L0-001→UIT-L0-002" in msg or "UIT-L0-002→UIT-L0-001" in msg
 
     def test_mediating_cycle_blocked(self):
         """MEDIATING cycles are likewise blocked."""

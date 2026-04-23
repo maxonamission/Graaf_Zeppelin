@@ -1,9 +1,57 @@
 # S14-05: ID-schema herontwerpen (GZ-05)
 
 **Epic:** EPIC-14 Graph-methodologie afstemming
-**Status:** 🔲 Backlog
+**Status:** ✅ Done
 **Prioriteit:** Gemiddeld
 **Bron:** `docs/actieplan-os.md` §GZ-05
+
+## Resultaat
+
+- **`app/core/id_schema.py`** — canonieke module met de 9-domein-tabel,
+  5 edge-type-afkortingen, `L1/L2 → L12` niveau-normalisatie, plus
+  `validate_node_id`, `validate_edge_id`, `parse_node_id`,
+  `parse_edge_id`, `derive_node_id`, `derive_edge_id`. 47 tests in
+  `tests/test_id_schema.py` borgen format, tabellen en edge-cases.
+- **`scripts/migrate_ids.py`** — idempotent migratiescript.
+  Per-bucket-sequencing: nodes binnen `(domain, level)`, edges binnen
+  `edge_type`. Werkt alle ID-verwijzingen bij (`source`, `target`, én
+  `slider.related_nodes`). Dry-run + expliciete `--indent` zodat de
+  bestaande 3-spaties-stijl bewaard blijft.
+- **Migratie uitgevoerd** op `data/models/sportdeelname_graph.json`:
+  **69/69 node-IDs** en **114/114 edge-IDs** herschreven. Audit-mapping
+  in `data/migrations/old_to_new_ids.json` (gecommit, klein bestand).
+  Per-node review uitgevoerd (alle 69 regels met label + domein + level
+  naast het nieuwe ID); alles plausibel. Tweede run idempotent: no-op.
+- **Pydantic-validators** op `Node.id` (strict, altijd) en `Edge.id`
+  (strict bij niet-lege string). Invalid formats raisen meteen een
+  helpful `ValidationError` bij `Graph.model_validate`.
+- **Docs**: nieuwe `docs/id-schema.md` met tabellen, voorbeelden en
+  uitbreidingsprocedure. `docs/AUDIT.md` en `docs/epic_slider_qualifiers.md`
+  bijgewerkt met nieuwe IDs via de mapping-file. Geen resterende
+  ongeïdentificeerde `N###`/`E###`-refs in docs.
+- **Tests**: alle 168 graph-gerelateerde tests groen (test_id_schema:
+  47, test_dag_engine: 54, test_validation: 23, test_graph_models: 24,
+  test_conversions: 8, test_slider_engine: 12). Fixtures uit
+  test_dag_engine, test_graph_models, test_validation, test_api,
+  test_integration en test_slider_engine gemigreerd naar Vorm A.
+  `scripts/validate_graph.py` nog altijd `is_valid=True` op de
+  gemigreerde data.
+
+## Niet blokkerend, wel bekend
+
+- **`test_api.py`** en **`test_integration.py`** hebben nog meer N-IDs
+  in asserties die ik niet uitputtend heb nagelopen, omdat die
+  testfiles momenteel niet eens worden gecollecteerd (EPIC-15 S15-01
+  pytest-asyncio). De `N001` → `UIT-L0-001` vervangingen die ik kon
+  vinden zijn wel doorgevoerd zodat ze niet direct stuk gaan zodra
+  S15-01 rond is.
+
+## Vervolg
+
+Mapping-file blijft staan voor toekomstige cross-references (bv.
+externe rapporten die alsnog oude IDs blijken te hebben, of een
+cross-project-taxonomie-revisie — zie
+`docs/uniforme-kenmerken-taxonomie.md`).
 
 ## Doel
 

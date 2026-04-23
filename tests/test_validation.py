@@ -26,28 +26,32 @@ from app.core.validation import (
 
 
 def _v2_base() -> dict:
-    """A minimal, structurally-clean v2 fixture used as a starting point."""
+    """A minimal, structurally-clean v2 fixture used as a starting point.
+
+    Uses S14-05 Vorm A IDs. ``A``, ``B``, ``C`` below are human nicknames
+    for ``UIT-L0-001``, ``UIT-L0-002`` and ``PSY-L1-001`` respectively.
+    """
     return {
         "metadata": {"project": "val-fixture", "version": "0.0.0"},
         "nodes": [
-            {"id": "A", "label": "A", "domain": "x", "level": "L0"},
-            {"id": "B", "label": "B", "domain": "x", "level": "L0"},
-            {"id": "C", "label": "C", "domain": "x", "level": "L1"},
+            {"id": "UIT-L0-001", "label": "A", "domain": "Uitkomsten", "level": "L0"},
+            {"id": "UIT-L0-002", "label": "B", "domain": "Uitkomsten", "level": "L0"},
+            {"id": "PSY-L1-001", "label": "C", "domain": "Psychologisch", "level": "L1"},
         ],
         "edges": [
             {
-                "id": "E1",
-                "source": "A",
-                "target": "B",
+                "id": "E-STR-001",
+                "source": "UIT-L0-001",
+                "target": "UIT-L0-002",
                 "target_type": "node",
                 "polarity": "positief",
                 "base_weight": 0.5,
                 "edge_type": "STRUCTURAL",
             },
             {
-                "id": "E2",
-                "source": "B",
-                "target": "C",
+                "id": "E-MED-001",
+                "source": "UIT-L0-002",
+                "target": "PSY-L1-001",
                 "target_type": "node",
                 "polarity": "positief",
                 "base_weight": 0.7,
@@ -69,9 +73,9 @@ class TestDetectCycles:
         data = _v2_base()
         data["edges"].append(
             {
-                "id": "E3",
-                "source": "C",
-                "target": "A",
+                "id": "E-STR-002",
+                "source": "PSY-L1-001",
+                "target": "UIT-L0-001",
                 "target_type": "node",
                 "polarity": "positief",
                 "base_weight": 0.5,
@@ -82,16 +86,16 @@ class TestDetectCycles:
         dag = CausalDAG.from_dict(data, strict=False)
         cycles = detect_cycles(dag.graph)
         assert len(cycles) == 1
-        assert set(cycles[0]) == {"A", "B", "C"}
+        assert set(cycles[0]) == {"UIT-L0-001", "UIT-L0-002", "PSY-L1-001"}
 
     def test_feedback_cycle_ignored(self):
         """FEEDBACK edges are exempt from the acyclicity constraint."""
         data = _v2_base()
         data["edges"].append(
             {
-                "id": "E3",
-                "source": "C",
-                "target": "A",
+                "id": "E-FBK-001",
+                "source": "PSY-L1-001",
+                "target": "UIT-L0-001",
                 "target_type": "node",
                 "polarity": "positief",
                 "base_weight": 0.5,
@@ -113,10 +117,15 @@ class TestFindOrphanNodes:
     def test_orphan_reported(self):
         data = _v2_base()
         data["nodes"].append(
-            {"id": "ISOLATED", "label": "alone", "domain": "x", "level": "L0"}
+            {
+                "id": "DIS-L3-999",
+                "label": "alone",
+                "domain": "Discipline-specifiek",
+                "level": "L3",
+            }
         )
         dag = CausalDAG.from_dict(data)
-        assert find_orphan_nodes(dag.graph) == ["ISOLATED"]
+        assert find_orphan_nodes(dag.graph) == ["DIS-L3-999"]
 
 
 # ── find_duplicate_ids ──────────────────────────────────────────────
@@ -131,19 +140,24 @@ class TestFindDuplicateIds:
     def test_duplicate_node_id(self):
         data = _v2_base()
         data["nodes"].append(
-            {"id": "A", "label": "A again", "domain": "x", "level": "L0"}
+            {
+                "id": "UIT-L0-001",  # duplicates an existing node
+                "label": "dup",
+                "domain": "Uitkomsten",
+                "level": "L0",
+            }
         )
         node_dupes, _ = find_duplicate_ids(data)
-        assert node_dupes == ["A"]
+        assert node_dupes == ["UIT-L0-001"]
 
     def test_duplicate_edge_id(self):
         data = _v2_base()
         dup = copy.deepcopy(data["edges"][0])
-        dup["source"] = "B"
-        dup["target"] = "C"
+        dup["source"] = "UIT-L0-002"
+        dup["target"] = "PSY-L1-001"
         data["edges"].append(dup)
         _, edge_dupes = find_duplicate_ids(data)
-        assert edge_dupes == ["E1"]
+        assert edge_dupes == ["E-STR-001"]
 
 
 # ── find_dangling_refs ──────────────────────────────────────────────
@@ -157,8 +171,8 @@ class TestFindDanglingRefs:
         data = _v2_base()
         data["edges"].append(
             {
-                "id": "E3",
-                "source": "A",
+                "id": "E-STR-999",
+                "source": "UIT-L0-001",
                 "target": "DOES_NOT_EXIST",
                 "target_type": "node",
                 "polarity": "positief",
@@ -168,7 +182,7 @@ class TestFindDanglingRefs:
         )
         dangling = find_dangling_refs(data)
         assert len(dangling) == 1
-        assert dangling[0]["edge_id"] == "E3"
+        assert dangling[0]["edge_id"] == "E-STR-999"
         assert dangling[0]["field"] == "target"
         assert dangling[0]["invalid_id"] == "DOES_NOT_EXIST"
 
@@ -177,8 +191,8 @@ class TestFindDanglingRefs:
         data = _v2_base()
         data["edges"].append(
             {
-                "id": "E3",
-                "source": "A",
+                "id": "E-MOD-999",
+                "source": "UIT-L0-001",
                 "target": "GHOST_EDGE",
                 "target_type": "edge",
                 "polarity": "moderator",
@@ -204,15 +218,25 @@ class TestCheckConnectivity:
         data = _v2_base()
         data["nodes"].extend(
             [
-                {"id": "X", "label": "X", "domain": "y", "level": "L0"},
-                {"id": "Y", "label": "Y", "domain": "y", "level": "L0"},
+                {
+                    "id": "MAC-L3-998",
+                    "label": "X",
+                    "domain": "Macro-context",
+                    "level": "L3",
+                },
+                {
+                    "id": "MAC-L3-999",
+                    "label": "Y",
+                    "domain": "Macro-context",
+                    "level": "L3",
+                },
             ]
         )
         data["edges"].append(
             {
-                "id": "E3",
-                "source": "X",
-                "target": "Y",
+                "id": "E-STR-998",
+                "source": "MAC-L3-998",
+                "target": "MAC-L3-999",
                 "target_type": "node",
                 "polarity": "positief",
                 "base_weight": 0.5,
@@ -283,19 +307,29 @@ class TestValidateGraphOrchestrator:
     def test_dirty_fixture_reports_all_issues(self):
         """One fixture with multiple simultaneous violations."""
         data = _v2_base()
-        # Duplicate node id
+        # Duplicate node id (same id as an existing one)
         data["nodes"].append(
-            {"id": "A", "label": "dup", "domain": "x", "level": "L0"}
+            {
+                "id": "UIT-L0-001",
+                "label": "dup",
+                "domain": "Uitkomsten",
+                "level": "L0",
+            }
         )
-        # Orphan node
+        # Orphan node (unused ID in the Discipline bucket)
         data["nodes"].append(
-            {"id": "Z", "label": "alone", "domain": "x", "level": "L0"}
+            {
+                "id": "DIS-L3-999",
+                "label": "alone",
+                "domain": "Discipline-specifiek",
+                "level": "L3",
+            }
         )
         # Dangling target
         data["edges"].append(
             {
-                "id": "E99",
-                "source": "A",
+                "id": "E-STR-999",
+                "source": "UIT-L0-001",
                 "target": "MISSING",
                 "target_type": "node",
                 "polarity": "positief",
@@ -308,8 +342,8 @@ class TestValidateGraphOrchestrator:
 
         report = validate_graph(data)
         assert report.is_valid is False
-        assert "A" in report.duplicate_node_ids
-        assert "Z" in report.orphan_nodes
+        assert "UIT-L0-001" in report.duplicate_node_ids
+        assert "DIS-L3-999" in report.orphan_nodes
         assert any(d["invalid_id"] == "MISSING" for d in report.dangling_refs)
         assert any(
             v["field"] == "base_weight" and v["value"] == 2.0

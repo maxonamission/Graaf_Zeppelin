@@ -32,7 +32,7 @@ def _valid_graph_data() -> dict:
         "metadata": {"project": "test", "version": "0.0.0"},
         "nodes": [
             {
-                "id": "A",
+                "id": "UIT-L0-001",
                 "label": "Alpha",
                 "domain": "Uitkomsten",
                 "level": "L0",
@@ -40,7 +40,7 @@ def _valid_graph_data() -> dict:
                 "status": "A",
             },
             {
-                "id": "B",
+                "id": "PSY-L1-001",
                 "label": "Beta",
                 "domain": "Psychologisch",
                 "level": "L1",
@@ -50,9 +50,9 @@ def _valid_graph_data() -> dict:
         ],
         "edges": [
             {
-                "id": "E1",
-                "source": "A",
-                "target": "B",
+                "id": "E-STR-001",
+                "source": "UIT-L0-001",
+                "target": "PSY-L1-001",
                 "polarity": "positief",
                 "strength": "sterk",
                 "base_weight": 0.8,
@@ -122,8 +122,21 @@ class TestRequiredFields:
 
     def test_node_accepts_extra_fields(self):
         """``extra="allow"`` so data-side additions don't break the loader."""
-        n = Node(id="X", some_future_field="whatever")
-        assert n.id == "X"
+        n = Node(id="UIT-L0-001", some_future_field="whatever")
+        assert n.id == "UIT-L0-001"
+
+    def test_node_id_schema_enforced(self):
+        """S14-05: invalid-format node IDs are rejected."""
+        with pytest.raises(ValidationError, match="does not match"):
+            Node(id="N001")
+
+    def test_edge_id_schema_enforced_when_nonempty(self):
+        """Empty-string edge id is allowed; non-empty must match the schema."""
+        # allowed: empty (schema treats id as optional)
+        Edge(source="UIT-L0-001", target="PSY-L1-001")
+        # rejected: legacy-style id
+        with pytest.raises(ValidationError, match="does not match"):
+            Edge(id="E001", source="UIT-L0-001", target="PSY-L1-001")
 
 
 # ── Graph-level dangling-ref check ──────────────────────────────────
@@ -151,9 +164,9 @@ class TestDanglingRefs:
         data = _valid_graph_data()
         data["edges"].append(
             {
-                "id": "E2",
-                "source": "A",
-                "target": "GHOST",
+                "id": "E-MOD-001",
+                "source": "UIT-L0-001",
+                "target": "E-STR-999",  # unknown edge id
                 "target_type": "edge",
                 "edge_type": "MODERATOR",
                 "polarity": "moderator",
@@ -167,9 +180,9 @@ class TestDanglingRefs:
         data = _valid_graph_data()
         data["edges"].append(
             {
-                "id": "E2",
-                "source": "A",
-                "target": "E1",  # existing edge
+                "id": "E-MOD-001",
+                "source": "UIT-L0-001",
+                "target": "E-STR-001",  # existing edge from _valid_graph_data()
                 "target_type": "edge",
                 "edge_type": "MODERATOR",
                 "polarity": "moderator",

@@ -27,6 +27,8 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
+from app.core.id_schema import validate_edge_id, validate_node_id
+
 # ── Enums (values match data/models/sportdeelname_graph.json) ────────
 
 
@@ -142,6 +144,18 @@ class Node(BaseModel):
     def _normalize_empty(cls, v: Any) -> Any:
         return _empty_to_none(v)
 
+    @field_validator("id")
+    @classmethod
+    def _validate_id_schema(cls, v: str) -> str:
+        """Enforce the S14-05 node-ID schema: ``{DOMEIN-AFK}-{LEVEL}-{VOLGNR}``."""
+        if not validate_node_id(v):
+            raise ValueError(
+                f"Node id {v!r} does not match the expected schema "
+                "'{DOMEIN-AFK}-{LEVEL}-{VOLGNR}' (e.g. 'UIT-L0-001'). "
+                "See docs/id-schema.md for the canonical tables."
+            )
+        return v
+
 
 # ── Edge ─────────────────────────────────────────────────────────────
 
@@ -207,6 +221,22 @@ class Edge(BaseModel):
     def _base_weight_in_unit_interval(cls, v: float | None) -> float | None:
         if v is not None and not (0.0 <= v <= 1.0):
             raise ValueError(f"base_weight {v!r} must be in [0.0, 1.0]")
+        return v
+
+    @field_validator("id")
+    @classmethod
+    def _validate_id_schema(cls, v: str) -> str:
+        """Enforce the S14-05 edge-ID schema when ``id`` is non-empty.
+
+        Empty-string ids are accepted (the v2 schema allows unidentified
+        edges); non-empty ids must match ``E-{TYPE-AFK}-{VOLGNR}``.
+        """
+        if v and not validate_edge_id(v):
+            raise ValueError(
+                f"Edge id {v!r} does not match the expected schema "
+                "'E-{TYPE-AFK}-{VOLGNR}' (e.g. 'E-MED-014'). "
+                "See docs/id-schema.md for the canonical tables."
+            )
         return v
 
 

@@ -371,7 +371,7 @@ class TestReasoningFlow:
                 response = await client.post(
                     "/api/reasoning/intervene",
                     json={
-                        "factor_id": "N001",
+                        "factor_id": "UIT-L0-001",
                         "change": 0.3,
                         "description": "Meer investering in coaching",
                         "provider": "openai",

@@ -81,7 +81,7 @@
    },
    "nodes": [
       {
-         "id": "N001",
+         "id": "UIT-L0-001",
          "label": "Toelaatbaarheid",
          "domain": "Uitkomsten",
          "level": "L0",
@@ -96,7 +96,7 @@
          "out_degree": 1
       },
       {
-         "id": "N002",
+         "id": "UIT-L0-002",
          "label": "Feitelijke deelname",
          "domain": "Uitkomsten",
          "level": "L0",
@@ -111,7 +111,7 @@
          "out_degree": 2
       },
       {
-         "id": "N003",
+         "id": "UIT-L0-003",
          "label": "Continuïteit",
          "domain": "Uitkomsten",
          "level": "L0",
@@ -126,7 +126,7 @@
          "out_degree": 0
       },
       {
-         "id": "N004",
+         "id": "REG-L2-001",
          "label": "Licentiestatus",
          "domain": "Regels & Administratie",
          "level": "L2",
@@ -141,7 +141,7 @@
          "out_degree": 1
       },
       {
-         "id": "N005",
+         "id": "REG-L2-002",
          "label": "Lidmaatschapseis",
          "domain": "Regels & Administratie",
          "level": "L2",
@@ -156,7 +156,7 @@
          "out_degree": 1
       },
       {
-         "id": "N006",
+         "id": "REG-L2-003",
          "label": "Licentiekosten",
          "domain": "Regels & Administratie",
          "level": "L2",
@@ -176,7 +176,7 @@
          "out_degree": 1
       },
       {
-         "id": "N007",
+         "id": "REG-L2-004",
          "label": "Categorie-indeling",
          "domain": "Regels & Administratie",
          "level": "L2",
@@ -196,7 +196,7 @@
          "out_degree": 1
       },
       {
-         "id": "N008",
+         "id": "REG-L2-005",
          "label": "Kwalificatiestatus",
          "domain": "Regels & Administratie",
          "level": "L2",
@@ -216,7 +216,7 @@
          "out_degree": 1
       },
       {
-         "id": "N009",
+         "id": "REG-L2-006",
          "label": "Inschrijfprocedure",
          "domain": "Regels & Administratie",
          "level": "L2",
@@ -231,7 +231,7 @@
          "out_degree": 1
       },
       {
-         "id": "N010",
+         "id": "REG-L12-001",
          "label": "Inschrijfbekwaamheid",
          "domain": "Regels & Administratie",
          "level": "L1/L2",
@@ -246,7 +246,7 @@
          "out_degree": 1
       },
       {
-         "id": "N011",
+         "id": "TRP-L1-001",
          "label": "Trainingsvolume",
          "domain": "Training & Prestatie",
          "level": "L1",
@@ -266,7 +266,7 @@
          "out_degree": 1
       },
       {
-         "id": "N012",
+         "id": "TRP-L1-002",
          "label": "Trainingskwaliteit",
          "domain": "Training & Prestatie",
          "level": "L1",
@@ -281,7 +281,7 @@
          "out_degree": 1
       },
       {
-         "id": "N013",
+         "id": "TRP-L1-003",
          "label": "Technisch niveau",
          "domain": "Training & Prestatie",
          "level": "L1",
@@ -301,7 +301,7 @@
          "out_degree": 2
       },
       {
-         "id": "N014",
+         "id": "TRP-L1-004",
          "label": "Fysieke capaciteit",
          "domain": "Training & Prestatie",
          "level": "L1",
@@ -321,7 +321,7 @@
          "out_degree": 2
       },
       {
-         "id": "N015",
+         "id": "TRP-L1-005",
          "label": "Blessuregevoeligheid",
          "domain": "Training & Prestatie",
          "level": "L1",
@@ -336,7 +336,7 @@
          "out_degree": 3
       },
       {
-         "id": "N016",
+         "id": "TRP-L1-006",
          "label": "Prestatieniveau",
          "domain": "Training & Prestatie",
          "level": "L1",
@@ -356,7 +356,7 @@
          "out_degree": 2
       },
       {
-         "id": "N017",
+         "id": "TRP-L1-007",
          "label": "Herstelcapaciteit",
          "domain": "Training & Prestatie",
          "level": "L1",
@@ -371,7 +371,7 @@
          "out_degree": 2
       },
       {
-         "id": "N018",
+         "id": "PSY-L1-001",
          "label": "Intrinsieke motivatie",
          "domain": "Psychologisch",
          "level": "L1",
@@ -391,7 +391,7 @@
          "out_degree": 3
       },
       {
-         "id": "N019",
+         "id": "PSY-L1-002",
          "label": "Extrinsieke motivatie",
          "domain": "Psychologisch",
          "level": "L1",
@@ -411,7 +411,7 @@
          "out_degree": 1
       },
       {
-         "id": "N020",
+         "id": "PSY-L1-003",
          "label": "Zelfeffectiviteit",
          "domain": "Psychologisch",
          "level": "L1",
@@ -426,7 +426,7 @@
          "out_degree": 3
       },
       {
-         "id": "N021",
+         "id": "PSY-L1-004",
          "label": "Wedstrijdvertrouwen",
          "domain": "Psychologisch",
          "level": "L1",
@@ -441,7 +441,7 @@
          "out_degree": 1
       },
       {
-         "id": "N022",
+         "id": "PSY-L1-005",
          "label": "Ervaren wedstrijdspanning",
          "domain": "Psychologisch",
          "level": "L1",
@@ -456,7 +456,7 @@
          "out_degree": 2
       },
       {
-         "id": "N023",
+         "id": "PSY-L1-006",
          "label": "Emotieregulatie",
          "domain": "Psychologisch",
          "level": "L1",
@@ -471,7 +471,7 @@
          "out_degree": 1
       },
       {
-         "id": "N024",
+         "id": "PSY-L1-007",
          "label": "Doeloriëntatie",
          "domain": "Psychologisch",
          "level": "L1",
@@ -486,7 +486,7 @@
          "out_degree": 3
       },
       {
-         "id": "N025",
+         "id": "SOC-L1-001",
          "label": "Ouderondersteuning",
          "domain": "Sociaal",
          "level": "L1",
@@ -501,7 +501,7 @@
          "out_degree": 3
       },
       {
-         "id": "N026",
+         "id": "SOC-L1-002",
          "label": "Peergroep/teamgenoten",
          "domain": "Sociaal",
          "level": "L1",
@@ -521,7 +521,7 @@
          "out_degree": 3
       },
       {
-         "id": "N027",
+         "id": "SOC-L2-001",
          "label": "Clubklimaat",
          "domain": "Sociaal",
          "level": "L2",
@@ -536,7 +536,7 @@
          "out_degree": 4
       },
       {
-         "id": "N028",
+         "id": "SOC-L12-001",
          "label": "Coach-atleet relatie",
          "domain": "Sociaal",
          "level": "L1/L2",
@@ -551,7 +551,7 @@
          "out_degree": 2
       },
       {
-         "id": "N029",
+         "id": "MDL-L1-001",
          "label": "Financiële draagkracht",
          "domain": "Middelen & Logistiek",
          "level": "L1",
@@ -566,7 +566,7 @@
          "out_degree": 4
       },
       {
-         "id": "N030",
+         "id": "MDL-L1-002",
          "label": "Tijd beschikbaar",
          "domain": "Middelen & Logistiek",
          "level": "L1",
@@ -581,7 +581,7 @@
          "out_degree": 3
       },
       {
-         "id": "N031",
+         "id": "MDL-L1-003",
          "label": "Materiaaltoegang",
          "domain": "Middelen & Logistiek",
          "level": "L1",
@@ -601,7 +601,7 @@
          "out_degree": 1
       },
       {
-         "id": "N032",
+         "id": "MDL-L1-004",
          "label": "Materiaalkosten",
          "domain": "Middelen & Logistiek",
          "level": "L1",
@@ -621,7 +621,7 @@
          "out_degree": 1
       },
       {
-         "id": "N033",
+         "id": "MDL-L1-005",
          "label": "Reisafstand",
          "domain": "Middelen & Logistiek",
          "level": "L1",
@@ -641,7 +641,7 @@
          "out_degree": 1
       },
       {
-         "id": "N034",
+         "id": "MDL-L1-006",
          "label": "Reiskosten",
          "domain": "Middelen & Logistiek",
          "level": "L1",
@@ -661,7 +661,7 @@
          "out_degree": 1
       },
       {
-         "id": "N035",
+         "id": "MDL-L2-001",
          "label": "Transponderregistratie",
          "domain": "Middelen & Logistiek",
          "level": "L2",
@@ -679,7 +679,7 @@
          "out_degree": 1
       },
       {
-         "id": "N036",
+         "id": "ORG-L2-001",
          "label": "IJsbaanbeschikbaarheid",
          "domain": "Organisatie & Aanbod",
          "level": "L2",
@@ -694,7 +694,7 @@
          "out_degree": 2
       },
       {
-         "id": "N037",
+         "id": "ORG-L2-002",
          "label": "IJsuurverdeling",
          "domain": "Organisatie & Aanbod",
          "level": "L2",
@@ -714,7 +714,7 @@
          "out_degree": 1
       },
       {
-         "id": "N038",
+         "id": "ORG-L2-003",
          "label": "Coachcapaciteit",
          "domain": "Organisatie & Aanbod",
          "level": "L2",
@@ -729,7 +729,7 @@
          "out_degree": 1
       },
       {
-         "id": "N039",
+         "id": "ORG-L2-004",
          "label": "Coachkwaliteit",
          "domain": "Organisatie & Aanbod",
          "level": "L2",
@@ -744,7 +744,7 @@
          "out_degree": 4
       },
       {
-         "id": "N040",
+         "id": "ORG-L2-005",
          "label": "Wedstrijdkalender",
          "domain": "Organisatie & Aanbod",
          "level": "L2",
@@ -764,7 +764,7 @@
          "out_degree": 1
       },
       {
-         "id": "N041",
+         "id": "ORG-L2-006",
          "label": "Wedstrijdformat",
          "domain": "Organisatie & Aanbod",
          "level": "L2",
@@ -784,7 +784,7 @@
          "out_degree": 1
       },
       {
-         "id": "N042",
+         "id": "ORG-L2-007",
          "label": "Selectiesystematiek",
          "domain": "Organisatie & Aanbod",
          "level": "L2",
@@ -804,7 +804,7 @@
          "out_degree": 1
       },
       {
-         "id": "N043",
+         "id": "ORG-L2-008",
          "label": "Digitale systemen",
          "domain": "Organisatie & Aanbod",
          "level": "L2",
@@ -819,7 +819,7 @@
          "out_degree": 1
       },
       {
-         "id": "N044",
+         "id": "ORG-L2-009",
          "label": "Verenigingsondersteuning",
          "domain": "Organisatie & Aanbod",
          "level": "L2",
@@ -834,7 +834,7 @@
          "out_degree": 2
       },
       {
-         "id": "N045",
+         "id": "MAC-L3-001",
          "label": "Economisch klimaat",
          "domain": "Macro-context",
          "level": "L3",
@@ -849,7 +849,7 @@
          "out_degree": 1
       },
       {
-         "id": "N046",
+         "id": "MAC-L3-002",
          "label": "Klimaattrends",
          "domain": "Macro-context",
          "level": "L3",
@@ -868,7 +868,7 @@
          "out_degree": 2
       },
       {
-         "id": "N047",
+         "id": "MAC-L3-003",
          "label": "Energieprijzen",
          "domain": "Macro-context",
          "level": "L3",
@@ -883,7 +883,7 @@
          "out_degree": 4
       },
       {
-         "id": "N048",
+         "id": "MAC-L3-004",
          "label": "Mediaprofilering",
          "domain": "Macro-context",
          "level": "L3",
@@ -903,7 +903,7 @@
          "out_degree": 1
       },
       {
-         "id": "N049",
+         "id": "MAC-L3-005",
          "label": "Nationale successen",
          "domain": "Macro-context",
          "level": "L3",
@@ -923,7 +923,7 @@
          "out_degree": 1
       },
       {
-         "id": "N050",
+         "id": "MAC-L3-006",
          "label": "Sportvoorkeuren jeugd",
          "domain": "Macro-context",
          "level": "L3",
@@ -943,7 +943,7 @@
          "out_degree": 1
       },
       {
-         "id": "N051",
+         "id": "MAC-L3-007",
          "label": "Duurzaamheidsdiscours",
          "domain": "Macro-context",
          "level": "L3",
@@ -962,7 +962,7 @@
          "out_degree": 1
       },
       {
-         "id": "N052",
+         "id": "DIS-L2-001",
          "label": "Ploegenstructuur",
          "domain": "Discipline-specifiek",
          "level": "L2",
@@ -977,7 +977,7 @@
          "out_degree": 2
       },
       {
-         "id": "N053",
+         "id": "DIS-L2-002",
          "label": "Internationale oriëntatie",
          "domain": "Discipline-specifiek",
          "level": "L2",
@@ -992,7 +992,7 @@
          "out_degree": 1
       },
       {
-         "id": "N054",
+         "id": "DIS-L1-001",
          "label": "Tactische complexiteit",
          "domain": "Discipline-specifiek",
          "level": "L1",
@@ -1008,7 +1008,7 @@
          "out_degree": 1
       },
       {
-         "id": "N055",
+         "id": "DIS-L3-001",
          "label": "Wegveiligheid",
          "domain": "Discipline-specifiek",
          "level": "L3",
@@ -1023,7 +1023,7 @@
          "out_degree": 1
       },
       {
-         "id": "N056",
+         "id": "DIS-L12-001",
          "label": "Seizoenscompensatie",
          "domain": "Discipline-specifiek",
          "level": "L1/L2",
@@ -1038,7 +1038,7 @@
          "out_degree": 2
       },
       {
-         "id": "N057",
+         "id": "UIT-L0-004",
          "label": "Recreatieve participatie",
          "domain": "Uitkomsten",
          "level": "L0",
@@ -1053,7 +1053,7 @@
          "out_degree": 0
       },
       {
-         "id": "N058",
+         "id": "MDL-L12-001",
          "label": "Toegangskosten recreatief",
          "domain": "Middelen & Logistiek",
          "level": "L1/L2",
@@ -1068,7 +1068,7 @@
          "out_degree": 1
       },
       {
-         "id": "N059",
+         "id": "ORG-L2-010",
          "label": "Openingstijden publiek schaatsen",
          "domain": "Organisatie & Aanbod",
          "level": "L2",
@@ -1083,7 +1083,7 @@
          "out_degree": 1
       },
       {
-         "id": "N060",
+         "id": "PSY-L1-008",
          "label": "Autonomie / Zelfbepaling",
          "domain": "Psychologisch",
          "level": "L1",
@@ -1098,7 +1098,7 @@
          "out_degree": 2
       },
       {
-         "id": "N061",
+         "id": "ORG-L2-011",
          "label": "Participatieflexibiliteit",
          "domain": "Organisatie & Aanbod",
          "level": "L2",
@@ -1113,7 +1113,7 @@
          "out_degree": 1
       },
       {
-         "id": "N062",
+         "id": "SOC-L1-003",
          "label": "Informele sociale groepen",
          "domain": "Sociaal",
          "level": "L1",
@@ -1128,7 +1128,7 @@
          "out_degree": 2
       },
       {
-         "id": "N063",
+         "id": "PSY-L1-009",
          "label": "Kwaliteit vroege sportervaring",
          "domain": "Psychologisch",
          "level": "L1",
@@ -1143,7 +1143,7 @@
          "out_degree": 1
       },
       {
-         "id": "N064",
+         "id": "PSY-L1-010",
          "label": "Post-carrière identiteit",
          "domain": "Psychologisch",
          "level": "L1",
@@ -1158,7 +1158,7 @@
          "out_degree": 1
       },
       {
-         "id": "N065",
+         "id": "ORG-L2-012",
          "label": "Herintrede-programma’s",
          "domain": "Organisatie & Aanbod",
          "level": "L2",
@@ -1173,7 +1173,7 @@
          "out_degree": 1
       },
       {
-         "id": "N066",
+         "id": "PSY-L1-011",
          "label": "Niet-participatie fase",
          "domain": "Psychologisch",
          "level": "L1",
@@ -1188,7 +1188,7 @@
          "out_degree": 1
       },
       {
-         "id": "N067",
+         "id": "ORG-L2-013",
          "label": "Hybride event-beschikbaarheid",
          "domain": "Organisatie & Aanbod",
          "level": "L2",
@@ -1203,7 +1203,7 @@
          "out_degree": 2
       },
       {
-         "id": "N068",
+         "id": "REG-L2-007",
          "label": "Spelregels & veiligheidsregels",
          "domain": "Regels & Administratie",
          "level": "L2",
@@ -1218,7 +1218,7 @@
          "out_degree": 4
       },
       {
-         "id": "N069",
+         "id": "MAC-L3-008",
          "label": "Institutionele prioriteitstelling",
          "domain": "Macro-context",
          "level": "L3",
@@ -1235,9 +1235,9 @@
    ],
    "edges": [
       {
-         "id": "E001",
-         "source": "N005",
-         "target": "N004",
+         "id": "E-STR-001",
+         "source": "REG-L2-002",
+         "target": "REG-L2-001",
          "target_type": "node",
          "source_label": "Lidmaatschapseis",
          "target_label": "Licentiestatus",
@@ -1276,9 +1276,9 @@
          }
       },
       {
-         "id": "E002",
-         "source": "N004",
-         "target": "N001",
+         "id": "E-STR-002",
+         "source": "REG-L2-001",
+         "target": "UIT-L0-001",
          "target_type": "node",
          "source_label": "Licentiestatus",
          "target_label": "Toelaatbaarheid",
@@ -1317,9 +1317,9 @@
          }
       },
       {
-         "id": "E003",
-         "source": "N006",
-         "target": "N004",
+         "id": "E-STR-003",
+         "source": "REG-L2-003",
+         "target": "REG-L2-001",
          "target_type": "node",
          "source_label": "Licentiekosten",
          "target_label": "Licentiestatus",
@@ -1357,9 +1357,9 @@
          }
       },
       {
-         "id": "E004",
-         "source": "N029",
-         "target": "E003",
+         "id": "E-MOD-001",
+         "source": "MDL-L1-001",
+         "target": "E-STR-003",
          "target_type": "edge",
          "source_label": "Financiële draagkracht",
          "target_label": "Licentiekosten → Licentiestatus",
@@ -1389,9 +1389,9 @@
          }
       },
       {
-         "id": "E005",
-         "source": "N016",
-         "target": "N008",
+         "id": "E-STR-004",
+         "source": "TRP-L1-006",
+         "target": "REG-L2-005",
          "target_type": "node",
          "source_label": "Prestatieniveau",
          "target_label": "Kwalificatiestatus",
@@ -1427,9 +1427,9 @@
          }
       },
       {
-         "id": "E006",
-         "source": "N008",
-         "target": "N001",
+         "id": "E-STR-005",
+         "source": "REG-L2-005",
+         "target": "UIT-L0-001",
          "target_type": "node",
          "source_label": "Kwalificatiestatus",
          "target_label": "Toelaatbaarheid",
@@ -1465,9 +1465,9 @@
          }
       },
       {
-         "id": "E007",
-         "source": "N010",
-         "target": "N001",
+         "id": "E-STR-006",
+         "source": "REG-L12-001",
+         "target": "UIT-L0-001",
          "target_type": "node",
          "source_label": "Inschrijfbekwaamheid",
          "target_label": "Toelaatbaarheid",
@@ -1506,9 +1506,9 @@
          }
       },
       {
-         "id": "E008",
-         "source": "N043",
-         "target": "N010",
+         "id": "E-STR-007",
+         "source": "ORG-L2-008",
+         "target": "REG-L12-001",
          "target_type": "node",
          "source_label": "Digitale systemen",
          "target_label": "Inschrijfbekwaamheid",
@@ -1545,9 +1545,9 @@
          }
       },
       {
-         "id": "E009",
-         "source": "N009",
-         "target": "N010",
+         "id": "E-STR-008",
+         "source": "REG-L2-006",
+         "target": "REG-L12-001",
          "target_type": "node",
          "source_label": "Inschrijfprocedure",
          "target_label": "Inschrijfbekwaamheid",
@@ -1584,9 +1584,9 @@
          }
       },
       {
-         "id": "E010",
-         "source": "N018",
-         "target": "N010",
+         "id": "E-STR-009",
+         "source": "PSY-L1-001",
+         "target": "REG-L12-001",
          "target_type": "node",
          "source_label": "Intrinsieke motivatie",
          "target_label": "Inschrijfbekwaamheid",
@@ -1619,9 +1619,9 @@
          }
       },
       {
-         "id": "E011",
-         "source": "N001",
-         "target": "N002",
+         "id": "E-MED-001",
+         "source": "UIT-L0-001",
+         "target": "UIT-L0-002",
          "target_type": "node",
          "source_label": "Toelaatbaarheid",
          "target_label": "Feitelijke deelname",
@@ -1654,9 +1654,9 @@
          }
       },
       {
-         "id": "E012",
-         "source": "N015",
-         "target": "N002",
+         "id": "E-MED-002",
+         "source": "TRP-L1-005",
+         "target": "UIT-L0-002",
          "target_type": "node",
          "source_label": "Blessuregevoeligheid",
          "target_label": "Feitelijke deelname",
@@ -1689,9 +1689,9 @@
          }
       },
       {
-         "id": "E013",
-         "source": "N015",
-         "target": "N011",
+         "id": "E-MED-003",
+         "source": "TRP-L1-005",
+         "target": "TRP-L1-001",
          "target_type": "node",
          "source_label": "Blessuregevoeligheid",
          "target_label": "Trainingsvolume",
@@ -1726,9 +1726,9 @@
          }
       },
       {
-         "id": "E014",
-         "source": "N011",
-         "target": "N016",
+         "id": "E-MED-004",
+         "source": "TRP-L1-001",
+         "target": "TRP-L1-006",
          "target_type": "node",
          "source_label": "Trainingsvolume",
          "target_label": "Prestatieniveau",
@@ -1761,9 +1761,9 @@
          }
       },
       {
-         "id": "E015",
-         "source": "N012",
-         "target": "N016",
+         "id": "E-MED-005",
+         "source": "TRP-L1-002",
+         "target": "TRP-L1-006",
          "target_type": "node",
          "source_label": "Trainingskwaliteit",
          "target_label": "Prestatieniveau",
@@ -1796,9 +1796,9 @@
          }
       },
       {
-         "id": "E016",
-         "source": "N036",
-         "target": "N011",
+         "id": "E-MED-006",
+         "source": "ORG-L2-001",
+         "target": "TRP-L1-001",
          "target_type": "node",
          "source_label": "IJsbaanbeschikbaarheid",
          "target_label": "Trainingsvolume",
@@ -1828,9 +1828,9 @@
          }
       },
       {
-         "id": "E017",
-         "source": "N037",
-         "target": "N011",
+         "id": "E-MED-007",
+         "source": "ORG-L2-002",
+         "target": "TRP-L1-001",
          "target_type": "node",
          "source_label": "IJsuurverdeling",
          "target_label": "Trainingsvolume",
@@ -1863,9 +1863,9 @@
          }
       },
       {
-         "id": "E018",
-         "source": "N031",
-         "target": "N002",
+         "id": "E-MED-008",
+         "source": "MDL-L1-003",
+         "target": "UIT-L0-002",
          "target_type": "node",
          "source_label": "Materiaaltoegang",
          "target_label": "Feitelijke deelname",
@@ -1901,9 +1901,9 @@
          }
       },
       {
-         "id": "E019",
-         "source": "N032",
-         "target": "N031",
+         "id": "E-MED-009",
+         "source": "MDL-L1-004",
+         "target": "MDL-L1-003",
          "target_type": "node",
          "source_label": "Materiaalkosten",
          "target_label": "Materiaaltoegang",
@@ -1936,9 +1936,9 @@
          }
       },
       {
-         "id": "E020",
-         "source": "N029",
-         "target": "E019",
+         "id": "E-MOD-002",
+         "source": "MDL-L1-001",
+         "target": "E-MED-009",
          "target_type": "edge",
          "source_label": "Financiële draagkracht",
          "target_label": "Materiaalkosten → Materiaaltoegang",
@@ -1970,9 +1970,9 @@
          }
       },
       {
-         "id": "E021",
-         "source": "N033",
-         "target": "N002",
+         "id": "E-MED-010",
+         "source": "MDL-L1-005",
+         "target": "UIT-L0-002",
          "target_type": "node",
          "source_label": "Reisafstand",
          "target_label": "Feitelijke deelname",
@@ -2004,9 +2004,9 @@
          }
       },
       {
-         "id": "E022",
-         "source": "N034",
-         "target": "N002",
+         "id": "E-MED-011",
+         "source": "MDL-L1-006",
+         "target": "UIT-L0-002",
          "target_type": "node",
          "source_label": "Reiskosten",
          "target_label": "Feitelijke deelname",
@@ -2038,9 +2038,9 @@
          }
       },
       {
-         "id": "E023",
-         "source": "N040",
-         "target": "N033",
+         "id": "E-MED-012",
+         "source": "ORG-L2-005",
+         "target": "MDL-L1-005",
          "target_type": "node",
          "source_label": "Wedstrijdkalender",
          "target_label": "Reisafstand",
@@ -2070,9 +2070,9 @@
          }
       },
       {
-         "id": "E024",
-         "source": "N030",
-         "target": "N011",
+         "id": "E-MED-013",
+         "source": "MDL-L1-002",
+         "target": "TRP-L1-001",
          "target_type": "node",
          "source_label": "Tijd beschikbaar",
          "target_label": "Trainingsvolume",
@@ -2105,9 +2105,9 @@
          }
       },
       {
-         "id": "E025",
-         "source": "N030",
-         "target": "N002",
+         "id": "E-MED-014",
+         "source": "MDL-L1-002",
+         "target": "UIT-L0-002",
          "target_type": "node",
          "source_label": "Tijd beschikbaar",
          "target_label": "Feitelijke deelname",
@@ -2141,9 +2141,9 @@
          }
       },
       {
-         "id": "E026",
-         "source": "N035",
-         "target": "N002",
+         "id": "E-MED-015",
+         "source": "MDL-L2-001",
+         "target": "UIT-L0-002",
          "target_type": "node",
          "source_label": "Transponderregistratie",
          "target_label": "Feitelijke deelname",
@@ -2176,9 +2176,9 @@
          }
       },
       {
-         "id": "E027",
-         "source": "N018",
-         "target": "N011",
+         "id": "E-SREG-001",
+         "source": "PSY-L1-001",
+         "target": "TRP-L1-001",
          "target_type": "node",
          "source_label": "Intrinsieke motivatie",
          "target_label": "Trainingsvolume",
@@ -2214,9 +2214,9 @@
          }
       },
       {
-         "id": "E028",
-         "source": "N019",
-         "target": "N011",
+         "id": "E-SREG-002",
+         "source": "PSY-L1-002",
+         "target": "TRP-L1-001",
          "target_type": "node",
          "source_label": "Extrinsieke motivatie",
          "target_label": "Trainingsvolume",
@@ -2253,9 +2253,9 @@
          }
       },
       {
-         "id": "E029",
-         "source": "N020",
-         "target": "N002",
+         "id": "E-SREG-003",
+         "source": "PSY-L1-003",
+         "target": "UIT-L0-002",
          "target_type": "node",
          "source_label": "Zelfeffectiviteit",
          "target_label": "Feitelijke deelname",
@@ -2285,9 +2285,9 @@
          }
       },
       {
-         "id": "E030",
-         "source": "N021",
-         "target": "N002",
+         "id": "E-SREG-004",
+         "source": "PSY-L1-004",
+         "target": "UIT-L0-002",
          "target_type": "node",
          "source_label": "Wedstrijdvertrouwen",
          "target_label": "Feitelijke deelname",
@@ -2317,9 +2317,9 @@
          }
       },
       {
-         "id": "E031",
-         "source": "N022",
-         "target": "N002",
+         "id": "E-SREG-005",
+         "source": "PSY-L1-005",
+         "target": "UIT-L0-002",
          "target_type": "node",
          "source_label": "Ervaren wedstrijdspanning",
          "target_label": "Feitelijke deelname",
@@ -2358,9 +2358,9 @@
          }
       },
       {
-         "id": "E032",
-         "source": "N023",
-         "target": "N022",
+         "id": "E-SREG-006",
+         "source": "PSY-L1-006",
+         "target": "PSY-L1-005",
          "target_type": "node",
          "source_label": "Emotieregulatie",
          "target_label": "Ervaren wedstrijdspanning",
@@ -2393,9 +2393,9 @@
          }
       },
       {
-         "id": "E033",
-         "source": "N016",
-         "target": "N020",
+         "id": "E-SREG-007",
+         "source": "TRP-L1-006",
+         "target": "PSY-L1-003",
          "target_type": "node",
          "source_label": "Prestatieniveau",
          "target_label": "Zelfeffectiviteit",
@@ -2427,9 +2427,9 @@
          }
       },
       {
-         "id": "E034",
-         "source": "N020",
-         "target": "N016",
+         "id": "E-SREG-008",
+         "source": "PSY-L1-003",
+         "target": "TRP-L1-006",
          "target_type": "node",
          "source_label": "Zelfeffectiviteit",
          "target_label": "Prestatieniveau",
@@ -2461,9 +2461,9 @@
          }
       },
       {
-         "id": "E035",
-         "source": "N041",
-         "target": "N018",
+         "id": "E-FBK-001",
+         "source": "ORG-L2-006",
+         "target": "PSY-L1-001",
          "target_type": "node",
          "source_label": "Wedstrijdformat",
          "target_label": "Intrinsieke motivatie",
@@ -2499,9 +2499,9 @@
          }
       },
       {
-         "id": "E036",
-         "source": "N042",
-         "target": "N019",
+         "id": "E-SREG-009",
+         "source": "ORG-L2-007",
+         "target": "PSY-L1-002",
          "target_type": "node",
          "source_label": "Selectiesystematiek",
          "target_label": "Extrinsieke motivatie",
@@ -2536,9 +2536,9 @@
          }
       },
       {
-         "id": "E037",
-         "source": "N025",
-         "target": "N030",
+         "id": "E-SREG-010",
+         "source": "SOC-L1-001",
+         "target": "MDL-L1-002",
          "target_type": "node",
          "source_label": "Ouderondersteuning",
          "target_label": "Tijd beschikbaar",
@@ -2573,9 +2573,9 @@
          }
       },
       {
-         "id": "E038",
-         "source": "N025",
-         "target": "N029",
+         "id": "E-SREG-011",
+         "source": "SOC-L1-001",
+         "target": "MDL-L1-001",
          "target_type": "node",
          "source_label": "Ouderondersteuning",
          "target_label": "Financiële draagkracht",
@@ -2610,9 +2610,9 @@
          }
       },
       {
-         "id": "E039",
-         "source": "N025",
-         "target": "N018",
+         "id": "E-SREG-012",
+         "source": "SOC-L1-001",
+         "target": "PSY-L1-001",
          "target_type": "node",
          "source_label": "Ouderondersteuning",
          "target_label": "Intrinsieke motivatie",
@@ -2648,9 +2648,9 @@
          }
       },
       {
-         "id": "E040",
-         "source": "N026",
-         "target": "N018",
+         "id": "E-SREG-013",
+         "source": "SOC-L1-002",
+         "target": "PSY-L1-001",
          "target_type": "node",
          "source_label": "Peergroep",
          "target_label": "Intrinsieke motivatie",
@@ -2687,9 +2687,9 @@
          }
       },
       {
-         "id": "E041",
-         "source": "N026",
-         "target": "N011",
+         "id": "E-SREG-014",
+         "source": "SOC-L1-002",
+         "target": "TRP-L1-001",
          "target_type": "node",
          "source_label": "Peergroep",
          "target_label": "Trainingsvolume",
@@ -2723,9 +2723,9 @@
          }
       },
       {
-         "id": "E042",
-         "source": "N027",
-         "target": "N018",
+         "id": "E-SREG-015",
+         "source": "SOC-L2-001",
+         "target": "PSY-L1-001",
          "target_type": "node",
          "source_label": "Clubklimaat",
          "target_label": "Intrinsieke motivatie",
@@ -2760,9 +2760,9 @@
          }
       },
       {
-         "id": "E043",
-         "source": "N027",
-         "target": "N003",
+         "id": "E-SREG-016",
+         "source": "SOC-L2-001",
+         "target": "UIT-L0-003",
          "target_type": "node",
          "source_label": "Clubklimaat",
          "target_label": "Continuïteit",
@@ -2792,9 +2792,9 @@
          }
       },
       {
-         "id": "E044",
-         "source": "N028",
-         "target": "N020",
+         "id": "E-SREG-017",
+         "source": "SOC-L12-001",
+         "target": "PSY-L1-003",
          "target_type": "node",
          "source_label": "Coach-atleet relatie",
          "target_label": "Zelfeffectiviteit",
@@ -2826,9 +2826,9 @@
          }
       },
       {
-         "id": "E045",
-         "source": "N028",
-         "target": "N012",
+         "id": "E-SREG-018",
+         "source": "SOC-L12-001",
+         "target": "TRP-L1-002",
          "target_type": "node",
          "source_label": "Coach-atleet relatie",
          "target_label": "Trainingskwaliteit",
@@ -2858,9 +2858,9 @@
          }
       },
       {
-         "id": "E046",
-         "source": "N038",
-         "target": "N028",
+         "id": "E-MED-016",
+         "source": "ORG-L2-003",
+         "target": "SOC-L12-001",
          "target_type": "node",
          "source_label": "Coachcapaciteit",
          "target_label": "Coach-atleet relatie",
@@ -2893,9 +2893,9 @@
          }
       },
       {
-         "id": "E047",
-         "source": "N039",
-         "target": "N012",
+         "id": "E-MED-017",
+         "source": "ORG-L2-004",
+         "target": "TRP-L1-002",
          "target_type": "node",
          "source_label": "Coachkwaliteit",
          "target_label": "Trainingskwaliteit",
@@ -2925,9 +2925,9 @@
          }
       },
       {
-         "id": "E048",
-         "source": "N039",
-         "target": "N020",
+         "id": "E-MED-018",
+         "source": "ORG-L2-004",
+         "target": "PSY-L1-003",
          "target_type": "node",
          "source_label": "Coachkwaliteit",
          "target_label": "Zelfeffectiviteit",
@@ -2959,9 +2959,9 @@
          }
       },
       {
-         "id": "E049",
-         "source": "N039",
-         "target": "N023",
+         "id": "E-MED-019",
+         "source": "ORG-L2-004",
+         "target": "PSY-L1-006",
          "target_type": "node",
          "source_label": "Coachkwaliteit",
          "target_label": "Emotieregulatie",
@@ -2991,9 +2991,9 @@
          }
       },
       {
-         "id": "E050",
-         "source": "N039",
-         "target": "N015",
+         "id": "E-MED-020",
+         "source": "ORG-L2-004",
+         "target": "TRP-L1-005",
          "target_type": "node",
          "source_label": "Coachkwaliteit",
          "target_label": "Blessuregevoeligheid",
@@ -3025,9 +3025,9 @@
          }
       },
       {
-         "id": "E051",
-         "source": "N044",
-         "target": "N038",
+         "id": "E-MED-021",
+         "source": "ORG-L2-009",
+         "target": "ORG-L2-003",
          "target_type": "node",
          "source_label": "Verenigingsondersteuning",
          "target_label": "Coachcapaciteit",
@@ -3057,9 +3057,9 @@
          }
       },
       {
-         "id": "E052",
-         "source": "N044",
-         "target": "N027",
+         "id": "E-MED-022",
+         "source": "ORG-L2-009",
+         "target": "SOC-L2-001",
          "target_type": "node",
          "source_label": "Verenigingsondersteuning",
          "target_label": "Clubklimaat",
@@ -3089,9 +3089,9 @@
          }
       },
       {
-         "id": "E053",
-         "source": "N002",
-         "target": "N003",
+         "id": "E-MED-023",
+         "source": "UIT-L0-002",
+         "target": "UIT-L0-003",
          "target_type": "node",
          "source_label": "Feitelijke deelname",
          "target_label": "Continuïteit",
@@ -3124,9 +3124,9 @@
          }
       },
       {
-         "id": "E054",
-         "source": "N018",
-         "target": "N003",
+         "id": "E-MED-024",
+         "source": "PSY-L1-001",
+         "target": "UIT-L0-003",
          "target_type": "node",
          "source_label": "Intrinsieke motivatie",
          "target_label": "Continuïteit",
@@ -3168,9 +3168,9 @@
          }
       },
       {
-         "id": "E055",
-         "source": "N027",
-         "target": "N003",
+         "id": "E-MED-025",
+         "source": "SOC-L2-001",
+         "target": "UIT-L0-003",
          "target_type": "node",
          "source_label": "Clubklimaat",
          "target_label": "Continuïteit",
@@ -3204,9 +3204,9 @@
          }
       },
       {
-         "id": "E056",
-         "source": "N015",
-         "target": "N003",
+         "id": "E-MED-026",
+         "source": "TRP-L1-005",
+         "target": "UIT-L0-003",
          "target_type": "node",
          "source_label": "Blessuregevoeligheid",
          "target_label": "Continuïteit",
@@ -3244,9 +3244,9 @@
          }
       },
       {
-         "id": "E057",
-         "source": "N020",
-         "target": "N003",
+         "id": "E-MED-027",
+         "source": "PSY-L1-003",
+         "target": "UIT-L0-003",
          "target_type": "node",
          "source_label": "Zelfeffectiviteit",
          "target_label": "Continuïteit",
@@ -3280,9 +3280,9 @@
          }
       },
       {
-         "id": "E058",
-         "source": "N029",
-         "target": "N003",
+         "id": "E-MED-028",
+         "source": "MDL-L1-001",
+         "target": "UIT-L0-003",
          "target_type": "node",
          "source_label": "Financiële draagkracht",
          "target_label": "Continuïteit",
@@ -3314,9 +3314,9 @@
          }
       },
       {
-         "id": "E059",
-         "source": "N045",
-         "target": "N029",
+         "id": "E-STR-010",
+         "source": "MAC-L3-001",
+         "target": "MDL-L1-001",
          "target_type": "node",
          "source_label": "Economisch klimaat",
          "target_label": "Financiële draagkracht",
@@ -3348,9 +3348,9 @@
          }
       },
       {
-         "id": "E060",
-         "source": "N046",
-         "target": "N036",
+         "id": "E-STR-011",
+         "source": "MAC-L3-002",
+         "target": "ORG-L2-001",
          "target_type": "node",
          "source_label": "Klimaattrends",
          "target_label": "IJsbaanbeschikbaarheid",
@@ -3386,9 +3386,9 @@
          }
       },
       {
-         "id": "E061",
-         "source": "N047",
-         "target": "N006",
+         "id": "E-STR-012",
+         "source": "MAC-L3-003",
+         "target": "REG-L2-003",
          "target_type": "node",
          "source_label": "Energieprijzen",
          "target_label": "Licentiekosten",
@@ -3420,9 +3420,9 @@
          }
       },
       {
-         "id": "E062",
-         "source": "N047",
-         "target": "N036",
+         "id": "E-STR-013",
+         "source": "MAC-L3-003",
+         "target": "ORG-L2-001",
          "target_type": "node",
          "source_label": "Energieprijzen",
          "target_label": "IJsbaanbeschikbaarheid",
@@ -3455,9 +3455,9 @@
          }
       },
       {
-         "id": "E063",
-         "source": "N048",
-         "target": "N018",
+         "id": "E-STR-014",
+         "source": "MAC-L3-004",
+         "target": "PSY-L1-001",
          "target_type": "node",
          "source_label": "Mediaprofilering",
          "target_label": "Intrinsieke motivatie",
@@ -3489,9 +3489,9 @@
          }
       },
       {
-         "id": "E064",
-         "source": "N049",
-         "target": "N018",
+         "id": "E-STR-015",
+         "source": "MAC-L3-005",
+         "target": "PSY-L1-001",
          "target_type": "node",
          "source_label": "Nationale successen",
          "target_label": "Intrinsieke motivatie",
@@ -3523,9 +3523,9 @@
          }
       },
       {
-         "id": "E065",
-         "source": "N050",
-         "target": "N018",
+         "id": "E-STR-016",
+         "source": "MAC-L3-006",
+         "target": "PSY-L1-001",
          "target_type": "node",
          "source_label": "Sportvoorkeuren jeugd",
          "target_label": "Intrinsieke motivatie",
@@ -3555,9 +3555,9 @@
          }
       },
       {
-         "id": "E066",
-         "source": "N051",
-         "target": "N018",
+         "id": "E-STR-017",
+         "source": "MAC-L3-007",
+         "target": "PSY-L1-001",
          "target_type": "node",
          "source_label": "Duurzaamheidsdiscours",
          "target_label": "Intrinsieke motivatie",
@@ -3587,9 +3587,9 @@
          }
       },
       {
-         "id": "E067",
-         "source": "N052",
-         "target": "N026",
+         "id": "E-STR-018",
+         "source": "DIS-L2-001",
+         "target": "SOC-L1-002",
          "target_type": "node",
          "source_label": "Ploegenstructuur",
          "target_label": "Peergroep",
@@ -3621,9 +3621,9 @@
          }
       },
       {
-         "id": "E068",
-         "source": "N052",
-         "target": "N034",
+         "id": "E-STR-019",
+         "source": "DIS-L2-001",
+         "target": "MDL-L1-006",
          "target_type": "node",
          "source_label": "Ploegenstructuur",
          "target_label": "Reiskosten",
@@ -3655,9 +3655,9 @@
          }
       },
       {
-         "id": "E069",
-         "source": "N056",
-         "target": "N011",
+         "id": "E-STR-020",
+         "source": "DIS-L12-001",
+         "target": "TRP-L1-001",
          "target_type": "node",
          "source_label": "Seizoenscompensatie",
          "target_label": "Trainingsvolume",
@@ -3687,9 +3687,9 @@
          }
       },
       {
-         "id": "E070",
-         "source": "N056",
-         "target": "N003",
+         "id": "E-STR-021",
+         "source": "DIS-L12-001",
+         "target": "UIT-L0-003",
          "target_type": "node",
          "source_label": "Seizoenscompensatie",
          "target_label": "Continuïteit",
@@ -3719,9 +3719,9 @@
          }
       },
       {
-         "id": "E071",
-         "source": "N046",
-         "target": "N056",
+         "id": "E-STR-022",
+         "source": "MAC-L3-002",
+         "target": "DIS-L12-001",
          "target_type": "node",
          "source_label": "Klimaattrends",
          "target_label": "Seizoenscompensatie",
@@ -3753,9 +3753,9 @@
          }
       },
       {
-         "id": "E072",
-         "source": "N007",
-         "target": "N001",
+         "id": "E-STR-023",
+         "source": "REG-L2-004",
+         "target": "UIT-L0-001",
          "target_type": "node",
          "source_label": "Categorie-indeling",
          "target_label": "Toelaatbaarheid",
@@ -3791,9 +3791,9 @@
          }
       },
       {
-         "id": "E073",
-         "source": "N013",
-         "target": "N016",
+         "id": "E-MED-029",
+         "source": "TRP-L1-003",
+         "target": "TRP-L1-006",
          "target_type": "node",
          "source_label": "Technisch niveau",
          "target_label": "Prestatieniveau",
@@ -3823,9 +3823,9 @@
          }
       },
       {
-         "id": "E074",
-         "source": "N013",
-         "target": "N008",
+         "id": "E-STR-024",
+         "source": "TRP-L1-003",
+         "target": "REG-L2-005",
          "target_type": "node",
          "source_label": "Technisch niveau",
          "target_label": "Kwalificatiestatus",
@@ -3858,9 +3858,9 @@
          }
       },
       {
-         "id": "E075",
-         "source": "N014",
-         "target": "N016",
+         "id": "E-MED-030",
+         "source": "TRP-L1-004",
+         "target": "TRP-L1-006",
          "target_type": "node",
          "source_label": "Fysieke capaciteit",
          "target_label": "Prestatieniveau",
@@ -3890,9 +3890,9 @@
          }
       },
       {
-         "id": "E076",
-         "source": "N014",
-         "target": "N015",
+         "id": "E-MED-031",
+         "source": "TRP-L1-004",
+         "target": "TRP-L1-005",
          "target_type": "node",
          "source_label": "Fysieke capaciteit",
          "target_label": "Blessuregevoeligheid",
@@ -3927,9 +3927,9 @@
          }
       },
       {
-         "id": "E077",
-         "source": "N017",
-         "target": "N011",
+         "id": "E-MED-032",
+         "source": "TRP-L1-007",
+         "target": "TRP-L1-001",
          "target_type": "node",
          "source_label": "Herstelcapaciteit",
          "target_label": "Trainingsvolume",
@@ -3959,9 +3959,9 @@
          }
       },
       {
-         "id": "E078",
-         "source": "N017",
-         "target": "N015",
+         "id": "E-MED-033",
+         "source": "TRP-L1-007",
+         "target": "TRP-L1-005",
          "target_type": "node",
          "source_label": "Herstelcapaciteit",
          "target_label": "Blessuregevoeligheid",
@@ -3991,9 +3991,9 @@
          }
       },
       {
-         "id": "E080",
-         "source": "N024",
-         "target": "N019",
+         "id": "E-SREG-019",
+         "source": "PSY-L1-007",
+         "target": "PSY-L1-002",
          "target_type": "node",
          "source_label": "Doeloriëntatie",
          "target_label": "Extrinsieke motivatie",
@@ -4026,9 +4026,9 @@
          }
       },
       {
-         "id": "E081",
-         "source": "N024",
-         "target": "N003",
+         "id": "E-MED-034",
+         "source": "PSY-L1-007",
+         "target": "UIT-L0-003",
          "target_type": "node",
          "source_label": "Doeloriëntatie",
          "target_label": "Continuïteit",
@@ -4058,9 +4058,9 @@
          }
       },
       {
-         "id": "E082",
-         "source": "N053",
-         "target": "N034",
+         "id": "E-STR-025",
+         "source": "DIS-L2-002",
+         "target": "MDL-L1-006",
          "target_type": "node",
          "source_label": "Internationale oriëntatie",
          "target_label": "Reiskosten",
@@ -4090,9 +4090,9 @@
          }
       },
       {
-         "id": "E083",
-         "source": "N054",
-         "target": "N018",
+         "id": "E-STR-026",
+         "source": "DIS-L1-001",
+         "target": "PSY-L1-001",
          "target_type": "node",
          "source_label": "Tactische complexiteit",
          "target_label": "Intrinsieke motivatie",
@@ -4125,9 +4125,9 @@
          }
       },
       {
-         "id": "E084",
-         "source": "N055",
-         "target": "N002",
+         "id": "E-STR-027",
+         "source": "DIS-L3-001",
+         "target": "UIT-L0-002",
          "target_type": "node",
          "source_label": "Wegveiligheid",
          "target_label": "Feitelijke deelname",
@@ -4157,9 +4157,9 @@
          }
       },
       {
-         "id": "E085",
-         "source": "N027",
-         "target": "N003",
+         "id": "E-MED-035",
+         "source": "SOC-L2-001",
+         "target": "UIT-L0-003",
          "target_type": "node",
          "source_label": "SES",
          "target_label": "Continuïteit",
@@ -4195,9 +4195,9 @@
          }
       },
       {
-         "id": "E086",
-         "source": "N026",
-         "target": "N003",
+         "id": "E-MED-036",
+         "source": "SOC-L1-002",
+         "target": "UIT-L0-003",
          "target_type": "node",
          "source_label": "Peergroep",
          "target_label": "Continuïteit",
@@ -4233,9 +4233,9 @@
          }
       },
       {
-         "id": "E087",
-         "source": "N022",
-         "target": "N003",
+         "id": "E-MED-037",
+         "source": "PSY-L1-005",
+         "target": "UIT-L0-003",
          "target_type": "node",
          "source_label": "Ervaren wedstrijdspanning",
          "target_label": "Continuïteit",
@@ -4269,9 +4269,9 @@
          }
       },
       {
-         "id": "E088",
-         "source": "N024",
-         "target": "N018",
+         "id": "E-MED-038",
+         "source": "PSY-L1-007",
+         "target": "PSY-L1-001",
          "target_type": "node",
          "source_label": "Doeloriëntatie",
          "target_label": "Intrinsieke motivatie",
@@ -4304,9 +4304,9 @@
          }
       },
       {
-         "id": "E089",
-         "source": "N002",
-         "target": "N020",
+         "id": "E-MED-039",
+         "source": "UIT-L0-002",
+         "target": "PSY-L1-003",
          "target_type": "node",
          "source_label": "Feitelijke deelname",
          "target_label": "Zelfeffectiviteit",
@@ -4338,9 +4338,9 @@
          }
       },
       {
-         "id": "E090",
-         "source": "N059",
-         "target": "N057",
+         "id": "E-MED-040",
+         "source": "ORG-L2-010",
+         "target": "UIT-L0-004",
          "target_type": "node",
          "source_label": "Openingstijden publiek schaatsen",
          "target_label": "Recreatieve participatie",
@@ -4370,9 +4370,9 @@
          }
       },
       {
-         "id": "E091",
-         "source": "N036",
-         "target": "N059",
+         "id": "E-MED-041",
+         "source": "ORG-L2-001",
+         "target": "ORG-L2-010",
          "target_type": "node",
          "source_label": "IJsbaanbeschikbaarheid",
          "target_label": "Openingstijden publiek schaatsen",
@@ -4402,9 +4402,9 @@
          }
       },
       {
-         "id": "E092",
-         "source": "N060",
-         "target": "N018",
+         "id": "E-MED-042",
+         "source": "PSY-L1-008",
+         "target": "PSY-L1-001",
          "target_type": "node",
          "source_label": "Autonomie / Zelfbepaling",
          "target_label": "Intrinsieke motivatie",
@@ -4436,9 +4436,9 @@
          }
       },
       {
-         "id": "E093",
-         "source": "N061",
-         "target": "N057",
+         "id": "E-MED-043",
+         "source": "ORG-L2-011",
+         "target": "UIT-L0-004",
          "target_type": "node",
          "source_label": "Participatieflexibiliteit",
          "target_label": "Recreatieve participatie",
@@ -4470,9 +4470,9 @@
          }
       },
       {
-         "id": "E094",
-         "source": "N062",
-         "target": "N018",
+         "id": "E-MED-044",
+         "source": "SOC-L1-003",
+         "target": "PSY-L1-001",
          "target_type": "node",
          "source_label": "Informele sociale groepen",
          "target_label": "Intrinsieke motivatie",
@@ -4506,9 +4506,9 @@
          }
       },
       {
-         "id": "E095",
-         "source": "N062",
-         "target": "N057",
+         "id": "E-MED-045",
+         "source": "SOC-L1-003",
+         "target": "UIT-L0-004",
          "target_type": "node",
          "source_label": "Informele sociale groepen",
          "target_label": "Recreatieve participatie",
@@ -4540,9 +4540,9 @@
          }
       },
       {
-         "id": "E096",
-         "source": "N063",
-         "target": "N057",
+         "id": "E-MED-046",
+         "source": "PSY-L1-009",
+         "target": "UIT-L0-004",
          "target_type": "node",
          "source_label": "Kwaliteit vroege sportervaring",
          "target_label": "Recreatieve participatie",
@@ -4576,9 +4576,9 @@
          }
       },
       {
-         "id": "E097",
-         "source": "N064",
-         "target": "N057",
+         "id": "E-MED-047",
+         "source": "PSY-L1-010",
+         "target": "UIT-L0-004",
          "target_type": "node",
          "source_label": "Post-carrière identiteit",
          "target_label": "Recreatieve participatie",
@@ -4613,9 +4613,9 @@
          }
       },
       {
-         "id": "E098",
-         "source": "N065",
-         "target": "N057",
+         "id": "E-MED-048",
+         "source": "ORG-L2-012",
+         "target": "UIT-L0-004",
          "target_type": "node",
          "source_label": "Herintrede-programma’s",
          "target_label": "Recreatieve participatie",
@@ -4649,9 +4649,9 @@
          }
       },
       {
-         "id": "E099",
-         "source": "N066",
-         "target": "E098",
+         "id": "E-MOD-003",
+         "source": "PSY-L1-011",
+         "target": "E-MED-048",
          "target_type": "edge",
          "source_label": "Niet-participatie fase",
          "target_label": "Herintrede-programma’s → Recreatieve participatie",
@@ -4684,9 +4684,9 @@
          }
       },
       {
-         "id": "E100",
-         "source": "N067",
-         "target": "N018",
+         "id": "E-MED-049",
+         "source": "ORG-L2-013",
+         "target": "PSY-L1-001",
          "target_type": "node",
          "source_label": "Hybride event-beschikbaarheid",
          "target_label": "Intrinsieke motivatie",
@@ -4719,9 +4719,9 @@
          }
       },
       {
-         "id": "E101",
-         "source": "N067",
-         "target": "N065",
+         "id": "E-MED-050",
+         "source": "ORG-L2-013",
+         "target": "ORG-L2-012",
          "target_type": "node",
          "source_label": "Hybride event-beschikbaarheid",
          "target_label": "Herintrede-programma’s",
@@ -4753,9 +4753,9 @@
          }
       },
       {
-         "id": "E102",
-         "source": "N058",
-         "target": "N057",
+         "id": "E-MED-051",
+         "source": "MDL-L12-001",
+         "target": "UIT-L0-004",
          "target_type": "node",
          "source_label": "Toegangskosten recreatief",
          "target_label": "Recreatieve participatie",
@@ -4788,9 +4788,9 @@
          }
       },
       {
-         "id": "E103",
-         "source": "N029",
-         "target": "E102",
+         "id": "E-MOD-004",
+         "source": "MDL-L1-001",
+         "target": "E-MED-051",
          "target_type": "edge",
          "source_label": "Financiële draagkracht",
          "target_label": "Toegangskosten → Recreatieve participatie",
@@ -4822,9 +4822,9 @@
          }
       },
       {
-         "id": "E104",
-         "source": "N030",
-         "target": "N061",
+         "id": "E-MED-052",
+         "source": "MDL-L1-002",
+         "target": "ORG-L2-011",
          "target_type": "node",
          "source_label": "Tijd beschikbaar",
          "target_label": "Participatieflexibiliteit",
@@ -4856,9 +4856,9 @@
          }
       },
       {
-         "id": "E105",
-         "source": "N060",
-         "target": "N057",
+         "id": "E-MED-053",
+         "source": "PSY-L1-008",
+         "target": "UIT-L0-004",
          "target_type": "node",
          "source_label": "Autonomie / Zelfbepaling",
          "target_label": "Recreatieve participatie",
@@ -4888,9 +4888,9 @@
          }
       },
       {
-         "id": "E106",
-         "source": "N047",
-         "target": "N058",
+         "id": "E-STR-028",
+         "source": "MAC-L3-003",
+         "target": "MDL-L12-001",
          "target_type": "node",
          "source_label": "Energieprijzen",
          "target_label": "Toegangskosten recreatief",
@@ -4920,9 +4920,9 @@
          }
       },
       {
-         "id": "E107",
-         "source": "N047",
-         "target": "N059",
+         "id": "E-STR-029",
+         "source": "MAC-L3-003",
+         "target": "ORG-L2-010",
          "target_type": "node",
          "source_label": "Energieprijzen",
          "target_label": "Openingstijden publiek schaatsen",
@@ -4952,9 +4952,9 @@
          }
       },
       {
-         "id": "E108",
-         "source": "N068",
-         "target": "N032",
+         "id": "E-MED-054",
+         "source": "REG-L2-007",
+         "target": "MDL-L1-004",
          "target_type": "node",
          "source_label": "Spelregels & veiligheidsregels",
          "target_label": "Materiaalkosten",
@@ -4984,9 +4984,9 @@
          }
       },
       {
-         "id": "E109",
-         "source": "N068",
-         "target": "N054",
+         "id": "E-STR-030",
+         "source": "REG-L2-007",
+         "target": "DIS-L1-001",
          "target_type": "node",
          "source_label": "Spelregels & veiligheidsregels",
          "target_label": "Tactische complexiteit",
@@ -5016,9 +5016,9 @@
          }
       },
       {
-         "id": "E110",
-         "source": "N068",
-         "target": "N052",
+         "id": "E-STR-031",
+         "source": "REG-L2-007",
+         "target": "DIS-L2-001",
          "target_type": "node",
          "source_label": "Spelregels & veiligheidsregels",
          "target_label": "Ploegenstructuur",
@@ -5049,9 +5049,9 @@
          }
       },
       {
-         "id": "E111",
-         "source": "N068",
-         "target": "N007",
+         "id": "E-STR-032",
+         "source": "REG-L2-007",
+         "target": "REG-L2-004",
          "target_type": "node",
          "source_label": "Spelregels & veiligheidsregels",
          "target_label": "Categorie-indeling",
@@ -5081,9 +5081,9 @@
          }
       },
       {
-         "id": "E112",
-         "source": "N069",
-         "target": "N037",
+         "id": "E-MED-055",
+         "source": "MAC-L3-008",
+         "target": "ORG-L2-002",
          "target_type": "node",
          "source_label": "Institutionele prioriteitstelling",
          "target_label": "IJsuurverdeling",
@@ -5113,9 +5113,9 @@
          }
       },
       {
-         "id": "E113",
-         "source": "N069",
-         "target": "N059",
+         "id": "E-MED-056",
+         "source": "MAC-L3-008",
+         "target": "ORG-L2-010",
          "target_type": "node",
          "source_label": "Institutionele prioriteitstelling",
          "target_label": "Openingstijden publiek schaatsen",
@@ -5145,9 +5145,9 @@
          }
       },
       {
-         "id": "E114",
-         "source": "N069",
-         "target": "N036",
+         "id": "E-MED-057",
+         "source": "MAC-L3-008",
+         "target": "ORG-L2-001",
          "target_type": "node",
          "source_label": "Institutionele prioriteitstelling",
          "target_label": "IJsbaanbeschikbaarheid",
@@ -5177,9 +5177,9 @@
          }
       },
       {
-         "id": "E115",
-         "source": "N069",
-         "target": "N065",
+         "id": "E-MED-058",
+         "source": "MAC-L3-008",
+         "target": "ORG-L2-012",
          "target_type": "node",
          "source_label": "Institutionele prioriteitstelling",
          "target_label": "Herintrede-programma’s",
@@ -5229,9 +5229,9 @@
          "definition": "Macro-economische condities die financiële draagkracht van deelnemers en clubs beïnvloeden: besteedbaar inkomen, werkloosheid, energieprijzen, sponsormarkt. Hoog = gunstig economisch klimaat, laag = recessie/crisis.",
          "mechanism": "Onder de drempel (slider < 0.55) is het economisch klimaat neutraal — basisparticipatie blijft intact. Boven de drempel treedt demping op bij verslechtering: hogere kosten (licentie, materiaal, reis) reduceren deelname, clubs krijgen minder sponsoring, vrijwilligers prioriteren betaald werk. Het effect is breed maar het sterkst op kosten-gevoelige en logistieke paden.",
          "related_nodes": [
-            "N048",
-            "N051",
-            "N018"
+            "MAC-L3-004",
+            "MAC-L3-007",
+            "PSY-L1-001"
          ],
          "primary_clusters": [
             "Toelaatbaarheid",
@@ -5307,10 +5307,10 @@
          "definition": "Beschikbaarheid en toegankelijkheid van schaatsfaciliteiten: ijstijd-aanbod, baanbeschikbaarheid, openingstijden publiek schaatsen, afstand tot faciliteiten. Hoog = ruim aanbod en goede bereikbaarheid, laag = schaarste/sluiting.",
          "mechanism": "Accommodatietoegang is de fysieke voorwaarde voor training en deelname. Onder de drempel (slider < 0.45) stopt de keten: geen ijs = geen training = geen deelname. Boven de drempel schaalt effect minder — meer ijstijd helpt, maar met afnemende meeropbrengst. Het effect is het sterkst op trainingsvolume en feitelijke deelname.",
          "related_nodes": [
-            "N020",
-            "N021",
-            "N023",
-            "N059"
+            "PSY-L1-003",
+            "PSY-L1-004",
+            "PSY-L1-006",
+            "ORG-L2-010"
          ],
          "primary_clusters": [
             "Feitelijke deelname",
@@ -5386,12 +5386,12 @@
          "definition": "Mate van regelgeving en formalisering door de schaatsbond: licentie-eisen, leeftijdsregels, kwalificatiesystemen, medische vereisten, competitiestructuur. Hoog = strikte regelgeving, laag = minimale formalisering.",
          "mechanism": "Bondsbeleid heeft een optimum: te weinig structuur leidt tot onveiligheid en onduidelijkheid; te veel regelgeving verhoogt drempels en sluit potentiële deelnemers uit. Het effect is het sterkst op Toelaatbaarheid-edges (waar regels directe gates vormen) en Feitelijke deelname (competitiestructuur). Het optimum verschilt per participatietype — recreatief profiteert van minder formalisering, competitief van meer.",
          "related_nodes": [
-            "N005",
-            "N006",
-            "N007",
-            "N008",
-            "N009",
-            "N010"
+            "REG-L2-002",
+            "REG-L2-003",
+            "REG-L2-004",
+            "REG-L2-005",
+            "REG-L2-006",
+            "REG-L12-001"
          ],
          "primary_clusters": [
             "Toelaatbaarheid",
@@ -5467,11 +5467,11 @@
          "definition": "Dominantie van prestatie-oriëntatie versus participatie-oriëntatie in de sportcultuur: selectiedruk, resultaatgerichtheid, competitie-nadruk, ego- vs. mastery-klimaat. Hoog = sterke nadruk op prestatie en selectie, laag = nadruk op plezier en deelname.",
          "mechanism": "Prestatiecultuur heeft een smal optimum: matige prestatiedruk stimuleert motivatie en verbetering; te veel druk leidt tot angst, dropout en uitsluiting van minder talentvolle deelnemers. Te weinig druk kan leiden tot gebrek aan uitdaging. Het effect is het sterkst op psychologische edges (zelfeffectiviteit, enjoyment, motivatie) en continuïteit.",
          "related_nodes": [
-            "N033",
-            "N030",
-            "N031",
-            "N032",
-            "N036"
+            "MDL-L1-005",
+            "MDL-L1-002",
+            "MDL-L1-003",
+            "MDL-L1-004",
+            "ORG-L2-001"
          ],
          "primary_clusters": [
             "Psychologisch",
@@ -5547,10 +5547,10 @@
          "definition": "Kwaliteit van de sociale omgeving in club/vereniging: inclusiviteit, groepscohesie, onderlinge steun, welkom-gevoel, sociale veiligheid. Hoog = sterk sociaal klimaat, laag = kil/exclusief klimaat.",
          "mechanism": "Clubklimaat heeft een breed optimum — een goed sociaal klimaat versterkt bijna alle sociale en psychologische paden. Te laag klimaat leidt tot isolatie en uitval. Extreem hoog kan leiden tot groepsdruk of in-group/out-group dynamiek, maar dit optimum is breed (hoog sigma). Het effect is het sterkst op sociale edges, enjoyment en continuïteit.",
          "related_nodes": [
-            "N043",
-            "N044",
-            "N041",
-            "N062"
+            "ORG-L2-008",
+            "ORG-L2-009",
+            "ORG-L2-006",
+            "SOC-L1-003"
          ],
          "primary_clusters": [
             "Sociaal",
@@ -5626,10 +5626,10 @@
          "definition": "Beschikbaarheid en inzet van vrijwilligers voor sportorganisatie: trainers, bestuursleden, wedstrijdofficials, baanpersoneel, evenementorganisatie. Hoog = voldoende en gemotiveerde vrijwilligers, laag = structureel tekort.",
          "mechanism": "Vrijwilligerscapaciteit is een lineaire versterker: meer vrijwilligers = meer trainingsaanbod, wedstrijdorganisatie en clubactiviteiten. Er is geen duidelijk optimum (meer is beter, tot organisatorische verzadiging). Het effect is het sterkst op organisatie-edges (trainers, programma-aanbod) en wedstrijdaanbod.",
          "related_nodes": [
-            "N049",
-            "N045",
-            "N046",
-            "N027"
+            "MAC-L3-005",
+            "MAC-L3-001",
+            "MAC-L3-002",
+            "SOC-L2-001"
          ],
          "primary_clusters": [
             "Organisatie",
@@ -5703,10 +5703,10 @@
          "definition": "Seizoensgebonden en klimatologische factoren die schaatsparticipatie beïnvloeden: winterduur, vorstdagen (natuurijs), indoorseizoen, seizoenscompensatie (inline skating). Hoog = gunstige condities (lang winters, veel ijs), laag = ongunstig (korte winters, klimaatopwarming).",
          "mechanism": "Seizoen en klimaat zijn lineaire versterkende factoren voor schaatsen als seizoenssport. Langere winters en meer vorstdagen betekenen meer natuurijsmogelijkheden en langere indoorseizoenenen. Het effect is het sterkst op baanbeschikbaarheid, seizoensplanning en recreatieve participatie. Klimaattrends (opwarming) werken structureel negatief op lange termijn.",
          "related_nodes": [
-            "N050",
-            "N020",
-            "N029",
-            "N059"
+            "MAC-L3-006",
+            "PSY-L1-003",
+            "MDL-L1-001",
+            "ORG-L2-010"
          ],
          "primary_clusters": [
             "Macro-moderaties",
@@ -5782,10 +5782,10 @@
          "definition": "Impact van levensfasetransities op sportparticipatie: school-naar-werk, studie-naar-carrière, gezinsvorming, verhuizing, pensioen. Hoog = stabiele levensfase, laag = actieve transitieperiode met veel verandering.",
          "mechanism": "Levensfasetransities zijn de sterkste predictor van sportuitval — niet omdat motivatie verdwijnt, maar omdat tijdsdruk, prioriteiten en logistiek veranderen. Het effect is het sterkst op continuïteit, trainingsvolume en recreatieve participatie. Bij lage slider-waarde (actieve transitie) worden deze paden gedempt.",
          "related_nodes": [
-            "N010",
-            "N042",
-            "N003",
-            "N057"
+            "REG-L12-001",
+            "ORG-L2-007",
+            "UIT-L0-003",
+            "UIT-L0-004"
          ],
          "primary_clusters": [
             "Continuïteit",

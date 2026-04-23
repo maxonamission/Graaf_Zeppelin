@@ -238,7 +238,7 @@ class TestSliderAPI:
         ) as client:
             response = await client.get(
                 "/api/graph/sliders/qualify/relevant",
-                params={"factor_ids": "N001"},
+                params={"factor_ids": "UIT-L0-001"},
             )
             assert response.status_code == 200
             data = response.json()
@@ -321,7 +321,7 @@ class TestReasoningAPI:
             response = await client.post(
                 "/api/reasoning/intervene",
                 json={
-                    "factor_id": "N001",
+                    "factor_id": "UIT-L0-001",
                     "change": 0.2,
                     "provider": "openai",
                     "stored_key_id": 1,
