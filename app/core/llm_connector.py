@@ -84,7 +84,8 @@ class LLMConnector:
             raise LLMProviderError(f"OpenAI API error {response.status_code}: {response.text}")
 
         data = response.json()
-        return data["choices"][0]["message"]["content"]
+        content: str = data["choices"][0]["message"]["content"]
+        return content
 
     async def _call_anthropic(
         self,
@@ -122,4 +123,5 @@ class LLMConnector:
             raise LLMProviderError(f"Anthropic API error {response.status_code}: {response.text}")
 
         data = response.json()
-        return data["content"][0]["text"]
+        text: str = data["content"][0]["text"]
+        return text

@@ -8,6 +8,7 @@ a curve function (dampening threshold, inverted-U, or linear).
 from __future__ import annotations
 
 import math
+from collections.abc import Callable
 from typing import Any
 
 
@@ -55,8 +56,9 @@ def linear_mod(value: float, gamma: float) -> float:
     return 1.0 + gamma * (value - 0.5)
 
 
-# Curve type registry
-_CURVE_FUNCTIONS = {
+# Curve type registry. Signatures verschillen per curve (t/b vs mu/sigma vs
+# gamma); ``Callable[..., float]`` dekt dat via ellipsis.
+_CURVE_FUNCTIONS: dict[str, Callable[..., float]] = {
     "DAMPENING_THRESHOLD": dampening_threshold,
     "INVERTED_U_MOD": inverted_u,
     "LINEAR_MOD": linear_mod,

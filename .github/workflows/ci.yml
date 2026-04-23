@@ -56,14 +56,8 @@ jobs:
       - name: Ruff format check
         run: ruff format --check --diff .
 
-      - name: Mypy (strict op EPIC-14-modules)
-        run: >
-          mypy
-          app/core/dag_engine.py
-          app/core/id_schema.py
-          app/core/validation.py
-          app/core/graph_models.py
-          app/core/graph_io.py
+      - name: Mypy (strict op app/core/)
+        run: mypy app/core/
 
       - name: Graph-validatie op checked-in model
         run: python scripts/validate_graph.py data/models/sportdeelname_graph.json

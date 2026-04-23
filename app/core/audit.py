@@ -32,7 +32,7 @@ def audit_log(
     **extra: Any,
 ) -> None:
     """Write a structured audit log entry as JSON."""
-    entry = {
+    entry: dict[str, Any] = {
         "timestamp": datetime.now(UTC).isoformat(),
         "event": event_type,
         "user_id": user_id,

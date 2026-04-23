@@ -36,15 +36,14 @@ Vijf lagen van bescherming, van lokaal naar remote:
 1. **Ruff** (`pyproject.toml` → `[tool.ruff]`) — lint + format. Regels:
    `E/F/I/UP/B/SIM/RUF`. Ignore: `E501, B008, RUF001-003` (zie toelichting
    in pyproject). Tests/scripts hebben een kleine extra-ignore-set.
-2. **Mypy strict** — geconfigureerd in `pyproject.toml`. Scope op dit
-   moment beperkt tot de EPIC-14-modules:
+2. **Mypy strict** — geconfigureerd in `pyproject.toml`. Scope omvat
+   de **volledige `app/core/`-laag** (na S14-06a):
    ```
-   mypy app/core/dag_engine.py app/core/id_schema.py \
-        app/core/validation.py app/core/graph_models.py app/core/graph_io.py
+   mypy app/core/
    ```
-   De bredere `app/core/` (auth, audit, slider_engine, llm_connector,
-   license_manager) is nog niet strict-compliant; uitbreiding staat op
-   de roadmap (niet voor deze release).
+   `app/api/`, `app/main.py` en `app/models/` blijven buiten scope
+   (~85 FastAPI-routing- en SQLAlchemy-`Mapped[]`-violations die
+   afzonderlijke typing-aandacht vereisen).
 3. **Pre-commit** (`.pre-commit-config.yaml`) — draait ruff-check,
    ruff-format, mypy (op scope), file-hygiene-hooks, secret-scanner
    en `scripts/check_story_status.py --mode=staged`. Installeer met:
@@ -65,8 +64,7 @@ Vijf lagen van bescherming, van lokaal naar remote:
 # Alles in één keer (wat pre-commit ook doet)
 ruff check .                # lint
 ruff format --check .       # formattering check
-mypy app/core/dag_engine.py app/core/id_schema.py app/core/validation.py \
-     app/core/graph_models.py app/core/graph_io.py
+mypy app/core/
 
 # Graph-gezondheid
 python scripts/validate_graph.py data/models/sportdeelname_graph.json
