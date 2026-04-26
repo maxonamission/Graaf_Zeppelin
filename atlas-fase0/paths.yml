@@ -1,0 +1,22 @@
+# Pad-configuratie voor promote_reference.py
+#
+# Pas aan na folder-structuur-harmonisatie indien nodig
+# (zie A_/docs/dwarsdoorsnede_modellenstructuur.md).
+# De huidige paden zijn relatief vanaf de root van codebase_atlas.
+
+gedeeld: "A_Modulaire Modelarchitectuur/literatuur/gedeeld_register.json"
+
+models:
+  L1: "L1_Ontwerp en Onderzoek Vermogensmodel/literatuur/L1_referenties.json"
+  L2: "L2_Affectief Vitale Vereniging/literatuur/AVV_D1_referenties.json"
+  L3: "L3_NSkiV/literatuur/literatuurregister_v2.json"
+  D1: "D1_Ontwerp en Onderzoek Sportdeelnamemodel/literatuur/SDM_D1_referenties.json"
+  C1: "C1_Ontwerp en Onderzoek Capability Model Data-Informed Werken/literatuur/C1_referenties.json"
+
+# Velden uit lokale registers die NIET mee worden gepromoveerd naar het
+# gedeelde register (model-specifieke velden).
+strip_on_promote:
+  - avv_usage      # AVV-specifiek usage-tracking
+  - sdm_usage      # eventuele D1-equivalent
+  - thema_codes    # L3 T01-T14 codes
+  - shared         # markering komt terug bij promotie
