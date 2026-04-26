@@ -1,0 +1,193 @@
+{
+  "metadata": {
+    "deliverable": "MLS_gedeeld_register",
+    "project": "Modulaire Modelarchitectuur",
+    "version": "0.2",
+    "status": "initial-batch",
+    "date": "2026-04-26",
+    "description": "Gedeeld literatuurregister voor de Modelbouw-stack. Bevat (1) bronnen die door twee of meer modellen worden gebruikt en (2) theoretische onderbouwing van de modelarchitectuur. Werkt aanvullend op project-eigen registers.",
+    "schema_extends": "AVV_D1_referenties.json",
+    "schema_additions": [
+      {
+        "field": "used_by",
+        "type": "array<string>",
+        "description": "Modelprefixen die de bron gebruiken (L1, L2, L3, D1, C1, A_)"
+      },
+      {
+        "field": "concepts",
+        "type": "array<string>",
+        "description": "Architecturele concepten die de bron representeert"
+      },
+      {
+        "field": "deprecated",
+        "type": "boolean",
+        "description": "Markeert niet-actieve bronnen; reden in verification_notes"
+      }
+    ],
+    "total_references": 8,
+    "verified_count": 0,
+    "change_log": [
+      {
+        "version": "0.1",
+        "date": "2026-04-25",
+        "change": "Skeleton aangemaakt; references-array leeg."
+      },
+      {
+        "version": "0.2",
+        "date": "2026-04-26",
+        "change": "Fase 0 — initiële batch van 8 architecturele kandidaten opgenomen (Sterman, Edmondson, Schein, Teece, Deci & Ryan, Bronfenbrenner, Coleman, Kozlowski & Klein). Bibliografische velden ingevuld op basis van standaard-cite-data; verified=false totdat eigenaar bevestigt."
+      }
+    ]
+  },
+  "references": [
+    {
+      "ref_id": "REF_Sterman_2000",
+      "cite_key": "sterman_2000",
+      "authors": [
+        {"family": "Sterman", "given": "John D."}
+      ],
+      "year": 2000,
+      "title": "Business Dynamics: Systems Thinking and Modeling for a Complex World",
+      "source": "Irwin/McGraw-Hill",
+      "type": "book",
+      "verified": false,
+      "verification_notes": "Standaard-citatie; eigenaar te verifiëren tegen exemplaar.",
+      "tags": ["architectural"],
+      "concepts": ["system-dynamics", "stock-flow", "feedback-loops", "modeling-methodology"],
+      "used_by": ["A_"]
+    },
+    {
+      "ref_id": "REF_Edmondson_1999",
+      "cite_key": "edmondson_1999",
+      "authors": [
+        {"family": "Edmondson", "given": "Amy C."}
+      ],
+      "year": 1999,
+      "title": "Psychological Safety and Learning Behavior in Work Teams",
+      "source": "Administrative Science Quarterly",
+      "volume": "44",
+      "issue": "2",
+      "pages": "350-383",
+      "doi": "10.2307/2666999",
+      "type": "journal_article",
+      "verified": false,
+      "verification_notes": "Standaard-citatie; eigenaar te verifiëren. Voorbeeld in protocol §6.2.",
+      "tags": ["architectural"],
+      "concepts": ["psychological-safety", "team-learning", "stock-node-veiligheid"],
+      "used_by": ["A_"]
+    },
+    {
+      "ref_id": "REF_Schein_2010",
+      "cite_key": "schein_2010",
+      "authors": [
+        {"family": "Schein", "given": "Edgar H."}
+      ],
+      "year": 2010,
+      "title": "Organizational Culture and Leadership",
+      "source": "Jossey-Bass",
+      "edition": "4th ed.",
+      "type": "book",
+      "verified": false,
+      "verification_notes": "Standaard-citatie; mogelijk gebruikt eigenaar 5e editie (2017) of 1985-eerstdruk — verifieer.",
+      "tags": ["architectural"],
+      "concepts": ["organizational-culture", "stock-node-cultuur", "cultuur-asymmetrie"],
+      "used_by": ["A_"]
+    },
+    {
+      "ref_id": "REF_Teece_2007",
+      "cite_key": "teece_2007",
+      "authors": [
+        {"family": "Teece", "given": "David J."}
+      ],
+      "year": 2007,
+      "title": "Explicating Dynamic Capabilities: The Nature and Microfoundations of (Sustainable) Enterprise Performance",
+      "source": "Strategic Management Journal",
+      "volume": "28",
+      "issue": "13",
+      "pages": "1319-1350",
+      "doi": "10.1002/smj.640",
+      "type": "journal_article",
+      "verified": false,
+      "verification_notes": "Standaard-citatie; mogelijk gebruikt eigenaar Teece, Pisano & Shuen 1997 als alternatieve bron — verifieer.",
+      "tags": ["architectural"],
+      "concepts": ["dynamic-capabilities", "capability-node", "microfoundations"],
+      "used_by": ["A_"]
+    },
+    {
+      "ref_id": "REF_Deci_2000",
+      "cite_key": "deci_ryan_2000",
+      "authors": [
+        {"family": "Deci", "given": "Edward L."},
+        {"family": "Ryan", "given": "Richard M."}
+      ],
+      "year": 2000,
+      "title": "The 'What' and 'Why' of Goal Pursuits: Human Needs and the Self-Determination of Behavior",
+      "source": "Psychological Inquiry",
+      "volume": "11",
+      "issue": "4",
+      "pages": "227-268",
+      "doi": "10.1207/S15327965PLI1104_01",
+      "type": "journal_article",
+      "verified": false,
+      "verification_notes": "Standaard-citatie; eigenaar te verifiëren. Mogelijk overlapt met Deci & Ryan 1985-boek of Ryan & Deci 2000 (American Psychologist).",
+      "tags": ["architectural"],
+      "concepts": ["self-determination", "intrinsic-motivation", "psychological-needs"],
+      "used_by": ["A_"]
+    },
+    {
+      "ref_id": "REF_Bronfenbrenner_1979",
+      "cite_key": "bronfenbrenner_1979",
+      "authors": [
+        {"family": "Bronfenbrenner", "given": "Urie"}
+      ],
+      "year": 1979,
+      "title": "The Ecology of Human Development: Experiments by Nature and Design",
+      "source": "Harvard University Press",
+      "type": "book",
+      "verified": false,
+      "verification_notes": "Standaard-citatie; eigenaar te verifiëren tegen exemplaar.",
+      "tags": ["architectural"],
+      "concepts": ["ecological-systems", "cross-level-architectuur", "multilevel-context"],
+      "used_by": ["A_"]
+    },
+    {
+      "ref_id": "REF_Coleman_1988",
+      "cite_key": "coleman_1988",
+      "authors": [
+        {"family": "Coleman", "given": "James S."}
+      ],
+      "year": 1988,
+      "title": "Social Capital in the Creation of Human Capital",
+      "source": "American Journal of Sociology",
+      "volume": "94",
+      "pages": "S95-S120",
+      "doi": "10.1086/228943",
+      "type": "journal_article",
+      "verified": false,
+      "verification_notes": "Standaard-citatie; supplement-issue paginering bevestigd.",
+      "tags": ["architectural"],
+      "concepts": ["social-capital", "social-structure", "stock-node-vertrouwen"],
+      "used_by": ["A_"]
+    },
+    {
+      "ref_id": "REF_Kozlowski_2000",
+      "cite_key": "kozlowski_klein_2000",
+      "authors": [
+        {"family": "Kozlowski", "given": "Steve W. J."},
+        {"family": "Klein", "given": "Katherine J."}
+      ],
+      "year": 2000,
+      "title": "A Multilevel Approach to Theory and Research in Organizations: Contextual, Temporal, and Emergent Processes",
+      "source": "Multilevel Theory, Research, and Methods in Organizations: Foundations, Extensions, and New Directions",
+      "editors": "Klein, K. J. & Kozlowski, S. W. J.",
+      "publisher": "Jossey-Bass",
+      "pages": "3-90",
+      "type": "book_chapter",
+      "verified": false,
+      "verification_notes": "Standaard-citatie; verifieer paginering tegen exemplaar.",
+      "tags": ["architectural"],
+      "concepts": ["multilevel-theory", "cross-level-architectuur", "emergence", "niveau-autonomie"],
+      "used_by": ["A_"]
+    }
+  ]
+}
